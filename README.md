@@ -2,7 +2,8 @@
 
 Modern web teknolojileri kullanılarak geliştirilmiş, **Tailwind CSS** tabanlı, responsive ve kullanıcı dostu kişisel portföy web sitesi. Single Page Application (SPA) mimarisi sayesinde sayfa yenilemesi olmadan hızlı geçişler sunar.
 
-https://allenvb-website.vercel.app/
+
+https://allenvb-websayfasi.vercel.app/
 
 ## 🎯 Proje Özellikleri
 
