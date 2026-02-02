@@ -1,0 +1,203 @@
+/* Advanced Hover Effects */
+
+/* 3D Floating Background Animation */
+@keyframes float3d {
+    0%, 100% {
+        transform: translateY(0px) translateZ(0) rotateX(0deg) rotateY(0deg);
+    }
+    25% {
+        transform: translateY(-30px) translateZ(20px) rotateX(5deg) rotateY(10deg);
+    }
+    50% {
+        transform: translateY(-50px) translateZ(40px) rotateX(10deg) rotateY(-5deg);
+    }
+    75% {
+        transform: translateY(-30px) translateZ(20px) rotateX(5deg) rotateY(10deg);
+    }
+}
+
+@keyframes float3d-alt {
+    0%, 100% {
+        transform: translateY(0px) translateZ(0) rotateX(0deg) rotateY(0deg);
+    }
+    25% {
+        transform: translateY(-40px) translateZ(30px) rotateX(-5deg) rotateY(-10deg);
+    }
+    50% {
+        transform: translateY(-60px) translateZ(50px) rotateX(-10deg) rotateY(5deg);
+    }
+    75% {
+        transform: translateY(-40px) translateZ(30px) rotateX(-5deg) rotateY(-10deg);
+    }
+}
+
+/* Smooth Image Scale on Hover */
+.hover-image-scale {
+    transition: transform 0.3s ease-in-out;
+}
+
+.hover-image-scale:hover {
+    transform: scale(1.05);
+}
+
+/* Smooth Page Transitions */
+.page-transition {
+    animation: fadeInUp 0.5s ease-in-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Button Glow Effect */
+button:hover,
+a.btn:hover {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+/* Card Hover Shadow Glow */
+.card-hover {
+    transition: all 0.3s ease-in-out;
+}
+
+.card-hover:hover {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+    transform: translateY(-5px);
+}
+
+/* Smooth Link Hover */
+a {
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: #3b82f6;
+}
+
+/* Form Input Focus Effect */
+input:focus,
+textarea:focus {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+/* Navigation Link Active State */
+[data-page].active {
+    color: #3b82f6;
+    border-bottom: 2px solid #3b82f6;
+}
+
+/* Loading Spinner */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+/* Text Gradient Animation */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% center;
+    }
+    100% {
+        background-position: 100% center;
+    }
+}
+
+.gradient-text {
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #3b82f6);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 3s ease infinite;
+}
+
+/* Smooth Scroll Behavior */
+html {
+    scroll-behavior: smooth;
+    perspective: 1000px;
+}
+
+/* Selection Styles */
+::selection {
+    background-color: #3b82f6;
+    color: white;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #3b82f6;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #60a5fa;
+}
+
+/* Social Icon Hover Animation */
+.social-icon {
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.social-icon:hover {
+    transform: translateY(-5px) scale(1.2);
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
+}
+
+/* Section Background Gradient */
+section {
+    position: relative;
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+/* Contact Form Success Message Animation */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-success {
+    animation: slideDown 0.3s ease-out;
+}
