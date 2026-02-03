@@ -25,17 +25,11 @@ const pages = {
                             </button>
                         </div>
                         <div class="flex gap-4">
-                            <a href="https://github.com/suleymanemrearlii" target="_blank" class="text-gray-300 hover:text-blue-400 transition text-2xl">
+                            <a href="https://github.com/AllenVB" target="_blank" class="text-gray-300 hover:text-blue-400 transition text-2xl">
                                 <i class="bi bi-github"></i>
                             </a>
-                            <a href="https://linkedin.com/in/suleymanemrearlii" target="_blank" class="text-gray-300 hover:text-blue-400 transition text-2xl">
+                            <a href="https://www.linkedin.com/in/s%C3%BCleyman-emre-arl%C4%B1-608491330/" target="_blank" class="text-gray-300 hover:text-blue-400 transition text-2xl">
                                 <i class="bi bi-linkedin"></i>
-                            </a>
-                            <a href="https://twitter.com/SleymanEmreArl1" target="_blank" class="text-gray-300 hover:text-blue-400 transition text-2xl">
-                                <i class="bi bi-twitter"></i>
-                            </a>
-                            <a href="https://instagram.com/suleymanemrearlii" target="_blank" class="text-gray-300 hover:text-blue-400 transition text-2xl">
-                                <i class="bi bi-instagram"></i>
                             </a>
                         </div>
                     </div>
@@ -128,7 +122,7 @@ const pages = {
                         <div class="p-6">
                             <h5 class="text-xl font-bold text-blue-400 mb-2 group-hover:text-blue-300 transition">Smart Home Security</h5>
                             <p class="text-gray-400 mb-4">Akıllı ev güvenlik sistemi projesi.</p>
-                            <a href="#" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded block text-center transition transform hover:scale-105">
+                            <a href="https://smart-home-security-veri-taban.vercel.app/" target="_blank" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded block text-center transition transform hover:scale-105">
                                 Detaylar
                             </a>
                         </div>
@@ -140,7 +134,7 @@ const pages = {
                         <div class="p-6">
                             <h5 class="text-xl font-bold text-blue-400 mb-2 group-hover:text-blue-300 transition">User SSO</h5>
                             <p class="text-gray-400 mb-4">Tek oturum açma sistemi.</p>
-                            <a href="#" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded block text-center transition transform hover:scale-105">
+                            <a href="https://github.com/AllenVB/usersso" target="_blank" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded block text-center transition transform hover:scale-105">
                                 Detaylar
                             </a>
                         </div>
@@ -150,11 +144,11 @@ const pages = {
                             <i class="bi bi-code-slash text-white text-3xl"></i>
                         </div>
                         <div class="p-6">
-                            <h5 class="text-xl font-bold text-blue-400 mb-2 group-hover:text-blue-300 transition">Proje 3</h5>
-                            <p class="text-gray-400 mb-4">Proje açıklaması gelecek.</p>
-                            <button class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded transition transform hover:scale-105">
+                            <h5 class="text-xl font-bold text-blue-400 mb-2 group-hover:text-blue-300 transition">Project Management Systems</h5>
+                            <p class="text-gray-400 mb-4">Yazılım tasarım ve mimarisi projesi.</p>
+                            <a href="https://yazilim-tasarim-mimarisi-proje.vercel.app/" target="_blank" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded block text-center transition transform hover:scale-105">
                                 Detaylar
-                            </button>
+                            </a>
                         </div>
                     </div>
                     <div class="group bg-gray-800 rounded-lg overflow-hidden hover:shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 transform hover:-translate-y-2">
@@ -162,9 +156,9 @@ const pages = {
                             <i class="bi bi-rocket text-white text-3xl"></i>
                         </div>
                         <div class="p-6">
-                            <h5 class="text-xl font-bold text-blue-400 mb-2 group-hover:text-blue-300 transition">Proje 4</h5>
-                            <p class="text-gray-400 mb-4">Harita tabanlı hizmet uygulaması.</p>
-                            <a href="#" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded block text-center transition transform hover:scale-105">
+                            <h5 class="text-xl font-bold text-blue-400 mb-2 group-hover:text-blue-300 transition">Fitness Platform</h5>
+                            <p class="text-gray-400 mb-4">Fitness platformu uygulaması.</p>
+                            <a href="https://fitness-platform-eta.vercel.app/" target="_blank" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded block text-center transition transform hover:scale-105">
                                 Detaylar
                             </a>
                         </div>
@@ -174,8 +168,8 @@ const pages = {
                             <i class="bi bi-gear text-white text-3xl"></i>
                         </div>
                         <div class="p-6">
-                            <h5 class="text-xl font-bold text-blue-400 mb-2 group-hover:text-blue-300 transition">Proje 5</h5>
-                            <p class="text-gray-400 mb-4">Otomasyon ve yönetim sistemi.</p>
+                            <h5 class="text-xl font-bold text-blue-400 mb-2 group-hover:text-blue-300 transition">Hava Durumu Uygulaması</h5>
+                            <p class="text-gray-400 mb-4">Yakında gelecek.</p>
                             <a href="#" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded block text-center transition transform hover:scale-105">
                                 Detaylar
                             </a>
@@ -187,7 +181,7 @@ const pages = {
                         </div>
                         <div class="p-6">
                             <h5 class="text-xl font-bold text-blue-400 mb-2 group-hover:text-blue-300 transition">Proje 6</h5>
-                            <p class="text-gray-400 mb-4">Veri analiz ve raporlama aracı.</p>
+                            <p class="text-gray-400 mb-4">Yakında.</p>
                             <a href="#" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded block text-center transition transform hover:scale-105">
                                 Detaylar
                             </a>
