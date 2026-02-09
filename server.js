@@ -3,8 +3,14 @@ const { Pool } = require('pg');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
+// Start the Discord bot
+require('./bot');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Serve static files (HTML, CSS, JS)
+app.use(express.static('.'));
 
 // Middleware
 app.use(cors());

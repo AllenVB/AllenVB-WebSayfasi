@@ -327,6 +327,16 @@ function loadPage(pageName) {
                 }, 3000);
             });
         }
+
+        // Track external link clicks
+        container.querySelectorAll('a[target="_blank"]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const projectTitle = e.currentTarget.closest('div').querySelector('h5').innerText;
+                if (window.sa_track) {
+                    window.sa_track(`click/project/${projectTitle}`);
+                }
+            });
+        });
     }, 300);
 }
 
