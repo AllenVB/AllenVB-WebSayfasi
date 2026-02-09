@@ -17,14 +17,15 @@
           TRACK_URL: "https://coremetrics-service-665359087509.europe-west3.run.app/api/Collector/track" // Canlı sunucu adresin
         };
 
-        async function trackVisit() {
+        async function trackVisit(pageName = null) {
           try {
+            const path = pageName ? `/#${pageName}` : window.location.pathname;
             await fetch(CONFIG.TRACK_URL, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 apiKey: CONFIG.API_KEY,
-                path: window.location.pathname, // Sayfanın yolunu otomatik alır
+                path: path, // Sayfanın yolunu otomatik alır
                 referrer: document.referrer || "Doğrudan Giriş", // Nereden gelindiğini anlar
                 userAgent: navigator.userAgent // 400 hatasını önlemek için gerekli
               })
@@ -33,6 +34,9 @@
             console.warn("CoreMetrics: Veri gönderilemedi.");
           }
         }
+
+        // Fonksiyonu global hale getir
+        window.sa_track = trackVisit;
 
         // Sayfa yüklendiğinde takibi başlat
         if (document.readyState === 'complete') {

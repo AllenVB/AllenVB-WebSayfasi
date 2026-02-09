@@ -259,8 +259,8 @@ function loadPage(pageName) {
     if (!pages[pageName]) pageName = 'home';
 
     // --- BURASI KRİTİK ---
-    if (typeof window.trackVisit === 'function') {
-        window.trackVisit(pageName);
+    if (typeof window.sa_track === 'function') {
+        window.sa_track(pageName);
     }
     // ---------------------
 
