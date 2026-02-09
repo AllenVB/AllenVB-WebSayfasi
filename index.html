@@ -13,9 +13,10 @@
    <script>
   (function() {
     const CONFIG = {
-      API_KEY: "db281f63-a569-47e4-b30d-e6637451e890",
-      TRACK_URL: "https://coremetrics-service-665359087509.europe-west3.run.app/api/Collector/track"
-    };
+    API_KEY: "db281f63-a569-47e4-b30d-e6637451e890",
+    // Buradaki URL'nin Frankfurt adresi olduğundan emin ol:
+    TRACK_URL: "https://coremetrics-service-665359087509.europe-west3.run.app/api/Collector/track"
+};
 
    async function trackVisit(pageName = null) {
     try {
