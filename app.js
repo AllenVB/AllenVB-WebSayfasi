@@ -258,11 +258,15 @@ function loadPage(pageName) {
     const container = document.getElementById('app-container');
     if (!pages[pageName]) pageName = 'home';
 
-    // --- BURASI KRİTİK ---
+    // --- GÜNCELLENEN KRİTİK KISIM ---
     if (typeof window.sa_track === 'function') {
-        window.sa_track(pageName);
+        // Frankfurt'a sadece sayfa ismini değil, tam yolu gönderiyoruz
+        const trackPath = pageName === 'home' ? '/' : `/#${pageName}`;
+        window.sa_track(trackPath); 
+        console.log("CoreMetrics: Sayfa geçişi takip ediliyor ->", trackPath);
+    } else {
+        console.warn("CoreMetrics: Takip scripti henüz hazır değil!");
     }
-    // ---------------------
 
     container.style.opacity = '0';
     setTimeout(() => {

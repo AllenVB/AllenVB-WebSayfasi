@@ -17,25 +17,27 @@
       TRACK_URL: "https://coremetrics-service-665359087509.europe-west3.run.app/api/Collector/track"
     };
 
-    async function trackVisit(pageName = null) {
-      try {
-        // Eğer pageName bir proje tıklamasıysa direkt onu kullan, değilse URL'den al
+   async function trackVisit(pageName = null) {
+    try {
         const path = pageName ? (pageName.startsWith('/') ? pageName : `/#${pageName}`) : window.location.pathname;
         
+        // KONSOL LOGU EKLEDİK (Test için)
+        console.log("CoreMetrics: Veri gönderiliyor ->", path);
+
         await fetch(CONFIG.TRACK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            apiKey: CONFIG.API_KEY,
-            path: path,
-            referrer: document.referrer || "Doğrudan Giriş",
-            userAgent: navigator.userAgent
-          })
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                apiKey: CONFIG.API_KEY,
+                path: path,
+                referrer: document.referrer || "Doğrudan Giriş",
+                userAgent: navigator.userAgent
+            })
         });
-      } catch (err) {
+    } catch (err) {
         console.warn("CoreMetrics: Veri gönderilemedi.");
-      }
     }
+}
 
     // --- YENİ: DIŞ BAĞLANTI TAKİPÇİSİ ---
     function setupLinkTracking() {
