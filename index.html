@@ -10,42 +10,63 @@
     <link rel="stylesheet" href="style.css">
     
     <!-- Takip Kodu -->
-    <script>
-      (function() {
-        const CONFIG = {
-          API_KEY: "db281f63-a569-47e4-b30d-e6637451e890", // Frankfurt'taki anahtarın
-          TRACK_URL: "https://coremetrics-service-665359087509.europe-west3.run.app/api/Collector/track" // Canlı sunucu adresin
-        };
+   <script>
+  (function() {
+    const CONFIG = {
+      API_KEY: "db281f63-a569-47e4-b30d-e6637451e890",
+      TRACK_URL: "https://coremetrics-service-665359087509.europe-west3.run.app/api/Collector/track"
+    };
 
-        async function trackVisit(pageName = null) {
-          try {
-            const path = pageName ? `/#${pageName}` : window.location.pathname;
-            await fetch(CONFIG.TRACK_URL, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                apiKey: CONFIG.API_KEY,
-                path: path, // Sayfanın yolunu otomatik alır
-                referrer: document.referrer || "Doğrudan Giriş", // Nereden gelindiğini anlar
-                userAgent: navigator.userAgent // 400 hatasını önlemek için gerekli
-              })
-            });
-          } catch (err) {
-            console.warn("CoreMetrics: Veri gönderilemedi.");
+    async function trackVisit(pageName = null) {
+      try {
+        // Eğer pageName bir proje tıklamasıysa direkt onu kullan, değilse URL'den al
+        const path = pageName ? (pageName.startsWith('/') ? pageName : `/#${pageName}`) : window.location.pathname;
+        
+        await fetch(CONFIG.TRACK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            apiKey: CONFIG.API_KEY,
+            path: path,
+            referrer: document.referrer || "Doğrudan Giriş",
+            userAgent: navigator.userAgent
+          })
+        });
+      } catch (err) {
+        console.warn("CoreMetrics: Veri gönderilemedi.");
+      }
+    }
+
+    // --- YENİ: DIŞ BAĞLANTI TAKİPÇİSİ ---
+    function setupLinkTracking() {
+      // Sayfadaki tüm "Detaylar" butonlarını veya dış linkleri yakala
+      document.addEventListener('click', (e) => {
+        const targetLink = e.target.closest('a');
+        if (targetLink && targetLink.getAttribute('target') === '_blank') {
+          // Proje ismini bulmaya çalış (kartın içindeki h5 başlığı)
+          const card = targetLink.closest('div');
+          const projectName = card ? card.querySelector('h5')?.innerText : targetLink.href;
+          
+          if (projectName) {
+            trackVisit(`proje-tiklama/${projectName.trim()}`);
           }
         }
+      });
+    }
 
-        // Fonksiyonu global hale getir
-        window.sa_track = trackVisit;
+    window.sa_track = trackVisit;
 
-        // Sayfa yüklendiğinde takibi başlat
-        if (document.readyState === 'complete') {
-          trackVisit();
-        } else {
-          window.addEventListener('load', trackVisit);
-        }
-      })();
-    </script>
+    if (document.readyState === 'complete') {
+      trackVisit();
+      setupLinkTracking();
+    } else {
+      window.addEventListener('load', () => {
+        trackVisit();
+        setupLinkTracking();
+      });
+    }
+  })();
+</script>
     <style>
         /* 3D Background Animations with Perspective */
         @keyframes float {
