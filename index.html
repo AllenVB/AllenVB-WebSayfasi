@@ -11,34 +11,36 @@
     
     <!-- Takip Kodu -->
     <script>
-      window.trackVisit = function(pageName = null) {
-          // console.log ile tetiklenip tetiklenmediğini kontrol edelim
-          console.log("Analiz tetiklendi, sayfa:", pageName || "anasayfa");
+      (function() {
+        const CONFIG = {
+          API_KEY: "db281f63-a569-47e4-b30d-e6637451e890", // Frankfurt'taki anahtarın
+          TRACK_URL: "https://coremetrics-service-665359087509.europe-west3.run.app/api/Collector/track" // Canlı sunucu adresin
+        };
 
-          const API_URL = "https://collen-unlyrical-retributively.ngrok-free.dev/api/collector/track";
-          const MY_API_KEY = "745fc94c-ab14-4ed2-beb2-db4a32c990a5"; 
-
-          const path = pageName ? `/#${pageName}` : window.location.pathname;
-
-          fetch(API_URL, {
+        async function trackVisit() {
+          try {
+            await fetch(CONFIG.TRACK_URL, {
               method: "POST",
-              headers: { 
-                  "Content-Type": "application/json",
-                  "ngrok-skip-browser-warning": "true" 
-              },
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
-                  apiKey: MY_API_KEY,
-                  path: path,
-                  referrer: document.referrer,
-                  userAgent: navigator.userAgent
+                apiKey: CONFIG.API_KEY,
+                path: window.location.pathname, // Sayfanın yolunu otomatik alır
+                referrer: document.referrer || "Doğrudan Giriş", // Nereden gelindiğini anlar
+                userAgent: navigator.userAgent // 400 hatasını önlemek için gerekli
               })
-          })
-          .then(res => console.log("API Yanıtı Geldi:", res.status))
-          .catch(err => console.error("POST Hatası:", err));
-      };
+            });
+          } catch (err) {
+            console.warn("CoreMetrics: Veri gönderilemedi.");
+          }
+        }
 
-      // İlk giriş kaydı
-      window.trackVisit();
+        // Sayfa yüklendiğinde takibi başlat
+        if (document.readyState === 'complete') {
+          trackVisit();
+        } else {
+          window.addEventListener('load', trackVisit);
+        }
+      })();
     </script>
     <style>
         /* 3D Background Animations with Perspective */

@@ -292,18 +292,38 @@ function loadPage(pageName) {
 
                 console.log("Form Gönderiliyor:", formData);
 
-                // Formun başarılı olduğunu göster
                 const messageDiv = contactForm.querySelector('#formMessage');
-                messageDiv.textContent = "✓ Mesajınız gönderildi! Teşekkürler.";
-                messageDiv.classList.add('text-green-400');
 
-                // Formu temizle
-                contactForm.reset();
+                try {
+                    // Backend'e veri gönder
+                    const response = await fetch('http://localhost:5000/api/contact', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        messageDiv.textContent = "✓ Mesajınız başarıyla kaydedildi! Teşekkürler.";
+                        messageDiv.classList.add('text-green-400');
+                        messageDiv.classList.remove('text-red-400');
+                        contactForm.reset();
+                    } else {
+                        throw new Error('Mesaj gönderilemedi');
+                    }
+                } catch (error) {
+                    console.error("Hata:", error);
+                    messageDiv.textContent = "✗ Mesaj gönderilemedi. Lütfen tekrar deneyin.";
+                    messageDiv.classList.add('text-red-400');
+                    messageDiv.classList.remove('text-green-400');
+                }
 
                 // 3 saniye sonra mesajı gizle
                 setTimeout(() => {
                     messageDiv.textContent = '';
-                    messageDiv.classList.remove('text-green-400');
+                    messageDiv.classList.remove('text-green-400', 'text-red-400');
                 }, 3000);
             });
         }
