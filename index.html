@@ -13,60 +13,71 @@
    <script>
   (function() {
     const CONFIG = {
-    API_KEY: "db281f63-a569-47e4-b30d-e6637451e890",
-    // Buradaki URL'nin Frankfurt adresi olduğundan emin ol:
-TRACK_URL: "https://coremetrics-service-665359087509.europe-west3.run.app/api/Collector/track"};
+      API_KEY: "db281f63-a569-47e4-b30d-e6637451e890",
+      TRACK_URL: "https://coremetrics-service-665359087509.europe-west3.run.app/api/Collector/track"
+    };
 
-   async function trackVisit(pageName = null) {
-    try {
-        const path = pageName ? (pageName.startsWith('/') ? pageName : `/#${pageName}`) : window.location.pathname;
+    async function trackVisit(pageName = null) {
+      try {
+        const path = pageName ? (pageName.startsWith('/') ? pageName : `/#${pageName}`) : (window.location.hash || "/");
         
-        // KONSOL LOGU EKLEDİK (Test için)
-        console.log("CoreMetrics: Veri gönderiliyor ->", path);
+        console.log("%cCoreMetrics: Veri gönderiliyor -> " + path, "color: #6366f1; font-weight: bold;");
 
         await fetch(CONFIG.TRACK_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                apiKey: CONFIG.API_KEY,
-                path: path,
-                referrer: document.referrer || "Doğrudan Giriş",
-                userAgent: navigator.userAgent
-            })
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            apiKey: CONFIG.API_KEY,
+            path: path,
+            referrer: document.referrer || "Doğrudan Giriş",
+            userAgent: navigator.userAgent
+          })
         });
-    } catch (err) {
+      } catch (err) {
         console.warn("CoreMetrics: Veri gönderilemedi.");
+      }
     }
-}
 
-    // --- YENİ: DIŞ BAĞLANTI TAKİPÇİSİ ---
-    function setupLinkTracking() {
-      // Sayfadaki tüm "Detaylar" butonlarını veya dış linkleri yakala
+    // --- DIŞ BAĞLANTI VE BUTON TAKİPÇİSİ ---
+    function setupInteractionTracking() {
       document.addEventListener('click', (e) => {
+        // 1. Proje Detay Butonları
         const targetLink = e.target.closest('a');
         if (targetLink && targetLink.getAttribute('target') === '_blank') {
-          // Proje ismini bulmaya çalış (kartın içindeki h5 başlığı)
           const card = targetLink.closest('div');
-          const projectName = card ? card.querySelector('h5')?.innerText : targetLink.href;
-          
+          const projectName = card ? card.querySelector('h5')?.innerText : null;
           if (projectName) {
             trackVisit(`proje-tiklama/${projectName.trim()}`);
           }
         }
+        
+        // 2. Menü Tıklamaları (SPA geçişleri için)
+        const navLink = e.target.closest('a[data-page]');
+        if (navLink) {
+          const page = navLink.getAttribute('data-page');
+          trackVisit(page);
+        }
       });
     }
 
+    // Global erişim için
     window.sa_track = trackVisit;
 
+    // Sayfa hazır olduğunda başlat
     if (document.readyState === 'complete') {
       trackVisit();
-      setupLinkTracking();
+      setupInteractionTracking();
     } else {
       window.addEventListener('load', () => {
         trackVisit();
-        setupLinkTracking();
+        setupInteractionTracking();
       });
     }
+
+    // Hash değişimlerini (URL'deki #about gibi) izle
+    window.addEventListener('hashchange', () => {
+      trackVisit(window.location.hash.replace('#', ''));
+    });
   })();
 </script>
     <style>
