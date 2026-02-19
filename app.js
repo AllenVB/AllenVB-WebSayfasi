@@ -279,18 +279,22 @@ const pages = {
                 </div>
 
                 <div id="stats-content" class="hidden">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
                         <div class="glass border border-indigo-500/20 p-6 rounded-2xl card-hover">
                             <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Toplam Ziyaret</p>
-                            <p id="stat-total" class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-300 to-indigo-500">-</p>
+                            <p id="stat-total" class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-300 to-indigo-500">-</p>
                         </div>
                         <div class="glass border border-purple-500/20 p-6 rounded-2xl card-hover">
                             <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Farklı Sayfa</p>
-                            <p id="stat-pages" class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-purple-300 to-purple-500">-</p>
+                            <p id="stat-pages" class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-purple-300 to-purple-500">-</p>
                         </div>
                         <div class="glass border border-emerald-500/20 p-6 rounded-2xl card-hover">
-                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Süre</p>
-                            <p id="stat-days" class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-emerald-300 to-emerald-500">30 gün</p>
+                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Oturum Sayısı</p>
+                            <p id="stat-sessions" class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-emerald-300 to-emerald-500">-</p>
+                        </div>
+                        <div class="glass border border-amber-500/20 p-6 rounded-2xl card-hover">
+                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Ort. Süre</p>
+                            <p id="stat-duration" class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-amber-300 to-amber-500">-</p>
                         </div>
                     </div>
 
@@ -320,6 +324,11 @@ function renderStatsData(data) {
 
     document.getElementById('stat-total').textContent = data.totalVisits ?? 0;
     document.getElementById('stat-pages').textContent = data.topPages?.length ?? 0;
+    document.getElementById('stat-sessions').textContent = data.totalSessions ?? 0;
+    const avgSec = data.avgSessionDuration ?? 0;
+    document.getElementById('stat-duration').textContent = avgSec >= 60
+        ? Math.floor(avgSec / 60) + 'dk ' + (avgSec % 60) + 'sn'
+        : avgSec + ' sn';
 
     const pageNames = {
         '/': '🏠 Anasayfa',
