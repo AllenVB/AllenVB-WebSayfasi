@@ -1,13 +1,13 @@
 // --- COREMETRICS ANALYTICS START ---
 const CORE_CONFIG = {
     API_KEY: "db281f63-a569-47e4-b30d-e6637451e890",
-    URL: "https://coremetrics-service-665359087509.europe-west3.run.app/api/Collector/track"
+    BASE_URL: "https://coremetrics-service-665359087509.europe-west3.run.app/api/Collector"
 };
 
 async function trackCoreMetrics(path) {
     console.log("%c📊 CoreMetrics: Veri Frankfurt'a uçuyor -> " + path, "color: #00ff00; font-weight: bold; background: #000; padding: 2px 5px;");
     try {
-        await fetch(CORE_CONFIG.URL, {
+        await fetch(CORE_CONFIG.BASE_URL + "/track", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -186,8 +186,108 @@ const pages = {
                 </div>
             </div>
         </section>
+    `,
+    stats: `
+        <section class="min-h-screen bg-gray-900 py-20 relative overflow-hidden">
+            <div class="absolute inset-0">
+                <div class="float-shape1 absolute top-20 left-10 w-20 h-20 bg-blue-500 opacity-20 rounded-full"></div>
+                <div class="float-shape2 absolute top-40 right-20 w-16 h-16 bg-purple-500 opacity-30 rounded-lg transform rotate-45"></div>
+                <div class="float-shape3 absolute bottom-40 left-1/4 w-24 h-24 bg-green-500 opacity-25 rounded-full"></div>
+            </div>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <h2 class="text-5xl md:text-6xl font-bold text-blue-400 mb-4">📊 Site İstatistikleri</h2>
+                <p class="text-gray-400 mb-10">Son 30 günlük ziyaret verileri</p>
+
+                <div id="stats-loading" class="text-center py-20">
+                    <div class="inline-block animate-spin text-blue-400 text-4xl mb-4">⏳</div>
+                    <p class="text-gray-400">Veriler yükleniyor...</p>
+                </div>
+
+                <div id="stats-content" class="hidden">
+                    <!-- Genel Özet -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                        <div class="bg-gray-800 p-6 rounded-xl border border-blue-500/30 hover:border-blue-400/60 transition">
+                            <p class="text-gray-400 text-sm mb-1">Toplam Ziyaret</p>
+                            <p id="stat-total" class="text-4xl font-bold text-blue-400">-</p>
+                        </div>
+                        <div class="bg-gray-800 p-6 rounded-xl border border-purple-500/30 hover:border-purple-400/60 transition">
+                            <p class="text-gray-400 text-sm mb-1">Farklı Sayfa</p>
+                            <p id="stat-pages" class="text-4xl font-bold text-purple-400">-</p>
+                        </div>
+                        <div class="bg-gray-800 p-6 rounded-xl border border-green-500/30 hover:border-green-400/60 transition">
+                            <p class="text-gray-400 text-sm mb-1">Süre</p>
+                            <p id="stat-days" class="text-4xl font-bold text-green-400">30 gün</p>
+                        </div>
+                    </div>
+
+                    <!-- Sayfa Bazlı Ziyaretler -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-gray-800 p-6 rounded-xl">
+                            <h3 class="text-xl font-bold text-blue-400 mb-6">📄 Sayfa Ziyaretleri</h3>
+                            <div id="pages-list" class="space-y-3"></div>
+                        </div>
+                        <div class="bg-gray-800 p-6 rounded-xl">
+                            <h3 class="text-xl font-bold text-blue-400 mb-6">🌍 Lokasyonlar</h3>
+                            <div id="locations-list" class="space-y-3"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="stats-error" class="hidden text-center py-20">
+                    <p class="text-red-400 text-xl">⚠️ Veriler yüklenemedi. Sunucu bağlantısını kontrol edin.</p>
+                </div>
+            </div>
+        </section>
     `
 };
+
+async function loadAnalyticsData() {
+    try {
+        const res = await fetch(
+            `${CORE_CONFIG.BASE_URL}/summary?apiKey=${CORE_CONFIG.API_KEY}&days=30`
+        );
+        if (!res.ok) throw new Error('Sunucu hatası');
+        const data = await res.json();
+
+        // Özet kartları
+        document.getElementById('stat-total').textContent = data.totalVisits ?? 0;
+        document.getElementById('stat-pages').textContent = data.topPages?.length ?? 0;
+
+        // Sayfa listesi
+        const pageNames = { '/': '🏠 Anasayfa', '/#about': '👤 Hakkımda', '/#projects': '💼 Projelerim', '/#contact': '✉️ İletişim' };
+        const pagesList = document.getElementById('pages-list');
+        const maxCount = Math.max(...(data.topPages?.map(p => p.count) ?? [1]));
+        pagesList.innerHTML = (data.topPages ?? []).map(p => {
+            const label = pageNames[p.path] ?? p.path;
+            const pct = Math.round((p.count / maxCount) * 100);
+            return `
+                <div>
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-gray-300">${label}</span>
+                        <span class="text-blue-400 font-bold">${p.count}</span>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-blue-500 h-2 rounded-full transition-all duration-700" style="width: ${pct}%"></div>
+                    </div>
+                </div>`;
+        }).join('');
+
+        // Lokasyon listesi
+        const locationsList = document.getElementById('locations-list');
+        locationsList.innerHTML = (data.topLocations ?? []).map(l => `
+            <div class="flex justify-between items-center bg-gray-700/50 rounded-lg px-4 py-2">
+                <span class="text-gray-300">🌐 ${l.city ?? '?'}, ${l.country ?? '?'}</span>
+                <span class="text-purple-400 font-bold">${l.count}</span>
+            </div>`).join('');
+
+        document.getElementById('stats-loading').classList.add('hidden');
+        document.getElementById('stats-content').classList.remove('hidden');
+    } catch (err) {
+        document.getElementById('stats-loading').classList.add('hidden');
+        document.getElementById('stats-error').classList.remove('hidden');
+        console.warn('Analytics verisi alınamadı:', err);
+    }
+}
 
 function loadPage(pageName) {
     const container = document.getElementById('app-container');
@@ -201,6 +301,11 @@ function loadPage(pageName) {
     setTimeout(() => {
         container.innerHTML = pages[pageName];
         container.style.opacity = '1';
+
+        // Stats sayfasıysa veriyi çek
+        if (pageName === 'stats') {
+            loadAnalyticsData();
+        }
 
         container.querySelectorAll('[data-page]').forEach(btn => {
             btn.addEventListener('click', (e) => {
