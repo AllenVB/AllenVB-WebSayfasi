@@ -448,6 +448,45 @@ function loadPage(pageName) {
             stopStatsLive();
         }
 
+        // İletişim formu — EmailJS entegrasyonu
+        if (pageName === 'contact') {
+            emailjs.init('IYOSLI7CaXZvxytxf');
+            const form = document.getElementById('contactForm');
+            const msg = document.getElementById('formMessage');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const btn = form.querySelector('button[type="submit"]');
+                    btn.disabled = true;
+                    btn.textContent = 'Gönderiliyor...';
+                    msg.textContent = '';
+                    msg.className = 'mt-2 text-center text-sm';
+
+                    const params = {
+                        from_name: form.name.value,
+                        from_email: form.email.value,
+                        subject: form.subject.value,
+                        message: form.message.value,
+                    };
+
+                    try {
+                        await emailjs.send('service_yaac4jp', 'template_juyhcsw', params);
+                        msg.textContent = '✅ Mesajınız iletildi, teşekkürler!';
+                        msg.classList.add('text-emerald-400');
+                        form.reset();
+                    } catch (err) {
+                        console.error(err);
+                        msg.textContent = '❌ Gönderilemedi, lütfen tekrar deneyin.';
+                        msg.classList.add('text-red-400');
+                    } finally {
+                        btn.disabled = false;
+                        btn.textContent = 'Gönder';
+                    }
+                });
+            }
+        }
+
+
         container.querySelectorAll('[data-page]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
