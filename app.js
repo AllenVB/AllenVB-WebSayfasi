@@ -188,21 +188,22 @@ const pages = {
                     </div>
 
                     <div class="project-card glass border border-white/5 rounded-3xl overflow-hidden">
-                        <div class="h-36 bg-gradient-to-br from-orange-600 to-red-700 flex items-center justify-center relative overflow-hidden">
+                        <div class="h-36 bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center relative overflow-hidden">
                             <div class="absolute inset-0 opacity-20" style="background-image:radial-gradient(circle at 80% 20%, white 1px, transparent 1px);background-size:20px 20px"></div>
-                            <i class="bi bi-activity text-white text-5xl relative z-10"></i>
+                            <i class="bi bi-bar-chart-line text-white text-5xl relative z-10"></i>
                         </div>
                         <div class="p-6">
-                            <h5 class="text-lg font-bold text-white mb-2">Fitness Platform</h5>
-                            <p class="text-slate-400 text-sm mb-4 leading-relaxed">Kapsamlı fitness ve spor takip platformu uygulaması.</p>
+                            <h5 class="text-lg font-bold text-white mb-2">CoreMetrics</h5>
+                            <p class="text-slate-400 text-sm mb-4 leading-relaxed">Gerçek zamanlı web sitesi analitik platformu — ziyaretçi takibi, oturum süresi ölçümü, konum tespiti ve canlı SSE güncellemeleri. Google Cloud Run üzerinde çalışır.</p>
                             <div class="flex flex-wrap gap-2 mb-5">
-                                <span class="text-[10px] font-bold bg-orange-500/15 text-orange-300 px-2.5 py-1 rounded-lg">JavaScript</span>
-                                <span class="text-[10px] font-bold bg-red-500/15 text-red-300 px-2.5 py-1 rounded-lg">CSS3</span>
-                                <span class="text-[10px] font-bold bg-yellow-500/15 text-yellow-300 px-2.5 py-1 rounded-lg">Vercel</span>
+                                <span class="text-[10px] font-bold bg-indigo-500/15 text-indigo-300 px-2.5 py-1 rounded-lg">C# .NET</span>
+                                <span class="text-[10px] font-bold bg-purple-500/15 text-purple-300 px-2.5 py-1 rounded-lg">PostgreSQL</span>
+                                <span class="text-[10px] font-bold bg-violet-500/15 text-violet-300 px-2.5 py-1 rounded-lg">Google Cloud</span>
                             </div>
-                            <a href="https://fitness-platform-eta.vercel.app/" target="_blank" class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white transition-all">Projeyi Gör <i class="bi bi-arrow-up-right"></i></a>
+                            <a href="dashboard.html" target="_blank" class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white transition-all">Dashboard'u Aç <i class="bi bi-arrow-up-right"></i></a>
                         </div>
                     </div>
+
 
                 </div>
             </div>
