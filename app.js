@@ -21,7 +21,25 @@ async function trackCoreMetrics(path) {
         console.warn("CoreMetrics: Bağlantı hatası.");
     }
 }
+
+// --- SESSION TRACKING (anonim, giriş gerekmez) ---
+const _sessionStart = Date.now();
+const _sessionPath = window.location.hash || "/";
+
+window.addEventListener("beforeunload", () => {
+    const duration = Math.round((Date.now() - _sessionStart) / 1000);
+    if (duration < 2) return; // 2 saniyeden kısa oturumları sayma
+    navigator.sendBeacon(
+        CORE_CONFIG.BASE_URL + "/session",
+        new Blob([JSON.stringify({
+            apiKey: CORE_CONFIG.API_KEY,
+            duration: duration,
+            path: _sessionPath
+        })], { type: "application/json" })
+    );
+});
 // --- COREMETRICS ANALYTICS END ---
+
 
 const pages = {
     home: `
