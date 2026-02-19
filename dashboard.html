@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>CoreMetrics Dashboard - Frankfurt Live</title>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        html,
+        body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        body {
+            background: #060d1f;
+            min-height: 100vh;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glass {
+            backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-bright {
+            backdrop-filter: blur(20px);
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+        }
+
+        .glow-indigo {
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.15), 0 4px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .glow-emerald {
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.12), 0 4px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .glow-purple {
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.12), 0 4px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes livePulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+                opacity: 1;
+            }
+
+            70% {
+                box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+                opacity: 0.8;
+            }
+        }
+
+        .live-dot {
+            animation: livePulse 1.8s infinite;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-up {
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .fade-up-1 {
+            animation-delay: 0.05s;
+        }
+
+        .fade-up-2 {
+            animation-delay: 0.12s;
+        }
+
+        .fade-up-3 {
+            animation-delay: 0.19s;
+        }
+
+        .fade-up-4 {
+            animation-delay: 0.26s;
+        }
+
+        .fade-up-5 {
+            animation-delay: 0.33s;
+        }
+
+        .stat-num {
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.04em;
+        }
+
+        .period-btn {
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #94a3b8;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .period-btn:hover {
+            color: #e2e8f0;
+            background: rgba(99, 102, 241, 0.12);
+        }
+
+        .period-btn.active {
+            background: linear-gradient(135deg, #6366f1, #7c3aed);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .table-row {
+            transition: all 0.15s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .table-row:hover {
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .loc-card {
+            transition: all 0.2s ease;
+            cursor: default;
+        }
+
+        .loc-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            scrollbar-width: none;
+        }
+
+        #apiKeyInput:focus {
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4);
+            border-color: rgba(99, 102, 241, 0.6);
+        }
+
+        .logo-shimmer {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+    </style>
+</head>
+
+<body class="text-slate-100 min-h-screen pb-24 relative">
+
+    <canvas id="bg-canvas"></canvas>
+
+    <header
+        class="relative z-10 max-w-6xl mx-auto px-6 pt-8 pb-6 flex flex-col md:flex-row items-center justify-between gap-5">
+        <div class="flex items-center gap-4 fade-up">
+            <div
+                class="w-12 h-12 rounded-2xl logo-shimmer flex items-center justify-center text-xl font-bold shadow-2xl select-none">
+                📊</div>
+            <div>
+                <h1 class="text-2xl font-extrabold text-white tracking-tight leading-none">CoreMetrics</h1>
+                <p class="text-slate-500 text-xs mt-0.5 font-medium tracking-wide uppercase">Canlı Analiz · Frankfurt,
+                    DE</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3 w-full md:w-auto fade-up fade-up-1">
+            <div class="relative flex-1 md:w-80">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs">🔑</span>
+                <input id="apiKeyInput" placeholder="API Key girin..."
+                    class="w-full pl-8 pr-4 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-sm text-slate-200 placeholder-slate-600 focus:outline-none transition-all" />
+            </div>
+            <button onclick="loadDashboard()" class="px-5 py-2.5 rounded-xl font-bold text-sm text-white transition-all duration-200
+                       bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500
+                       shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 active:scale-95">
+                Yenile
+            </button>
+        </div>
+    </header>
+
+    <main class="relative z-10 max-w-6xl mx-auto px-6 space-y-8">
+
+        <div class="fade-up fade-up-1 flex">
+            <div class="inline-flex p-1.5 glass rounded-2xl gap-1">
+                <button onclick="changePeriod(1, this)" class="period-btn">Bugün</button>
+                <button onclick="changePeriod(7, this)" class="period-btn active">7 Gün</button>
+                <button onclick="changePeriod(30, this)" class="period-btn">30 Gün</button>
+            </div>
+        </div>
+
+        <section class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+            <!-- Site Info -->
+            <div class="glass fade-up fade-up-2 p-6 rounded-2xl relative overflow-hidden lg:col-span-1">
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/20 to-transparent pointer-events-none">
+                </div>
+                <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-2">Web Sitesi</p>
+                <h2 id="siteName" class="text-lg font-bold text-white truncate">Yükleniyor...</h2>
+                <div class="flex items-center gap-2.5 mt-4">
+                    <span id="statusIndicator"
+                        class="live-dot w-2.5 h-2.5 rounded-full bg-yellow-400 flex-shrink-0"></span>
+                    <span id="statusText" class="text-xs text-slate-400 font-medium">Bağlanıyor...</span>
+                </div>
+            </div>
+            <!-- Toplam Ziyaret -->
+            <div class="glass glow-indigo fade-up fade-up-3 p-6 rounded-2xl relative overflow-hidden">
+                <div
+                    class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none -translate-y-1/2 translate-x-1/2">
+                </div>
+                <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-2">Toplam Ziyaret</p>
+                <h2 id="totalVisits"
+                    class="stat-num text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-300 to-indigo-500">
+                    0</h2>
+                <div class="mt-3 h-0.5 w-12 rounded-full bg-gradient-to-r from-indigo-500 to-transparent"></div>
+            </div>
+            <!-- Aktif Sayfalar -->
+            <div class="glass glow-emerald fade-up fade-up-3 p-6 rounded-2xl relative overflow-hidden">
+                <div
+                    class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none -translate-y-1/2 translate-x-1/2">
+                </div>
+                <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-2">Aktif Sayfalar</p>
+                <h2 id="uniquePages"
+                    class="stat-num text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-emerald-300 to-emerald-500">
+                    0</h2>
+                <div class="mt-3 h-0.5 w-12 rounded-full bg-gradient-to-r from-emerald-500 to-transparent"></div>
+            </div>
+            <!-- Oturum Sayısı -->
+            <div class="glass glow-purple fade-up fade-up-3 p-6 rounded-2xl relative overflow-hidden">
+                <div
+                    class="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl pointer-events-none -translate-y-1/2 translate-x-1/2">
+                </div>
+                <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-2">Oturum Sayısı</p>
+                <h2 id="totalSessions"
+                    class="stat-num text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-purple-300 to-purple-500">
+                    0</h2>
+                <div class="mt-3 h-0.5 w-12 rounded-full bg-gradient-to-r from-purple-500 to-transparent"></div>
+            </div>
+            <!-- Ort. Süre -->
+            <div class="glass fade-up fade-up-3 p-6 rounded-2xl relative overflow-hidden"
+                style="box-shadow:0 0 30px rgba(251,191,36,0.1),0 4px 24px rgba(0,0,0,0.3)">
+                <div
+                    class="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none -translate-y-1/2 translate-x-1/2">
+                </div>
+                <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-2">Ort. Süre</p>
+                <h2 id="avgDuration"
+                    class="stat-num text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-amber-300 to-amber-500">
+                    0sn</h2>
+                <div class="mt-3 h-0.5 w-12 rounded-full bg-gradient-to-r from-amber-500 to-transparent"></div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="glass fade-up fade-up-4 p-6 rounded-2xl h-[420px] flex flex-col">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Ziyaret Grafiği</h3>
+                    <span class="text-[10px] text-indigo-400 font-semibold bg-indigo-500/10 px-2 py-1 rounded-md">Sayfa
+                        bazlı</span>
+                </div>
+                <div class="flex-1 min-h-0"><canvas id="pagesChart"></canvas></div>
+            </div>
+            <div class="glass fade-up fade-up-4 p-6 rounded-2xl flex flex-col h-[420px]">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">En Çok Tıklananlar</h3>
+                    <span
+                        class="text-[10px] text-purple-400 font-semibold bg-purple-500/10 px-2 py-1 rounded-md">Sıralı</span>
+                </div>
+                <div class="overflow-auto scrollbar-hide flex-1">
+                    <table class="w-full text-sm text-left">
+                        <thead>
+                            <tr class="text-[10px] text-slate-600 uppercase tracking-widest">
+                                <th class="pb-3 font-semibold">#&nbsp;&nbsp;Sayfa</th>
+                                <th class="pb-3 font-semibold text-right">Ziyaret</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pagesTableBody" class="divide-y divide-slate-800/60"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass fade-up fade-up-5 p-8 rounded-3xl">
+            <div class="flex items-center gap-3 mb-7">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Dünya Genelindeki Ziyaretçiler
+                </h3>
+                <span class="text-base">🌍</span>
+            </div>
+            <div id="locationList" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <div class="col-span-full py-12 text-center text-slate-600 italic text-sm">Veri bekleniyor...</div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        const CONFIG = {
+            BASE_URL: "https://coremetrics-service-665359087509.europe-west3.run.app",
+            API_KEY: "db281f63-a569-47e4-b30d-e6637451e890"
+        };
+
+        let currentDays = 7;
+        let pagesChart = null;
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        apiKeyInput.value = localStorage.getItem('sa_api_key') || CONFIG.API_KEY;
+
+        function changePeriod(days, btn) {
+            currentDays = days;
+            document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            loadDashboard();
+        }
+
+        async function loadDashboard() {
+            const apiKey = apiKeyInput.value.trim();
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            try {
+                const response = await fetch(`${CONFIG.BASE_URL}/api/Collector/summary?apiKey=${apiKey}&days=${currentDays}`);
+                if (!response.ok) throw new Error('Server Error');
+                const data = await response.json();
+                updateUI(data);
+                statusIndicator.className = "live-dot w-2.5 h-2.5 rounded-full bg-emerald-400 flex-shrink-0";
+                statusText.innerText = "Canlı · Güncel";
+                localStorage.setItem('sa_api_key', apiKey);
+            } catch (err) {
+                console.error("Dashboard hatası:", err);
+                statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-red-500 flex-shrink-0";
+                statusText.innerText = "Bağlantı Kesildi";
+                document.getElementById('siteName').innerText = "Veri Alınamadı";
+            }
+        }
+
+        function updateUI(data) {
+            const total = data.totalVisits ?? 0;
+            const siteName = data.websiteName ?? 'Bilinmeyen';
+            const pages = data.topPages ?? [];
+            const locations = data.topLocations ?? [];
+            const sessions = data.totalSessions ?? 0;
+            const avgSec = data.avgSessionDuration ?? 0;
+
+            document.getElementById('siteName').innerText = siteName;
+            document.getElementById('totalVisits').innerText = total.toLocaleString('tr-TR');
+            document.getElementById('uniquePages').innerText = pages.length;
+            document.getElementById('totalSessions').innerText = sessions.toLocaleString('tr-TR');
+            document.getElementById('avgDuration').innerText = avgSec >= 60
+                ? Math.floor(avgSec / 60) + 'dk ' + (avgSec % 60) + 'sn'
+                : avgSec + ' sn';
+
+            const tbody = document.getElementById('pagesTableBody');
+            tbody.innerHTML = pages.length ? pages.map((p, i) => `
+                <tr class="table-row">
+                    <td class="py-3 pr-4">
+                        <div class="flex items-center gap-3">
+                            <span class="text-[10px] font-black text-slate-600 w-4 text-right">${i + 1}</span>
+                            <span class="font-mono text-[11px] text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded-md">${p.path ?? '/'}</span>
+                        </div>
+                    </td>
+                    <td class="py-3 text-right">
+                        <span class="font-black text-white text-sm">${(p.count ?? 0).toLocaleString('tr-TR')}</span>
+                    </td>
+                </tr>`).join('')
+                : '<tr><td colspan="2" class="text-center py-8 text-slate-600 italic text-sm">Henüz veri yok</td></tr>';
+
+            const locList = document.getElementById('locationList');
+            locList.innerHTML = locations.length ? locations.map(l => `
+                <div class="loc-card glass-bright p-4 rounded-2xl text-center border border-slate-700/50">
+                    <p class="text-[10px] text-slate-500 uppercase font-black tracking-wider mb-1">${l.country ?? 'Global'}</p>
+                    <p class="text-sm font-bold text-white truncate">${l.city ?? 'Bilinmeyen'}</p>
+                    <div class="mt-2.5 text-[11px] font-bold text-indigo-400 bg-indigo-500/10 rounded-lg py-1">
+                        ${(l.count ?? 0).toLocaleString('tr-TR')} ziyaret
+                    </div>
+                </div>`).join('')
+                : '<div class="col-span-full py-12 text-center text-slate-600 italic text-sm">Lokasyon verisi yok.</div>';
+
+            updateChart(pages);
+        }
+
+        function updateChart(pages) {
+            const ctx = document.getElementById('pagesChart').getContext('2d');
+            const labels = pages.map(p => p.path ?? '/');
+            const values = pages.map(p => p.count ?? 0);
+            if (pagesChart) pagesChart.destroy();
+            pagesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: values.map((_, i) => `hsla(${245 - i * 8}, 80%, 65%, 0.75)`),
+                        borderRadius: 10,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(15,23,42,0.95)',
+                            borderColor: 'rgba(99,102,241,0.3)',
+                            borderWidth: 1, padding: 12,
+                            titleColor: '#c7d2fe', bodyColor: '#e2e8f0',
+                            titleFont: { weight: 'bold', size: 11 },
+                            bodyFont: { size: 13, weight: 'bold' },
+                            callbacks: { label: ctx => ` ${ctx.raw.toLocaleString('tr-TR')} ziyaret` }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false },
+                            ticks: { color: '#475569', font: { size: 11 }, maxTicksLimit: 6 },
+                            border: { display: false }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#475569', font: { size: 10, family: 'monospace' }, maxRotation: 30 },
+                            border: { display: false }
+                        }
+                    },
+                    animation: { duration: 600, easing: 'easeOutQuart' }
+                }
+            });
+        }
+
+        loadDashboard();
+        setInterval(loadDashboard, 30000);
+    </script>
+
+    <script>
+        (function () {
+            const canvas = document.getElementById('bg-canvas');
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setClearColor(0x060d1f, 1);
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 300);
+            camera.position.set(0, 0, 60);
+
+            function resize() {
+                renderer.setSize(innerWidth, innerHeight);
+                camera.aspect = innerWidth / innerHeight;
+                camera.updateProjectionMatrix();
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            const particleCount = 700;
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            const palette = [new THREE.Color(0x6366f1), new THREE.Color(0x8b5cf6), new THREE.Color(0xa855f7), new THREE.Color(0x22d3ee)];
+            for (let i = 0; i < particleCount; i++) {
+                positions[i * 3] = (Math.random() - 0.5) * 200;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 120;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 100;
+                const c = palette[Math.floor(Math.random() * palette.length)];
+                colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
+            }
+            const pGeo = new THREE.BufferGeometry();
+            pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            pGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            scene.add(new THREE.Points(pGeo, new THREE.PointsMaterial({ size: 0.55, vertexColors: true, transparent: true, opacity: 0.7, sizeAttenuation: true })));
+
+            const shapes = [];
+            const geoTypes = [
+                () => new THREE.IcosahedronGeometry(Math.random() * 3 + 1.5, 0),
+                () => new THREE.OctahedronGeometry(Math.random() * 2.5 + 1, 0),
+                () => new THREE.TetrahedronGeometry(Math.random() * 2 + 1, 0),
+            ];
+            for (let i = 0; i < 28; i++) {
+                const mesh = new THREE.Mesh(
+                    geoTypes[Math.floor(Math.random() * geoTypes.length)](),
+                    new THREE.MeshBasicMaterial({ color: [0x6366f1, 0x7c3aed, 0xa855f7, 0x06b6d4][i % 4], wireframe: true, transparent: true, opacity: Math.random() * 0.25 + 0.06 })
+                );
+                mesh.position.set((Math.random() - 0.5) * 180, (Math.random() - 0.5) * 100, (Math.random() - 0.5) * 80);
+                mesh.userData = { rx: (Math.random() - 0.5) * 0.006, ry: (Math.random() - 0.5) * 0.008, rz: (Math.random() - 0.5) * 0.004, floatSpeed: Math.random() * 0.0004 + 0.0001, floatAmp: Math.random() * 1.5 + 0.5, floatOffset: Math.random() * Math.PI * 2 };
+                scene.add(mesh);
+                shapes.push(mesh);
+            }
+
+            let mx = 0, my = 0;
+            document.addEventListener('mousemove', e => { mx = (e.clientX / innerWidth - 0.5) * 2; my = (e.clientY / innerHeight - 0.5) * 2; });
+
+            let t = 0;
+            function animate() {
+                requestAnimationFrame(animate);
+                t += 0.016;
+                shapes.forEach(m => {
+                    m.rotation.x += m.userData.rx; m.rotation.y += m.userData.ry; m.rotation.z += m.userData.rz;
+                    m.position.y += Math.sin(t * m.userData.floatSpeed * 60 + m.userData.floatOffset) * m.userData.floatAmp * 0.008;
+                });
+                camera.position.x += (mx * 4 - camera.position.x) * 0.03;
+                camera.position.y += (-my * 2 - camera.position.y) * 0.03;
+                camera.lookAt(scene.position);
+                const pPoints = scene.children.find(c => c instanceof THREE.Points);
+                if (pPoints) pPoints.rotation.y = t * 0.012;
+                renderer.render(scene, camera);
+            }
+            animate();
+        })();
+    </script>
+</body>
+
+</html>
