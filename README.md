@@ -1,31 +1,75 @@
-# 📱 Kişisel Portföy Web Sitesi
+# 🌐 Süleyman Emre Arlı — Kişisel Portfolio
 
-Modern web teknolojileri kullanılarak geliştirilmiş, **Tailwind CSS** tabanlı, responsive ve kullanıcı dostu kişisel portföy web sitesi. Single Page Application (SPA) mimarisi sayesinde sayfa yenilemesi olmadan hızlı geçişler sunar.
+Kişisel portföy web sitesi. Vercel üzerinde yayınlanmaktadır.
 
+**Canlı:** [allenvb.websayfasi.vercel.app](https://allenvb.websayfasi.vercel.app)
 
-https://allenvb-websayfasi.vercel.app/
+---
 
-## 🎯 Proje Özellikleri
+## 🛠 Teknolojiler
 
-* **📱 Tam Responsive Tasarım:** Mobil, tablet ve masaüstü cihazlarda kusursuz görünüm (Responsive Grid Layout).
-* **🎨 Modern Arayüz:** Tailwind CSS ile hazırlanmış şık ve minimalist tasarım.
-* **🌓 Dark & Light Mod:** Kullanıcı tercihine göre tema değiştirme ve tercihi kaydetme özelliği.
-* **🌍 Çoklu Dil Desteği:** Türkçe ve İngilizce dil seçenekleri arasında anlık geçiş.
-* **⚡ SPA (Single Page Application):** Backend ihtiyacı olmadan hızlı ve akıcı sayfa geçişleri.
-* **✨ Smooth Animasyonlar:** Sayfa yüklenirken ve geçişlerde göze hoş gelen efektler.
-* **📩 İletişim Formu:** Ziyaretçi mesajlarını validasyon ile kontrol eder ve **LocalStorage** üzerinde saklar.
+- **HTML5 / Vanilla JS** — SPA (Single Page Application) yapısı
+- **Tailwind CSS** — stillendirme
+- **Three.js** — 3D animasyonlu arka plan
+- **Bootstrap Icons** — ikonlar
+- **EmailJS** — iletişim formu e-posta entegrasyonu
+- **CoreMetrics** — gerçek zamanlı ziyaretçi analitik sistemi (kendi geliştirmem)
 
-## 🛠️ Kullanılan Teknolojiler
+---
 
-* **Frontend:** HTML5, CSS3, JavaScript (Vanilla ES6+)
-* **Stil & Tasarım:** Tailwind CSS 3 (CDN), Bootstrap Icons
-* **Veri Yönetimi:** LocalStorage API (Mesajlar ve ayarlar için)
-* **Versiyon Kontrol:** Git & GitHub
+## 📁 Dosya Yapısı
 
-## 📂 Dosya Yapısı
+```
+WebSite/
+├── index.html        # Ana HTML, CDN bağımlılıkları
+├── app.js            # SPA sayfa yönetimi, tüm page template'leri
+├── style.css         # Glassmorphism, animasyonlar, özel stiller
+└── dashboard.html    # CoreMetrics canlı dashboard
+```
 
-```text
-├── index.html      # Ana uygulama dosyası
-├── app.js          # SPA mantığı, tema/dil yönetimi ve form işlevleri
-├── ben1.jpeg       # Profil görseli
-└── README.md       # Proje dokümantasyonu
+---
+
+## ✨ Özellikler
+
+### Sayfalar
+| Sayfa | Açıklama |
+|---|---|
+| Ana Sayfa | Tanıtım, sosyal bağlantılar, CTA butonları |
+| Hakkımda | Kişisel bilgiler, Frontend/Backend skill bar'ları |
+| Projelerim | Proje kartları (Smart Home, User SSO, PMS, CoreMetrics) |
+| İletişim | EmailJS ile doğrudan e-posta gönderme formu |
+| İstatistikler | CoreMetrics canlı ziyaret verileri (SSE + polling) |
+
+### CoreMetrics Entegrasyonu
+- Her sayfa geçişinde ziyaret `Frankfurt (Cloud Run)` sunucusuna gönderilir
+- Ziyaretçi sekmeyi kapatınca **oturum süresi** otomatik iletilir (`sendBeacon`)
+- İstatistikler sayfasında veriler **SSE** ile anlık güncellenir
+
+### İletişim Formu
+- **EmailJS** ile backend gerektirmeden e-posta gönderimi
+- Gönderim sırasında buton devre dışı kalır, başarı/hata mesajı gösterilir
+
+---
+
+## ⚙️ Yapılandırma
+
+`app.js` dosyasının en üstünde:
+
+```js
+const CORE_CONFIG = {
+    API_KEY: "...",      // CoreMetrics API anahtarı
+    BASE_URL: "..."      // Cloud Run servis URL'i
+};
+```
+
+---
+
+## 🚀 Deploy
+
+Vercel'e bağlı GitHub reposu üzerinden otomatik deploy.
+
+```bash
+git add .
+git commit -m "update"
+git push
+```
