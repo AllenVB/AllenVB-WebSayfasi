@@ -211,7 +211,7 @@
         <div class="flex items-center gap-3 w-full md:w-auto fade-up fade-up-1">
             <div class="relative flex-1 md:w-80">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs">🔑</span>
-                <input id="apiKeyInput" placeholder="API Key girin..."
+                <input id="apiKeyInput" type="password" placeholder="API Key girin..."
                     class="w-full pl-8 pr-4 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-sm text-slate-200 placeholder-slate-600 focus:outline-none transition-all" />
             </div>
             <button onclick="loadDashboard()" class="px-5 py-2.5 rounded-xl font-bold text-sm text-white transition-all duration-200
@@ -337,7 +337,7 @@
     <script>
         const CONFIG = {
             BASE_URL: "https://coremetrics-service-665359087509.europe-west3.run.app",
-            API_KEY: "db281f63-a569-47e4-b30d-e6637451e890"
+            API_KEY: ""
         };
 
         let currentDays = 7;
