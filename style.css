@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════
-   WebSite Portfolio — Premium Styles
+   WebSite Portfolio — Professional Styles
    ═══════════════════════════════════════ */
 
 /* Smooth scroll + scrollbar gizle */
@@ -24,13 +24,38 @@ body {
     color: #fff;
 }
 
-/* ── Glassmorphism ─────────────────────── */
+/* ── Ambient arka plan katmanları ──────── */
+#bg-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+
+    /* Izgara dokusu */
+    background-image:
+        linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+}
+
+#bg-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    /* Üst orta: yumuşak indigo parlaması */
+    background:
+        radial-gradient(ellipse 90% 45% at 50% -5%, rgba(99, 102, 241, 0.09) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 35% at 5% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+        radial-gradient(ellipse 40% 30% at 95% 90%, rgba(59, 130, 246, 0.05) 0%, transparent 45%);
+}
+
+/* ── Glassmorphism — daha rafine ──────── */
 .glass {
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    background: rgba(15, 23, 42, 0.55);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(10, 14, 28, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 8px 40px rgba(0, 0, 0, 0.4);
 }
 
 /* ── Animasyonlar ──────────────────────── */
@@ -170,12 +195,10 @@ body {
 }
 
 .gradient-text {
-    background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6, #60a5fa);
-    background-size: 200% auto;
+    background: linear-gradient(135deg, #e0e7ff 0%, #a5b4fc 45%, #818cf8 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: gradientShift 4s linear infinite;
 }
 
 /* Glow buton */
@@ -206,30 +229,34 @@ body {
 
 /* Skill bar */
 .skill-bar-fill {
-    height: 6px;
     border-radius: 99px;
-    background: linear-gradient(90deg, #6366f1, #a855f7);
-    transition: width 1s ease;
+    background: linear-gradient(90deg, #6366f1, #818cf8);
+    transition: width 1.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.skill-bar-green {
+    background: linear-gradient(90deg, #10b981, #34d399);
 }
 
 /* Proje kart hover */
 .project-card {
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .project-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.25);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(99, 102, 241, 0.2);
+    border-color: rgba(99, 102, 241, 0.15) !important;
 }
 
-/* Kart iç hover glow */
+/* Kart iç hover */
 .card-hover {
-    transition: all 0.3s ease;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .card-hover:hover {
-    box-shadow: 0 0 30px rgba(99, 102, 241, 0.2);
-    transform: translateY(-4px);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(99, 102, 241, 0.1);
 }
 
 /* Input focus */
@@ -265,10 +292,11 @@ textarea:focus {
     pointer-events: none;
 }
 
-/* Tüm içerik 3D canvas'ın üstünde */
+/* Tüm içerik overlay ve canvas'ın üstünde */
 nav,
 main,
 footer {
     position: relative;
     z-index: 10;
 }
+

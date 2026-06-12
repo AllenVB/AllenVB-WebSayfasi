@@ -81,48 +81,207 @@ const pages = {
     `,
     about: `
         <section class="min-h-screen relative overflow-hidden py-24">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div class="mb-14">
-                    <p class="text-indigo-400 text-xs font-bold uppercase tracking-widest mb-2">Ben kimim?</p>
-                    <h2 class="text-5xl font-black text-white tracking-tight">Hakkımda</h2>
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+                <!-- Başlık -->
+                <div class="mb-16">
+                    <div class="flex items-center gap-3 mb-5">
+                        <span class="w-5 h-px bg-indigo-500/70"></span>
+                        <span class="text-indigo-400 text-[11px] font-bold uppercase tracking-widest">Hakkımda</span>
+                    </div>
+                    <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
+                        Yazılım Geliştirici
+                    </h2>
+                    <p class="text-slate-500 text-lg mt-2 font-normal">Full-Stack · Android · AI Entegrasyonu</p>
                 </div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                    <div class="lg:col-span-1 glass p-7 rounded-3xl card-hover border border-white/5">
-                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-2xl mb-5">👤</div>
-                        <h3 class="text-lg font-bold text-white mb-3">Kişisel Bilgiler</h3>
-                        <p class="text-slate-400 text-sm leading-relaxed mb-4">Merhaba! Ben Süleyman Emre Arlı. Bandırma Onyedi Eylül Üniversitesinde Yazılım Mühendisliği öğrencisiyim.</p>
-                        <p class="text-slate-400 text-sm leading-relaxed">Modern teknolojiler ile projeler geliştirmeyi severim.</p>
-                        <div class="mt-6 space-y-3">
-                            <div class="flex items-center gap-3 text-sm text-slate-400"><i class="bi bi-envelope text-indigo-400"></i> suleymanarli0666@gmail.com</div>
-                            <div class="flex items-center gap-3 text-sm text-slate-400"><i class="bi bi-telephone text-indigo-400"></i> +90 544 453 0125</div>
-                            <div class="flex items-center gap-3 text-sm text-slate-400"><i class="bi bi-geo-alt text-indigo-400"></i> Bandırma, Balıkesir</div>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+                    <!-- Sol sütun: Profil + İstatistik + Teknoloji -->
+                    <div class="lg:col-span-4 flex flex-col gap-5">
+
+                        <!-- Profil kartı -->
+                        <div class="glass rounded-2xl p-6 border border-white/5">
+                            <div class="flex items-center gap-4 mb-5 pb-5 border-b border-white/5">
+                                <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/15 flex items-center justify-center flex-shrink-0">
+                                    <i class="bi bi-person text-indigo-400"></i>
+                                </div>
+                                <div>
+                                    <p class="text-white font-semibold text-sm leading-tight">Süleyman Emre Arlı</p>
+                                    <p class="text-slate-500 text-xs mt-0.5">Yazılım Mühendisliği, 3. Sınıf</p>
+                                </div>
+                                <div class="ml-auto flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    <span class="text-emerald-400 text-[10px] font-medium">Müsait</span>
+                                </div>
+                            </div>
+                            <p class="text-slate-400 text-sm leading-relaxed mb-5">
+                                Bandırma Onyedi Eylül Üniversitesi'nde öğrenimimi sürdürüyorum. Web, mobil ve backend alanlarında çalışıyorum; ürün odaklı düşünmeyi severim.
+                            </p>
+                            <div class="space-y-2.5">
+                                <div class="flex items-center gap-3">
+                                    <i class="bi bi-envelope text-slate-600 text-xs w-3.5 text-center"></i>
+                                    <span class="text-slate-400 text-xs">suleymanarli0666@gmail.com</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <i class="bi bi-geo-alt text-slate-600 text-xs w-3.5 text-center"></i>
+                                    <span class="text-slate-400 text-xs">Bandırma, Balıkesir, Türkiye</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <i class="bi bi-github text-slate-600 text-xs w-3.5 text-center"></i>
+                                    <a href="https://github.com/AllenVB" target="_blank" class="text-slate-400 text-xs hover:text-indigo-300 transition">github.com/AllenVB</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- İstatistikler -->
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="glass rounded-xl p-4 border border-white/5 text-center">
+                                <p class="text-xl font-black text-white">6+</p>
+                                <p class="text-slate-600 text-[10px] uppercase tracking-wider mt-1">Proje</p>
+                            </div>
+                            <div class="glass rounded-xl p-4 border border-white/5 text-center">
+                                <p class="text-xl font-black text-white">2+</p>
+                                <p class="text-slate-600 text-[10px] uppercase tracking-wider mt-1">Yıl</p>
+                            </div>
+                            <div class="glass rounded-xl p-4 border border-white/5 text-center">
+                                <p class="text-xl font-black text-white">7+</p>
+                                <p class="text-slate-600 text-[10px] uppercase tracking-wider mt-1">Teknoloji</p>
+                            </div>
+                        </div>
+
+                        <!-- Teknoloji etiketleri -->
+                        <div class="glass rounded-2xl p-5 border border-white/5">
+                            <p class="text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-3.5">Teknoloji Yığını</p>
+                            <div class="flex flex-wrap gap-2">
+                                ${['JavaScript','React','Java','C# .NET','Spring Boot','PostgreSQL','Tailwind CSS','Android'].map(t =>
+                                    `<span class="text-[11px] text-slate-400 bg-white/4 border border-white/6 px-2.5 py-1 rounded-md">${t}</span>`
+                                ).join('')}
+                            </div>
                         </div>
                     </div>
 
-                    <div class="lg:col-span-2 glass p-7 rounded-3xl card-hover border border-white/5">
-                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-600 flex items-center justify-center text-2xl mb-5">⚡</div>
-                        <h3 class="text-lg font-bold text-white mb-6">Yetenekler</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-5">
+                    <!-- Sağ sütun: Yetkinlikler -->
+                    <div class="lg:col-span-8 glass rounded-2xl p-7 border border-white/5">
+                        <div class="flex items-center gap-3 mb-7">
+                            <div class="w-8 h-8 rounded-lg bg-white/4 border border-white/6 flex items-center justify-center">
+                                <i class="bi bi-lightning-charge text-indigo-400 text-sm"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold text-white">Teknik Yetkinlikler</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+                            <!-- Frontend -->
                             <div>
-                                <p class="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-4">Frontend</p>
+                                <div class="flex items-center gap-2 mb-5">
+                                    <span class="w-0.5 h-3.5 bg-indigo-500 rounded-full"></span>
+                                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Frontend</span>
+                                </div>
                                 <div class="space-y-4">
-                                    <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">HTML5 &amp; CSS3</span><span class="text-slate-500">90%</span></div><div style="background:rgba(255,255,255,0.06);border-radius:99px;height:6px"><div class="skill-bar-fill" style="width:90%"></div></div></div>
-                                    <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">JavaScript</span><span class="text-slate-500">80%</span></div><div style="background:rgba(255,255,255,0.06);border-radius:99px;height:6px"><div class="skill-bar-fill" style="width:80%"></div></div></div>
-                                    <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">Tailwind CSS</span><span class="text-slate-500">85%</span></div><div style="background:rgba(255,255,255,0.06);border-radius:99px;height:6px"><div class="skill-bar-fill" style="width:85%"></div></div></div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1.5">
+                                            <span class="text-slate-300">HTML5 &amp; CSS3</span>
+                                            <span class="text-slate-600">90%</span>
+                                        </div>
+                                        <div class="h-0.5 bg-white/5 rounded-full overflow-hidden">
+                                            <div class="skill-bar-fill h-full" data-width="90%" style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1.5">
+                                            <span class="text-slate-300">JavaScript</span>
+                                            <span class="text-slate-600">80%</span>
+                                        </div>
+                                        <div class="h-0.5 bg-white/5 rounded-full overflow-hidden">
+                                            <div class="skill-bar-fill h-full" data-width="80%" style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1.5">
+                                            <span class="text-slate-300">Tailwind CSS</span>
+                                            <span class="text-slate-600">85%</span>
+                                        </div>
+                                        <div class="h-0.5 bg-white/5 rounded-full overflow-hidden">
+                                            <div class="skill-bar-fill h-full" data-width="85%" style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1.5">
+                                            <span class="text-slate-300">React</span>
+                                            <span class="text-slate-600">65%</span>
+                                        </div>
+                                        <div class="h-0.5 bg-white/5 rounded-full overflow-hidden">
+                                            <div class="skill-bar-fill h-full" data-width="65%" style="width:0%"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
+                            <!-- Backend -->
                             <div>
-                                <p class="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-4">Backend</p>
+                                <div class="flex items-center gap-2 mb-5">
+                                    <span class="w-0.5 h-3.5 bg-emerald-500 rounded-full"></span>
+                                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Backend</span>
+                                </div>
                                 <div class="space-y-4">
-                                    <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">Java &amp; Spring</span><span class="text-slate-500">75%</span></div><div style="background:rgba(255,255,255,0.06);border-radius:99px;height:6px"><div class="skill-bar-fill" style="width:75%"></div></div></div>
-                                    <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">C# &amp; .NET</span><span class="text-slate-500">70%</span></div><div style="background:rgba(255,255,255,0.06);border-radius:99px;height:6px"><div class="skill-bar-fill" style="width:70%"></div></div></div>
-                                    <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">PostgreSQL</span><span class="text-slate-500">72%</span></div><div style="background:rgba(255,255,255,0.06);border-radius:99px;height:6px"><div class="skill-bar-fill" style="width:72%"></div></div></div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1.5">
+                                            <span class="text-slate-300">Java &amp; Spring Boot</span>
+                                            <span class="text-slate-600">75%</span>
+                                        </div>
+                                        <div class="h-0.5 bg-white/5 rounded-full overflow-hidden">
+                                            <div class="skill-bar-fill skill-bar-green h-full" data-width="75%" style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1.5">
+                                            <span class="text-slate-300">C# &amp; ASP.NET Core</span>
+                                            <span class="text-slate-600">70%</span>
+                                        </div>
+                                        <div class="h-0.5 bg-white/5 rounded-full overflow-hidden">
+                                            <div class="skill-bar-fill skill-bar-green h-full" data-width="70%" style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1.5">
+                                            <span class="text-slate-300">PostgreSQL</span>
+                                            <span class="text-slate-600">72%</span>
+                                        </div>
+                                        <div class="h-0.5 bg-white/5 rounded-full overflow-hidden">
+                                            <div class="skill-bar-fill skill-bar-green h-full" data-width="72%" style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1.5">
+                                            <span class="text-slate-300">Android / Java</span>
+                                            <span class="text-slate-600">68%</span>
+                                        </div>
+                                        <div class="h-0.5 bg-white/5 rounded-full overflow-hidden">
+                                            <div class="skill-bar-fill skill-bar-green h-full" data-width="68%" style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Eğitim -->
+                        <div class="mt-8 pt-7 border-t border-white/5">
+                            <div class="flex items-center gap-2 mb-5">
+                                <span class="w-0.5 h-3.5 bg-violet-500 rounded-full"></span>
+                                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Eğitim</span>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-9 h-9 rounded-lg bg-violet-500/10 border border-violet-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <i class="bi bi-mortarboard text-violet-400 text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-slate-200 text-sm font-medium">Yazılım Mühendisliği</p>
+                                    <p class="text-slate-500 text-xs mt-0.5">Bandırma Onyedi Eylül Üniversitesi · 2022 – Devam Ediyor</p>
+                                    <p class="text-slate-600 text-xs mt-2 leading-relaxed">Web geliştirme, algoritmalar, veri tabanı tasarımı ve yazılım mimarisi üzerine kapsamlı müfredat.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>
@@ -133,77 +292,186 @@ const pages = {
                 <div class="mb-14">
                     <p class="text-indigo-400 text-xs font-bold uppercase tracking-widest mb-2">Neler yaptım?</p>
                     <h2 class="text-5xl font-black text-white tracking-tight">Projelerim</h2>
+                    <p class="text-slate-500 mt-3 text-sm flex items-center gap-2">
+                        <i class="bi bi-pin-fill text-indigo-400"></i> GitHub'da pinlenmiş projeler
+                    </p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-7">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
 
-                    <div class="project-card glass border border-white/5 rounded-3xl overflow-hidden">
-                        <div class="h-36 bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center relative overflow-hidden">
-                            <div class="absolute inset-0 opacity-20" style="background-image:radial-gradient(circle at 70% 30%, white 1px, transparent 1px);background-size:20px 20px"></div>
-                            <i class="bi bi-house-door text-white text-5xl relative z-10"></i>
+                    <!-- Smart Home Security -->
+                    <div class="project-card glass border border-white/5 rounded-3xl overflow-hidden group">
+                        <div class="h-44 bg-gradient-to-br from-blue-600 to-cyan-700 flex items-center justify-center relative overflow-hidden">
+                            <div class="absolute inset-0 opacity-15" style="background-image:radial-gradient(circle at 50% 50%, white 1px, transparent 1px);background-size:24px 24px"></div>
+                            <div class="absolute w-32 h-32 rounded-full border border-white/10 animate-pulse"></div>
+                            <div class="absolute w-20 h-20 rounded-full border border-white/20"></div>
+                            <i class="bi bi-house-gear text-white text-5xl relative z-10 drop-shadow-lg group-hover:scale-110 transition-transform duration-300"></i>
+                            <div class="absolute top-3 right-3 flex items-center gap-1 bg-black/30 backdrop-blur-sm rounded-full px-2 py-0.5 text-[10px] text-white/80 font-semibold">
+                                <i class="bi bi-star-fill text-yellow-400"></i> 1
+                            </div>
+                            <div class="absolute bottom-3 left-3 bg-black/30 backdrop-blur-sm rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white/80">HTML</div>
                         </div>
                         <div class="p-6">
                             <h5 class="text-lg font-bold text-white mb-2">Smart Home Security</h5>
-                            <p class="text-slate-400 text-sm mb-4 leading-relaxed">Akıllı ev güvenlik sistemi — veritabanı entegrasyonlu gerçek zamanlı izleme.</p>
+                            <p class="text-slate-400 text-sm mb-4 leading-relaxed">Akıllı ev güvenlik arayüzü — veritabanı entegrasyonlu gerçek zamanlı izleme ve güvenlik simülasyonu.</p>
                             <div class="flex flex-wrap gap-2 mb-5">
-                                <span class="text-[10px] font-bold bg-blue-500/15 text-blue-300 px-2.5 py-1 rounded-lg">JavaScript</span>
+                                <span class="text-[10px] font-bold bg-blue-500/15 text-blue-300 px-2.5 py-1 rounded-lg">HTML</span>
+                                <span class="text-[10px] font-bold bg-cyan-500/15 text-cyan-300 px-2.5 py-1 rounded-lg">Tailwind</span>
                                 <span class="text-[10px] font-bold bg-indigo-500/15 text-indigo-300 px-2.5 py-1 rounded-lg">PostgreSQL</span>
-                                <span class="text-[10px] font-bold bg-purple-500/15 text-purple-300 px-2.5 py-1 rounded-lg">Vercel</span>
                             </div>
-                            <a href="https://smart-home-security-veri-taban.vercel.app/" target="_blank" class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white transition-all">Projeyi Gör <i class="bi bi-arrow-up-right"></i></a>
+                            <div class="flex gap-2">
+                                <a href="https://smart-home-security-veri-taban.vercel.app/" target="_blank" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white transition-all">Canlı Demo <i class="bi bi-arrow-up-right"></i></a>
+                                <a href="https://github.com/AllenVB/SmartHomeSecurity-VeriTaban-" target="_blank" class="px-3 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-slate-400 transition-all flex items-center"><i class="bi bi-github"></i></a>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="project-card glass border border-white/5 rounded-3xl overflow-hidden">
-                        <div class="h-36 bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center relative overflow-hidden">
-                            <div class="absolute inset-0 opacity-20" style="background-image:radial-gradient(circle at 30% 70%, white 1px, transparent 1px);background-size:20px 20px"></div>
-                            <i class="bi bi-shield-lock text-white text-5xl relative z-10"></i>
-                        </div>
-                        <div class="p-6">
-                            <h5 class="text-lg font-bold text-white mb-2">User SSO</h5>
-                            <p class="text-slate-400 text-sm mb-4 leading-relaxed">Tek oturum açma (Single Sign-On) sistemi — güvenli kimlik doğrulama.</p>
-                            <div class="flex flex-wrap gap-2 mb-5">
-                                <span class="text-[10px] font-bold bg-emerald-500/15 text-emerald-300 px-2.5 py-1 rounded-lg">Java</span>
-                                <span class="text-[10px] font-bold bg-teal-500/15 text-teal-300 px-2.5 py-1 rounded-lg">Spring Boot</span>
-                                <span class="text-[10px] font-bold bg-cyan-500/15 text-cyan-300 px-2.5 py-1 rounded-lg">GitHub</span>
+                    <!-- CoreMetrics -->
+                    <div class="project-card glass border border-white/5 rounded-3xl overflow-hidden group">
+                        <div class="h-44 bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center relative overflow-hidden">
+                            <div class="absolute inset-0 opacity-10" style="background-image:linear-gradient(45deg, white 1px, transparent 1px), linear-gradient(-45deg, white 1px, transparent 1px);background-size:30px 30px"></div>
+                            <div class="absolute bottom-0 left-0 right-0 h-16 flex items-end justify-around px-4 pb-2 opacity-30">
+                                <div class="w-3 bg-white rounded-t" style="height:60%"></div>
+                                <div class="w-3 bg-white rounded-t" style="height:90%"></div>
+                                <div class="w-3 bg-white rounded-t" style="height:40%"></div>
+                                <div class="w-3 bg-white rounded-t" style="height:75%"></div>
+                                <div class="w-3 bg-white rounded-t" style="height:55%"></div>
+                                <div class="w-3 bg-white rounded-t" style="height:85%"></div>
                             </div>
-                            <a href="https://github.com/AllenVB/usersso" target="_blank" class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white transition-all">Projeyi Gör <i class="bi bi-arrow-up-right"></i></a>
-                        </div>
-                    </div>
-
-                    <div class="project-card glass border border-white/5 rounded-3xl overflow-hidden">
-                        <div class="h-36 bg-gradient-to-br from-purple-600 to-violet-700 flex items-center justify-center relative overflow-hidden">
-                            <div class="absolute inset-0 opacity-20" style="background-image:radial-gradient(circle at 50% 50%, white 1px, transparent 1px);background-size:20px 20px"></div>
-                            <i class="bi bi-diagram-3 text-white text-5xl relative z-10"></i>
-                        </div>
-                        <div class="p-6">
-                            <h5 class="text-lg font-bold text-white mb-2">Project Management Systems</h5>
-                            <p class="text-slate-400 text-sm mb-4 leading-relaxed">Yazılım tasarım ve mimari odaklı proje yönetim platformu.</p>
-                            <div class="flex flex-wrap gap-2 mb-5">
-                                <span class="text-[10px] font-bold bg-purple-500/15 text-purple-300 px-2.5 py-1 rounded-lg">React</span>
-                                <span class="text-[10px] font-bold bg-violet-500/15 text-violet-300 px-2.5 py-1 rounded-lg">Tailwind</span>
-                                <span class="text-[10px] font-bold bg-pink-500/15 text-pink-300 px-2.5 py-1 rounded-lg">Vercel</span>
+                            <i class="bi bi-bar-chart-line text-white text-5xl relative z-10 drop-shadow-lg group-hover:scale-110 transition-transform duration-300"></i>
+                            <div class="absolute top-3 right-3 flex items-center gap-1 bg-black/30 backdrop-blur-sm rounded-full px-2 py-0.5 text-[10px] text-white/80 font-semibold">
+                                <i class="bi bi-star-fill text-yellow-400"></i> 1
                             </div>
-                            <a href="https://yazilim-tasarim-mimarisi-proje.vercel.app/" target="_blank" class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-500 hover:to-violet-500 text-white transition-all">Projeyi Gör <i class="bi bi-arrow-up-right"></i></a>
-                        </div>
-                    </div>
-
-                    <div class="project-card glass border border-white/5 rounded-3xl overflow-hidden">
-                        <div class="h-36 bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center relative overflow-hidden">
-                            <div class="absolute inset-0 opacity-20" style="background-image:radial-gradient(circle at 80% 20%, white 1px, transparent 1px);background-size:20px 20px"></div>
-                            <i class="bi bi-bar-chart-line text-white text-5xl relative z-10"></i>
+                            <div class="absolute bottom-3 left-3 bg-black/30 backdrop-blur-sm rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white/80">C#</div>
                         </div>
                         <div class="p-6">
                             <h5 class="text-lg font-bold text-white mb-2">CoreMetrics</h5>
-                            <p class="text-slate-400 text-sm mb-4 leading-relaxed">Gerçek zamanlı web sitesi analitik platformu — ziyaretçi takibi, oturum süresi ölçümü, konum tespiti ve canlı SSE güncellemeleri. Google Cloud Run üzerinde çalışır.</p>
+                            <p class="text-slate-400 text-sm mb-4 leading-relaxed">Gerçek zamanlı analitik platformu — ziyaretçi takibi, oturum ölçümü, konum tespiti ve canlı SSE güncellemeleri.</p>
                             <div class="flex flex-wrap gap-2 mb-5">
                                 <span class="text-[10px] font-bold bg-indigo-500/15 text-indigo-300 px-2.5 py-1 rounded-lg">C# .NET</span>
                                 <span class="text-[10px] font-bold bg-purple-500/15 text-purple-300 px-2.5 py-1 rounded-lg">PostgreSQL</span>
                                 <span class="text-[10px] font-bold bg-violet-500/15 text-violet-300 px-2.5 py-1 rounded-lg">Google Cloud</span>
                             </div>
-                            <a href="dashboard.html" target="_blank" class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white transition-all">Dashboard'u Aç <i class="bi bi-arrow-up-right"></i></a>
+                            <div class="flex gap-2">
+                                <a href="dashboard.html" target="_blank" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white transition-all">Dashboard <i class="bi bi-arrow-up-right"></i></a>
+                                <a href="https://github.com/AllenVB/CoreMetrics" target="_blank" class="px-3 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-slate-400 transition-all flex items-center"><i class="bi bi-github"></i></a>
+                            </div>
                         </div>
                     </div>
 
+                    <!-- BizimSite -->
+                    <div class="project-card glass border border-white/5 rounded-3xl overflow-hidden group">
+                        <div class="h-44 bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center relative overflow-hidden">
+                            <div class="absolute inset-0 opacity-15" style="background-image:radial-gradient(circle at 30% 70%, white 1px, transparent 1px);background-size:20px 20px"></div>
+                            <div class="absolute top-4 left-4 right-4 h-8 bg-white/10 rounded-lg flex items-center px-3 gap-2">
+                                <div class="w-2 h-2 rounded-full bg-red-400/70"></div>
+                                <div class="w-2 h-2 rounded-full bg-yellow-400/70"></div>
+                                <div class="w-2 h-2 rounded-full bg-green-400/70"></div>
+                                <div class="flex-1 h-1.5 bg-white/20 rounded-full ml-2"></div>
+                            </div>
+                            <i class="bi bi-building text-white text-5xl relative z-10 drop-shadow-lg group-hover:scale-110 transition-transform duration-300"></i>
+                            <div class="absolute top-3 right-3 flex items-center gap-1 bg-black/30 backdrop-blur-sm rounded-full px-2 py-0.5 text-[10px] text-white/80 font-semibold">
+                                <i class="bi bi-star-fill text-yellow-400"></i> 1
+                            </div>
+                            <div class="absolute bottom-3 left-3 bg-black/30 backdrop-blur-sm rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white/80">JavaScript</div>
+                        </div>
+                        <div class="p-6">
+                            <h5 class="text-lg font-bold text-white mb-2">BizimSite</h5>
+                            <p class="text-slate-400 text-sm mb-4 leading-relaxed">Çok kiracılı apartman yönetim sistemi — aidat, duyuru ve şikayet takibi ayrı dashboardlar ile.</p>
+                            <div class="flex flex-wrap gap-2 mb-5">
+                                <span class="text-[10px] font-bold bg-emerald-500/15 text-emerald-300 px-2.5 py-1 rounded-lg">React 19</span>
+                                <span class="text-[10px] font-bold bg-teal-500/15 text-teal-300 px-2.5 py-1 rounded-lg">ASP.NET Core</span>
+                                <span class="text-[10px] font-bold bg-cyan-500/15 text-cyan-300 px-2.5 py-1 rounded-lg">PostgreSQL</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="https://bizim-site.vercel.app" target="_blank" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white transition-all">Canlı Demo <i class="bi bi-arrow-up-right"></i></a>
+                                <a href="https://github.com/AllenVB/BizimSite" target="_blank" class="px-3 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-slate-400 transition-all flex items-center"><i class="bi bi-github"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TraveLog -->
+                    <div class="project-card glass border border-white/5 rounded-3xl overflow-hidden group">
+                        <div class="h-44 bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center relative overflow-hidden">
+                            <div class="absolute inset-0 opacity-20" style="background-image:radial-gradient(circle at 25% 25%, white 1px, transparent 1px), radial-gradient(circle at 75% 75%, white 1px, transparent 1px);background-size:30px 30px"></div>
+                            <div class="absolute inset-0 flex items-center justify-center opacity-15">
+                                <div class="w-40 h-40 rounded-full border-2 border-white"></div>
+                                <div class="absolute w-32 h-8 border border-white rounded-full"></div>
+                            </div>
+                            <i class="bi bi-airplane text-white text-5xl relative z-10 drop-shadow-lg group-hover:scale-110 transition-transform duration-300" style="transform:rotate(-45deg)"></i>
+                            <div class="absolute top-3 right-3 flex items-center gap-1 bg-black/30 backdrop-blur-sm rounded-full px-2 py-0.5 text-[10px] text-white/80 font-semibold">
+                                <i class="bi bi-star-fill text-yellow-400"></i> 1
+                            </div>
+                            <div class="absolute bottom-3 left-3 bg-black/30 backdrop-blur-sm rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white/80">Java</div>
+                        </div>
+                        <div class="p-6">
+                            <h5 class="text-lg font-bold text-white mb-2">TraveLog</h5>
+                            <p class="text-slate-400 text-sm mb-4 leading-relaxed">Android tabanlı kişisel seyahat günlüğü — haritalar, hava durumu ve şehir anı defteri.</p>
+                            <div class="flex flex-wrap gap-2 mb-5">
+                                <span class="text-[10px] font-bold bg-orange-500/15 text-orange-300 px-2.5 py-1 rounded-lg">Java</span>
+                                <span class="text-[10px] font-bold bg-amber-500/15 text-amber-300 px-2.5 py-1 rounded-lg">Android</span>
+                                <span class="text-[10px] font-bold bg-yellow-500/15 text-yellow-300 px-2.5 py-1 rounded-lg">OpenStreetMap</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="https://github.com/AllenVB/TraveLog/releases" target="_blank" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white transition-all">APK İndir <i class="bi bi-download"></i></a>
+                                <a href="https://github.com/AllenVB/TraveLog" target="_blank" class="px-3 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-slate-400 transition-all flex items-center"><i class="bi bi-github"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FitMetrics -->
+                    <div class="project-card glass border border-white/5 rounded-3xl overflow-hidden group">
+                        <div class="h-44 bg-gradient-to-br from-rose-600 to-pink-700 flex items-center justify-center relative overflow-hidden">
+                            <div class="absolute inset-0 opacity-15" style="background-image:radial-gradient(circle at 80% 20%, white 1px, transparent 1px);background-size:18px 18px"></div>
+                            <svg class="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 200 100" preserveAspectRatio="none">
+                                <polyline points="0,70 30,50 60,65 90,30 120,45 150,20 180,35 200,25" fill="none" stroke="white" stroke-width="2"/>
+                                <polyline points="0,85 30,70 60,80 90,50 120,60 150,40 180,55 200,45" fill="none" stroke="white" stroke-width="1" opacity="0.5"/>
+                            </svg>
+                            <i class="bi bi-activity text-white text-5xl relative z-10 drop-shadow-lg group-hover:scale-110 transition-transform duration-300"></i>
+                            <div class="absolute top-3 right-3 flex items-center gap-1 bg-black/30 backdrop-blur-sm rounded-full px-2 py-0.5 text-[10px] text-white/80 font-semibold">
+                                <i class="bi bi-star-fill text-yellow-400"></i> 1
+                            </div>
+                            <div class="absolute bottom-3 left-3 bg-black/30 backdrop-blur-sm rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white/80">C#</div>
+                        </div>
+                        <div class="p-6">
+                            <h5 class="text-lg font-bold text-white mb-2">FitMetrics</h5>
+                            <p class="text-slate-400 text-sm mb-4 leading-relaxed">AI destekli beslenme, antrenman ve sağlık takip platformu — Claude API ile kişisel koçluk.</p>
+                            <div class="flex flex-wrap gap-2 mb-5">
+                                <span class="text-[10px] font-bold bg-rose-500/15 text-rose-300 px-2.5 py-1 rounded-lg">ASP.NET Core</span>
+                                <span class="text-[10px] font-bold bg-pink-500/15 text-pink-300 px-2.5 py-1 rounded-lg">React</span>
+                                <span class="text-[10px] font-bold bg-purple-500/15 text-purple-300 px-2.5 py-1 rounded-lg">Claude AI</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="https://github.com/AllenVB/FitMetrics" target="_blank" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white transition-all">GitHub'da Gör <i class="bi bi-arrow-up-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AllenVB-WebSayfasi -->
+                    <div class="project-card glass border border-white/5 rounded-3xl overflow-hidden group">
+                        <div class="h-44 bg-gradient-to-br from-violet-600 to-indigo-700 flex items-center justify-center relative overflow-hidden">
+                            <div class="absolute inset-0 flex flex-col justify-center gap-2 px-6 opacity-20 font-mono text-white text-[10px]">
+                                <div>&lt;<span class="text-cyan-300">html</span> lang="tr"&gt;</div>
+                                <div class="pl-3">&lt;<span class="text-green-300">head</span>&gt;...&lt;/<span class="text-green-300">head</span>&gt;</div>
+                                <div class="pl-3">&lt;<span class="text-green-300">body</span>&gt;</div>
+                                <div class="pl-6">&lt;<span class="text-yellow-300">nav</span>&gt;...&lt;/<span class="text-yellow-300">nav</span>&gt;</div>
+                                <div class="pl-3">&lt;/<span class="text-green-300">body</span>&gt;</div>
+                            </div>
+                            <i class="bi bi-code-slash text-white text-5xl relative z-10 drop-shadow-lg group-hover:scale-110 transition-transform duration-300"></i>
+                            <div class="absolute bottom-3 left-3 bg-black/30 backdrop-blur-sm rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white/80">HTML</div>
+                        </div>
+                        <div class="p-6">
+                            <h5 class="text-lg font-bold text-white mb-2">Kişisel Portföy</h5>
+                            <p class="text-slate-400 text-sm mb-4 leading-relaxed">Tailwind CSS tabanlı, çoklu tema destekli, Three.js 3D arkaplan ve CoreMetrics entegrasyonlu modern SPA.</p>
+                            <div class="flex flex-wrap gap-2 mb-5">
+                                <span class="text-[10px] font-bold bg-violet-500/15 text-violet-300 px-2.5 py-1 rounded-lg">HTML</span>
+                                <span class="text-[10px] font-bold bg-indigo-500/15 text-indigo-300 px-2.5 py-1 rounded-lg">Tailwind</span>
+                                <span class="text-[10px] font-bold bg-blue-500/15 text-blue-300 px-2.5 py-1 rounded-lg">Three.js</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="https://github.com/AllenVB/AllenVB-WebSayfasi" target="_blank" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white transition-all">GitHub'da Gör <i class="bi bi-arrow-up-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
             </div>
@@ -319,13 +587,39 @@ const pages = {
     `
 };
 
+// --- STATS: SAYAÇ ANİMASYONU ---
+function animateCounter(id, target) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const duration = 1200;
+    const start = Date.now();
+    const tick = () => {
+        const elapsed = Date.now() - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(ease * target);
+        if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+}
+
+// --- SKILL BAR ANİMASYONU ---
+function animateSkillBars() {
+    setTimeout(() => {
+        document.querySelectorAll('.skill-bar-fill[data-width]').forEach(bar => {
+            bar.style.width = bar.getAttribute('data-width');
+        });
+    }, 150);
+}
+
 // --- STATS: VERİ RENDER ---
 function renderStatsData(data) {
-    if (!document.getElementById('stat-total')) return; // Stats sayfası kapalıysa çık
+    if (!document.getElementById('stat-total')) return;
 
-    document.getElementById('stat-total').textContent = data.totalVisits ?? 0;
-    document.getElementById('stat-pages').textContent = data.topPages?.length ?? 0;
-    document.getElementById('stat-sessions').textContent = data.totalSessions ?? 0;
+    animateCounter('stat-total', data.totalVisits ?? 0);
+    animateCounter('stat-pages', data.topPages?.length ?? 0);
+    animateCounter('stat-sessions', data.totalSessions ?? 0);
+
     const avgSec = data.avgSessionDuration ?? 0;
     document.getElementById('stat-duration').textContent = avgSec >= 60
         ? Math.floor(avgSec / 60) + 'dk ' + (avgSec % 60) + 'sn'
@@ -335,34 +629,62 @@ function renderStatsData(data) {
         '/': '🏠 Anasayfa',
         '/#about': '👤 Hakkımda',
         '/#projects': '💼 Projelerim',
-        '/#contact': '✉️ İletişim'
+        '/#contact': '✉️ İletişim',
+        '/#stats': '📊 İstatistikler'
     };
+    const chartColors = [
+        'from-indigo-500 to-purple-500',
+        'from-blue-500 to-cyan-500',
+        'from-emerald-500 to-teal-500',
+        'from-violet-500 to-pink-500',
+        'from-amber-500 to-orange-500'
+    ];
+
     const pagesList = document.getElementById('pages-list');
     const maxCount = Math.max(...(data.topPages?.map(p => p.count) ?? [1]), 1);
-    pagesList.innerHTML = (data.topPages ?? []).map(p => {
+    pagesList.innerHTML = (data.topPages ?? []).map((p, i) => {
         const label = pageNames[p.path] ?? p.path;
         const pct = Math.round((p.count / maxCount) * 100);
+        const color = chartColors[i % chartColors.length];
         return `
             <div>
-                <div class="flex justify-between text-sm mb-1">
-                    <span class="text-gray-300">${label}</span>
-                    <span class="text-blue-400 font-bold">${p.count}</span>
+                <div class="flex justify-between text-sm mb-2">
+                    <span class="text-gray-200 font-medium">${label}</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-slate-500 text-xs">${pct}%</span>
+                        <span class="text-indigo-400 font-bold text-sm">${p.count}</span>
+                    </div>
                 </div>
-                <div class="w-full bg-gray-700 rounded-full h-2">
-                    <div class="bg-blue-500 h-2 rounded-full transition-all duration-700" style="width: ${pct}%"></div>
+                <div class="w-full bg-white/5 rounded-full h-2.5 overflow-hidden">
+                    <div class="h-full rounded-full bg-gradient-to-r ${color} transition-all duration-1000 ease-out chart-bar" data-width="${pct}%" style="width:0%"></div>
                 </div>
             </div>`;
     }).join('');
 
     const locationsList = document.getElementById('locations-list');
-    locationsList.innerHTML = (data.topLocations ?? []).map(l => `
-        <div class="flex justify-between items-center bg-gray-700/50 rounded-lg px-4 py-2">
-            <span class="text-gray-300">🌐 ${l.city ?? '?'}, ${l.country ?? '?'}</span>
-            <span class="text-purple-400 font-bold">${l.count}</span>
-        </div>`).join('');
+    const maxLocCount = Math.max(...(data.topLocations?.map(l => l.count) ?? [1]), 1);
+    locationsList.innerHTML = (data.topLocations ?? []).map(l => {
+        const pct = Math.round((l.count / maxLocCount) * 100);
+        return `
+        <div>
+            <div class="flex justify-between items-center mb-1.5">
+                <span class="text-gray-300 text-sm font-medium">🌐 ${l.city ?? '?'}, ${l.country ?? '?'}</span>
+                <span class="text-purple-400 font-bold text-sm">${l.count}</span>
+            </div>
+            <div class="w-full bg-white/5 rounded-full h-2 overflow-hidden">
+                <div class="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-1000 ease-out chart-bar" data-width="${pct}%" style="width:0%"></div>
+            </div>
+        </div>`;
+    }).join('');
 
     document.getElementById('stats-loading')?.classList.add('hidden');
     document.getElementById('stats-content')?.classList.remove('hidden');
+
+    setTimeout(() => {
+        document.querySelectorAll('.chart-bar[data-width]').forEach(bar => {
+            bar.style.width = bar.getAttribute('data-width');
+        });
+    }, 150);
 }
 
 // --- STATS: VERİ ÇEK ---
@@ -446,6 +768,11 @@ function loadPage(pageName) {
             startStatsLive();
         } else {
             stopStatsLive();
+        }
+
+        // About sayfasında skill barlarını animasyonlu doldur
+        if (pageName === 'about') {
+            animateSkillBars();
         }
 
         // İletişim formu — EmailJS entegrasyonu

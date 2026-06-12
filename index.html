@@ -88,10 +88,13 @@
 
 </head>
 
-<body class="bg-gray-900 text-gray-100" style="font-family:'Inter',sans-serif">
+<body class="text-gray-100" style="font-family:'Inter',sans-serif;background:#06080f">
 
     <!-- Three.js 3D Background -->
     <canvas id="bg-canvas"></canvas>
+
+    <!-- Ambient gradient orbs -->
+    <div id="bg-overlay" aria-hidden="true"></div>
 
     <!-- Navbar -->
     <nav class="glass fixed w-full z-50 border-b border-white/5">
@@ -186,16 +189,18 @@
 
     <script src="app.js"></script>
 
-    <!-- Three.js 3D Background -->
+    <!-- Three.js Minimal Background -->
     <script>
         (function () {
             const canvas = document.getElementById('bg-canvas');
             const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.setClearColor(0x0a0f1e, 1);
+            renderer.setClearColor(0x06080f, 1);
+
             const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(65, innerWidth / innerHeight, 0.1, 300);
-            camera.position.set(0, 0, 65);
+            const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 400);
+            camera.position.set(0, 0, 90);
+
             function resize() {
                 renderer.setSize(innerWidth, innerHeight);
                 camera.aspect = innerWidth / innerHeight;
@@ -203,43 +208,69 @@
             }
             resize(); window.addEventListener('resize', resize);
 
-            // Particles
-            const N = 600;
-            const pos = new Float32Array(N * 3), col = new Float32Array(N * 3);
-            const palette = [new THREE.Color(0x6366f1), new THREE.Color(0x8b5cf6), new THREE.Color(0xa855f7), new THREE.Color(0x3b82f6)];
+            // Minimal particle field — tek renk, düşük opaklık
+            const N = 220;
+            const pos = new Float32Array(N * 3);
+            const speeds = new Float32Array(N * 3);
             for (let i = 0; i < N; i++) {
-                pos[i * 3] = (Math.random() - .5) * 200; pos[i * 3 + 1] = (Math.random() - .5) * 120; pos[i * 3 + 2] = (Math.random() - .5) * 100;
-                const c = palette[Math.floor(Math.random() * palette.length)];
-                col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
+                pos[i * 3]     = (Math.random() - .5) * 260;
+                pos[i * 3 + 1] = (Math.random() - .5) * 160;
+                pos[i * 3 + 2] = (Math.random() - .5) * 100;
+                speeds[i * 3]     = (Math.random() - .5) * 0.003;
+                speeds[i * 3 + 1] = (Math.random() - .5) * 0.002;
+                speeds[i * 3 + 2] = 0;
             }
-            const pg = new THREE.BufferGeometry();
-            pg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-            pg.setAttribute('color', new THREE.BufferAttribute(col, 3));
-            scene.add(new THREE.Points(pg, new THREE.PointsMaterial({ size: .5, vertexColors: true, transparent: true, opacity: .65 })));
+            const geom = new THREE.BufferGeometry();
+            geom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            const mat = new THREE.PointsMaterial({
+                size: .35, color: 0xa5b4fc, transparent: true, opacity: .28, sizeAttenuation: true
+            });
+            const pts = new THREE.Points(geom, mat);
+            scene.add(pts);
 
-            // Wireframe shapes
-            const shapes = [], geos = [() => new THREE.IcosahedronGeometry(Math.random() * 3 + 1.5, 0), () => new THREE.OctahedronGeometry(Math.random() * 2.5 + 1, 0), () => new THREE.TetrahedronGeometry(Math.random() * 2 + 1, 0)];
-            const sc = [0x6366f1, 0x7c3aed, 0xa855f7, 0x3b82f6];
-            for (let i = 0; i < 25; i++) {
-                const m = new THREE.Mesh(geos[i % 3](), new THREE.MeshBasicMaterial({ color: sc[i % 4], wireframe: true, transparent: true, opacity: Math.random() * .2 + .05 }));
-                m.position.set((Math.random() - .5) * 180, (Math.random() - .5) * 100, (Math.random() - .5) * 80);
-                m.userData = { rx: (Math.random() - .5) * .007, ry: (Math.random() - .5) * .009, rz: (Math.random() - .5) * .005, fa: Math.random() * 1.5 + .5, fo: Math.random() * Math.PI * 2 };
-                scene.add(m); shapes.push(m);
+            // Çok ince bağlantı çizgileri — yalnızca yakın noktalar arası
+            const lineMat = new THREE.LineBasicMaterial({ color: 0x6366f1, transparent: true, opacity: 0.05 });
+            const sample = 40;
+            const sPos = Array.from({ length: sample }, (_, i) => new THREE.Vector3(
+                pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]
+            ));
+            for (let i = 0; i < sample; i++) {
+                for (let j = i + 1; j < sample; j++) {
+                    if (sPos[i].distanceTo(sPos[j]) < 50) {
+                        scene.add(new THREE.Line(
+                            new THREE.BufferGeometry().setFromPoints([sPos[i], sPos[j]]),
+                            lineMat
+                        ));
+                    }
+                }
             }
 
             // Mouse parallax
             let mx = 0, my = 0;
-            document.addEventListener('mousemove', e => { mx = (e.clientX / innerWidth - .5) * 2; my = (e.clientY / innerHeight - .5) * 2; });
+            document.addEventListener('mousemove', e => {
+                mx = (e.clientX / innerWidth - .5) * 2;
+                my = (e.clientY / innerHeight - .5) * 2;
+            });
 
             let t = 0;
             (function animate() {
-                requestAnimationFrame(animate); t += .016;
-                shapes.forEach(m => { m.rotation.x += m.userData.rx; m.rotation.y += m.userData.ry; m.rotation.z += m.userData.rz; m.position.y += Math.sin(t * 50 * m.userData.fa * .001 + m.userData.fo) * m.userData.fa * .01; });
-                camera.position.x += (mx * 5 - camera.position.x) * .03;
-                camera.position.y += (-my * 3 - camera.position.y) * .03;
+                requestAnimationFrame(animate);
+                t += .01;
+                // Parçacıklar yavaşça kayar
+                const p = geom.attributes.position.array;
+                for (let i = 0; i < N; i++) {
+                    p[i * 3]     += speeds[i * 3];
+                    p[i * 3 + 1] += speeds[i * 3 + 1];
+                    // Sınırı aşarsa karşı tarafa geç
+                    if (p[i * 3] > 130 || p[i * 3] < -130) speeds[i * 3] *= -1;
+                    if (p[i * 3 + 1] > 80 || p[i * 3 + 1] < -80) speeds[i * 3 + 1] *= -1;
+                }
+                geom.attributes.position.needsUpdate = true;
+
+                // Hafif parallax
+                camera.position.x += (mx * 4 - camera.position.x) * .025;
+                camera.position.y += (-my * 2.5 - camera.position.y) * .025;
                 camera.lookAt(scene.position);
-                const pts = scene.children.find(c => c instanceof THREE.Points);
-                if (pts) pts.rotation.y = t * .01;
                 renderer.render(scene, camera);
             })();
         })();
