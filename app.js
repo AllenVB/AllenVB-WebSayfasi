@@ -58,9 +58,12 @@ const pages = {
                         <p class="text-slate-400 text-lg mb-10 leading-relaxed max-w-md">
                             Modern teknolojiler ile yaratıcı ve ölçeklenebilir çözümler üretiyorum. Bandırma Onyedi Eylül Üniversitesi Yazılım Mühendisliği öğrencisiyim.
                         </p>
-                        <div class="flex flex-col sm:flex-row gap-4 mb-10">
-                            <button data-page="projects" class="btn-glow px-8 py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg shadow-indigo-500/30">Projelerimi Gör</button>
-                            <button data-page="contact"  class="px-8 py-3.5 rounded-xl font-bold text-indigo-300 border border-indigo-500/40 hover:bg-indigo-500/10 transition-all duration-200 hover:scale-105 active:scale-95">İletişime Geç</button>
+                        <div class="flex flex-col sm:flex-row gap-3 mb-10">
+                            <button data-page="projects" class="btn-glow px-7 py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg shadow-indigo-500/30">Projelerimi Gör</button>
+                            <a href="cv.pdf" download="Süleyman_Emre_Arlı_CV.pdf" class="px-7 py-3.5 rounded-xl font-bold text-slate-200 border border-white/10 hover:bg-white/6 transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                                <i class="bi bi-download text-sm"></i> CV İndir
+                            </a>
+                            <button data-page="contact" class="px-7 py-3.5 rounded-xl font-bold text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/8 transition-all duration-200 hover:scale-105 active:scale-95">İletişim</button>
                         </div>
                         <div class="flex gap-5">
                             <a href="https://github.com/AllenVB" target="_blank" class="social-icon text-slate-400 text-2xl"><i class="bi bi-github"></i></a>
@@ -84,7 +87,7 @@ const pages = {
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
                 <!-- Başlık -->
-                <div class="mb-16">
+                <div class="reveal mb-16">
                     <div class="flex items-center gap-3 mb-5">
                         <span class="w-5 h-px bg-indigo-500/70"></span>
                         <span class="text-indigo-400 text-[11px] font-bold uppercase tracking-widest">Hakkımda</span>
@@ -98,7 +101,7 @@ const pages = {
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
 
                     <!-- Sol sütun: Profil + İstatistik + Teknoloji -->
-                    <div class="lg:col-span-4 flex flex-col gap-5">
+                    <div class="reveal reveal-d1 lg:col-span-4 flex flex-col gap-5">
 
                         <!-- Profil kartı -->
                         <div class="glass rounded-2xl p-6 border border-white/5">
@@ -162,7 +165,7 @@ const pages = {
                     </div>
 
                     <!-- Sağ sütun: Yetkinlikler -->
-                    <div class="lg:col-span-8 glass rounded-2xl p-7 border border-white/5">
+                    <div class="reveal reveal-d2 lg:col-span-8 glass rounded-2xl p-7 border border-white/5">
                         <div class="flex items-center gap-3 mb-7">
                             <div class="w-8 h-8 rounded-lg bg-white/4 border border-white/6 flex items-center justify-center">
                                 <i class="bi bi-lightning-charge text-indigo-400 text-sm"></i>
@@ -289,7 +292,7 @@ const pages = {
     projects: `
         <section class="min-h-screen relative overflow-hidden py-24">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div class="mb-14">
+                <div class="reveal mb-14">
                     <p class="text-indigo-400 text-xs font-bold uppercase tracking-widest mb-2">Neler yaptım?</p>
                     <h2 class="text-5xl font-black text-white tracking-tight">Projelerim</h2>
                     <p class="text-slate-500 mt-3 text-sm flex items-center gap-2">
@@ -299,7 +302,7 @@ const pages = {
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
 
                     <!-- Smart Home Security -->
-                    <div class="project-card glass border border-white/5 rounded-3xl overflow-hidden group">
+                    <div class="reveal reveal-d1 project-card glass border border-white/5 rounded-3xl overflow-hidden group">
                         <div class="h-44 bg-gradient-to-br from-blue-600 to-cyan-700 flex items-center justify-center relative overflow-hidden">
                             <div class="absolute inset-0 opacity-15" style="background-image:radial-gradient(circle at 50% 50%, white 1px, transparent 1px);background-size:24px 24px"></div>
                             <div class="absolute w-32 h-32 rounded-full border border-white/10 animate-pulse"></div>
@@ -326,7 +329,7 @@ const pages = {
                     </div>
 
                     <!-- CoreMetrics -->
-                    <div class="project-card glass border border-white/5 rounded-3xl overflow-hidden group">
+                    <div class="reveal reveal-d2 project-card glass border border-white/5 rounded-3xl overflow-hidden group">
                         <div class="h-44 bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center relative overflow-hidden">
                             <div class="absolute inset-0 opacity-10" style="background-image:linear-gradient(45deg, white 1px, transparent 1px), linear-gradient(-45deg, white 1px, transparent 1px);background-size:30px 30px"></div>
                             <div class="absolute bottom-0 left-0 right-0 h-16 flex items-end justify-around px-4 pb-2 opacity-30">
@@ -359,7 +362,7 @@ const pages = {
                     </div>
 
                     <!-- BizimSite -->
-                    <div class="project-card glass border border-white/5 rounded-3xl overflow-hidden group">
+                    <div class="reveal reveal-d3 project-card glass border border-white/5 rounded-3xl overflow-hidden group">
                         <div class="h-44 bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center relative overflow-hidden">
                             <div class="absolute inset-0 opacity-15" style="background-image:radial-gradient(circle at 30% 70%, white 1px, transparent 1px);background-size:20px 20px"></div>
                             <div class="absolute top-4 left-4 right-4 h-8 bg-white/10 rounded-lg flex items-center px-3 gap-2">
@@ -390,7 +393,7 @@ const pages = {
                     </div>
 
                     <!-- TraveLog -->
-                    <div class="project-card glass border border-white/5 rounded-3xl overflow-hidden group">
+                    <div class="reveal reveal-d4 project-card glass border border-white/5 rounded-3xl overflow-hidden group">
                         <div class="h-44 bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center relative overflow-hidden">
                             <div class="absolute inset-0 opacity-20" style="background-image:radial-gradient(circle at 25% 25%, white 1px, transparent 1px), radial-gradient(circle at 75% 75%, white 1px, transparent 1px);background-size:30px 30px"></div>
                             <div class="absolute inset-0 flex items-center justify-center opacity-15">
@@ -419,7 +422,7 @@ const pages = {
                     </div>
 
                     <!-- FitMetrics -->
-                    <div class="project-card glass border border-white/5 rounded-3xl overflow-hidden group">
+                    <div class="reveal reveal-d5 project-card glass border border-white/5 rounded-3xl overflow-hidden group">
                         <div class="h-44 bg-gradient-to-br from-rose-600 to-pink-700 flex items-center justify-center relative overflow-hidden">
                             <div class="absolute inset-0 opacity-15" style="background-image:radial-gradient(circle at 80% 20%, white 1px, transparent 1px);background-size:18px 18px"></div>
                             <svg class="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 200 100" preserveAspectRatio="none">
@@ -447,7 +450,7 @@ const pages = {
                     </div>
 
                     <!-- AllenVB-WebSayfasi -->
-                    <div class="project-card glass border border-white/5 rounded-3xl overflow-hidden group">
+                    <div class="reveal reveal-d6 project-card glass border border-white/5 rounded-3xl overflow-hidden group">
                         <div class="h-44 bg-gradient-to-br from-violet-600 to-indigo-700 flex items-center justify-center relative overflow-hidden">
                             <div class="absolute inset-0 flex flex-col justify-center gap-2 px-6 opacity-20 font-mono text-white text-[10px]">
                                 <div>&lt;<span class="text-cyan-300">html</span> lang="tr"&gt;</div>
@@ -480,13 +483,13 @@ const pages = {
     contact: `
         <section class="min-h-screen relative overflow-hidden py-24">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div class="mb-14">
+                <div class="reveal mb-14">
                     <p class="text-indigo-400 text-xs font-bold uppercase tracking-widest mb-2">Ulaşın</p>
                     <h2 class="text-5xl font-black text-white tracking-tight">İletişim</h2>
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
 
-                    <div class="lg:col-span-3 glass p-8 rounded-3xl border border-white/5">
+                    <div class="reveal reveal-d1 lg:col-span-3 glass p-8 rounded-3xl border border-white/5">
                         <h3 class="text-lg font-bold text-white mb-6">Mesaj Gönderin</h3>
                         <form id="contactForm" class="space-y-5">
                             <div>
@@ -510,7 +513,7 @@ const pages = {
                         </form>
                     </div>
 
-                    <div class="lg:col-span-2 space-y-4">
+                    <div class="reveal reveal-d2 lg:col-span-2 space-y-4">
                         <div class="glass p-5 rounded-2xl border border-white/5 flex items-center gap-4 card-hover">
                             <div class="w-10 h-10 rounded-xl bg-indigo-500/15 flex items-center justify-center flex-shrink-0"><i class="bi bi-envelope text-indigo-400"></i></div>
                             <div><p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-0.5">E-posta</p><p class="text-sm text-slate-300">suleymanarli0666@gmail.com</p></div>
@@ -536,7 +539,7 @@ const pages = {
     stats: `
         <section class="min-h-screen relative overflow-hidden py-24">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div class="mb-12">
+                <div class="reveal mb-12">
                     <p class="text-indigo-400 text-xs font-bold uppercase tracking-widest mb-2">Canlı Veri</p>
                     <h2 class="text-5xl font-black text-white tracking-tight">📊 Site İstatistikleri</h2>
                     <p class="text-slate-500 mt-2 text-sm">Son 30 günlük ziyaret verileri — gerçek zamanlı</p>
@@ -601,6 +604,21 @@ function animateCounter(id, target) {
         if (progress < 1) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
+}
+
+// --- SCROLL REVEAL ---
+function initScrollReveal() {
+    const els = document.querySelectorAll('.reveal:not(.visible)');
+    if (!els.length) return;
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                io.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    els.forEach(el => io.observe(el));
 }
 
 // --- SKILL BAR ANİMASYONU ---
@@ -684,6 +702,7 @@ function renderStatsData(data) {
         document.querySelectorAll('.chart-bar[data-width]').forEach(bar => {
             bar.style.width = bar.getAttribute('data-width');
         });
+        initScrollReveal();
     }, 150);
 }
 
@@ -774,6 +793,9 @@ function loadPage(pageName) {
         if (pageName === 'about') {
             animateSkillBars();
         }
+
+        // Tüm sayfalarda scroll reveal başlat
+        initScrollReveal();
 
         // İletişim formu — EmailJS entegrasyonu
         if (pageName === 'contact') {
