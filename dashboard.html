@@ -404,14 +404,18 @@
                 : '<tr><td colspan="2" class="text-center py-8 text-slate-600 italic text-sm">Henüz veri yok</td></tr>';
 
             const locList = document.getElementById('locationList');
-            locList.innerHTML = locations.length ? locations.map(l => `
+            locList.innerHTML = locations.length ? locations.map(l => {
+                let cityName = l.city ?? 'Bilinmeyen';
+                if (cityName === 'Panderma') cityName = 'Bandırma';
+                return `
                 <div class="loc-card glass-bright p-4 rounded-2xl text-center border border-slate-700/50">
                     <p class="text-[10px] text-slate-500 uppercase font-black tracking-wider mb-1">${l.country ?? 'Global'}</p>
-                    <p class="text-sm font-bold text-white truncate">${l.city ?? 'Bilinmeyen'}</p>
+                    <p class="text-sm font-bold text-white truncate">${cityName}</p>
                     <div class="mt-2.5 text-[11px] font-bold text-indigo-400 bg-indigo-500/10 rounded-lg py-1">
                         ${(l.count ?? 0).toLocaleString('tr-TR')} ziyaret
                     </div>
-                </div>`).join('')
+                </div>`;
+            }).join('')
                 : '<div class="col-span-full py-12 text-center text-slate-600 italic text-sm">Lokasyon verisi yok.</div>';
 
             updateChart(pages);
