@@ -2,7 +2,7 @@
 
 Kişisel portföy web sitesi. Vercel üzerinde yayınlanmaktadır.
 
-**Canlı:** [allenvb.websayfasi.vercel.app](https://allenvb.websayfasi.vercel.app)
+**Canlı:** [allenvb.websayfasi.vercel.app](allenvb-websayfasi.vercel.app)
 
 ---
 
