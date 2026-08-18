@@ -4,47 +4,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Süleyman Emre Arlı | Yazılım Mühendisi & Full-Stack Developer</title>
+    <title>Süleyman Emre Arlı | Backend & Full-Stack Developer</title>
 
     <!-- SEO -->
-    <meta name="description" content="Süleyman Emre Arlı — Bandırma Onyedi Eylül Üniversitesi Yazılım Mühendisliği öğrencisi. Java, C# .NET, React ve Android ile full-stack projeler geliştiriyorum.">
-    <meta name="keywords" content="Süleyman Emre Arlı, Yazılım Mühendisi, Full Stack Developer, Java, Spring Boot, React, C#, ASP.NET, Android, PostgreSQL, AllenVB">
+    <meta name="description" content="Süleyman Emre Arlı — Backend / Full-Stack Developer. Java 21, Spring Boot, Apache Kafka, PostgreSQL ve React ile event-driven, gerçek zamanlı sistemler geliştiriyorum.">
+    <meta name="keywords" content="Süleyman Emre Arlı, Backend Developer, Full Stack Developer, Java, Spring Boot, Kafka, Microservices, React, PostgreSQL, AllenVB">
     <meta name="author" content="Süleyman Emre Arlı">
     <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#06080f">
+    <link rel="canonical" href="https://allenvb.vercel.app/">
 
-    <!-- Open Graph — LinkedIn / Facebook / WhatsApp önizlemesi -->
+    <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://allenvb.vercel.app/">
-    <meta property="og:title" content="Süleyman Emre Arlı | Yazılım Mühendisi">
-    <meta property="og:description" content="Full-Stack web geliştirici ve Android developer. Java, C# .NET, React ile 6+ proje geliştirdim.">
-    <meta property="og:image" content="https://allenvb.vercel.app/og-image.jpg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    <meta property="og:title" content="Süleyman Emre Arlı | Backend & Full-Stack Developer">
+    <meta property="og:description" content="Java 21, Spring Boot, Kafka ve React ile event-driven, gerçek zamanlı sistemler geliştiriyorum.">
+    <meta property="og:image" content="https://allenvb.vercel.app/ben1.jpeg">
     <meta property="og:site_name" content="Süleyman Emre Arlı — Portföy">
     <meta property="og:locale" content="tr_TR">
 
-    <!-- Twitter Card -->
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Süleyman Emre Arlı | Yazılım Mühendisi">
-    <meta name="twitter:description" content="Full-Stack web geliştirici ve Android developer. Java, C# .NET, React ile 6+ proje geliştirdim.">
-    <meta name="twitter:image" content="https://allenvb.vercel.app/og-image.jpg">
+    <meta name="twitter:title" content="Süleyman Emre Arlı | Backend & Full-Stack Developer">
+    <meta name="twitter:description" content="Java 21, Spring Boot, Kafka ve React ile event-driven, gerçek zamanlı sistemler geliştiriyorum.">
+    <meta name="twitter:image" content="https://allenvb.vercel.app/ben1.jpeg">
 
-    <!-- Schema.org Person -->
+    <!-- Schema.org -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Person",
       "name": "Süleyman Emre Arlı",
-      "jobTitle": "Yazılım Mühendisi",
+      "jobTitle": "Backend / Full-Stack Developer",
       "email": "suleymanarli0666@gmail.com",
       "telephone": "+90 544 453 0125",
       "url": "https://allenvb.vercel.app",
       "image": "https://allenvb.vercel.app/ben1.jpeg",
       "sameAs": [
         "https://github.com/AllenVB",
-        "https://www.linkedin.com/in/s%C3%BCleyman-emre-arl%C4%B1-608491330/"
+        "https://www.linkedin.com/in/suleymanemrearlii"
       ],
-      "knowsAbout": ["JavaScript", "React", "Java", "Spring Boot", "C#", "ASP.NET Core", "PostgreSQL", "Android"],
+      "knowsAbout": ["Java", "Spring Boot", "Apache Kafka", "Microservices", "PostgreSQL", "React", "C#", "ASP.NET Core", "Docker", "Redis"],
       "alumniOf": {
         "@type": "CollegeOrUniversity",
         "name": "Bandırma Onyedi Eylül Üniversitesi"
@@ -57,276 +57,101 @@
       }
     }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
-
-    <!-- Takip Kodu -->
-    <script>
-        (function () {
-            const CONFIG = {
-                API_KEY: "db281f63-a569-47e4-b30d-e6637451e890",
-                TRACK_URL: "https://coremetrics-service-665359087509.europe-west3.run.app/api/Collector/track"
-            };
-
-            async function trackVisit(pageName = null) {
-                try {
-                    const path = pageName ? (pageName.startsWith('/') ? pageName : `/#${pageName}`) : (window.location.hash || "/");
-
-                    console.log("%cCoreMetrics: Veri gönderiliyor -> " + path, "color: #6366f1; font-weight: bold;");
-
-                    await fetch(CONFIG.TRACK_URL, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            apiKey: CONFIG.API_KEY,
-                            path: path,
-                            referrer: document.referrer || "Doğrudan Giriş",
-                            userAgent: navigator.userAgent
-                        })
-                    });
-                } catch (err) {
-                    console.warn("CoreMetrics: Veri gönderilemedi.");
-                }
-            }
-
-            // --- DIŞ BAĞLANTI VE BUTON TAKİPÇİSİ ---
-            function setupInteractionTracking() {
-                document.addEventListener('click', (e) => {
-                    // 1. Proje Detay Butonları
-                    const targetLink = e.target.closest('a');
-                    if (targetLink && targetLink.getAttribute('target') === '_blank') {
-                        const card = targetLink.closest('div');
-                        const projectName = card ? card.querySelector('h5')?.innerText : null;
-                        if (projectName) {
-                            trackVisit(`proje-tiklama/${projectName.trim()}`);
-                        }
-                    }
-
-                    // 2. Menü Tıklamaları (SPA geçişleri için)
-                    const navLink = e.target.closest('a[data-page]');
-                    if (navLink) {
-                        const page = navLink.getAttribute('data-page');
-                        trackVisit(page);
-                    }
-                });
-            }
-
-            // Global erişim için
-            window.sa_track = trackVisit;
-
-            // Sayfa hazır olduğunda başlat
-            if (document.readyState === 'complete') {
-                trackVisit();
-                setupInteractionTracking();
-            } else {
-                window.addEventListener('load', () => {
-                    trackVisit();
-                    setupInteractionTracking();
-                });
-            }
-
-            // Hash değişimlerini (URL'deki #about gibi) izle
-            window.addEventListener('hashchange', () => {
-                trackVisit(window.location.hash.replace('#', ''));
-            });
-        })();
-    </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
 </head>
 
-<body class="text-gray-100" style="font-family:'Inter',sans-serif;background:#06080f">
+<body>
+    <!-- Scroll progress -->
+    <div id="scroll-progress" aria-hidden="true"></div>
 
-    <!-- Three.js 3D Background -->
-    <canvas id="bg-canvas"></canvas>
-
-    <!-- Ambient gradient orbs -->
+    <!-- Arka plan katmanları -->
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
     <div id="bg-overlay" aria-hidden="true"></div>
 
     <!-- Navbar -->
-    <nav class="glass fixed w-full z-50 border-b border-white/5">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16 gap-8">
-                <!-- Logo -->
-                <a href="#home" data-page="home" class="flex items-center gap-3 group">
-                    <div
-                        class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg text-xs font-black text-white">
-                        S</div>
-                    <span class="font-bold text-white text-sm group-hover:text-indigo-300 transition">Süleyman
-                        Emre</span>
+    <nav id="navbar">
+        <div class="nav-inner">
+            <a href="#home" data-page="home" class="brand">
+                <span class="brand-mark">SA</span>
+                <span class="brand-text">Süleyman Emre <em>Arlı</em></span>
+            </a>
+
+            <div class="nav-links" id="nav-links">
+                <a href="#home"    data-page="home">Anasayfa</a>
+                <a href="#about"   data-page="about">Hakkımda</a>
+                <a href="#projects" data-page="projects">Projeler</a>
+                <a href="#cv"      data-page="cv">CV</a>
+                <a href="#contact" data-page="contact">İletişim</a>
+                <a href="#stats"   data-page="stats">İstatistikler</a>
+                <span id="nav-indicator" aria-hidden="true"></span>
+            </div>
+
+            <div class="nav-actions">
+                <a href="cv.pdf" download="Suleyman-Emre-Arli-CV.pdf" class="btn btn-sm btn-ghost hide-sm" data-track="cv-download-nav">
+                    <i class="bi bi-download"></i> CV
                 </a>
-                <!-- Desktop menu -->
-                <div class="hidden md:flex items-center gap-6">
-                    <a href="#about" data-page="about"
-                        class="text-slate-400 hover:text-indigo-300 transition text-sm font-medium">Hakkımda</a>
-                    <a href="#projects" data-page="projects"
-                        class="text-slate-400 hover:text-indigo-300 transition text-sm font-medium">Projelerim</a>
-                    <a href="#contact" data-page="contact"
-                        class="text-slate-400 hover:text-indigo-300 transition text-sm font-medium">İletişim</a>
-                    <a href="#stats" data-page="stats"
-                        class="text-slate-400 hover:text-indigo-300 transition text-sm font-medium">📊 İstatistikler</a>
-                </div>
-                <!-- Mobile toggle -->
-                <div class="md:hidden">
-                    <button id="mobile-menu-btn" class="text-slate-400 hover:text-indigo-300">
-                        <i class="bi bi-list text-2xl"></i>
-                    </button>
-                </div>
+                <a href="https://github.com/AllenVB" target="_blank" rel="noopener" class="icon-btn" aria-label="GitHub">
+                    <i class="bi bi-github"></i>
+                </a>
+                <button id="menu-btn" class="icon-btn menu-only" aria-label="Menü" aria-expanded="false">
+                    <i class="bi bi-list"></i>
+                </button>
             </div>
-            <!-- Mobile menu -->
-            <div id="mobile-menu" class="hidden md:hidden pb-4 space-y-2">
-                <a href="#about" data-page="about"
-                    class="block py-2 text-slate-400 hover:text-indigo-300 text-sm">Hakkımda</a>
-                <a href="#projects" data-page="projects"
-                    class="block py-2 text-slate-400 hover:text-indigo-300 text-sm">Projelerim</a>
-                <a href="#contact" data-page="contact"
-                    class="block py-2 text-slate-400 hover:text-indigo-300 text-sm">İletişim</a>
-                <a href="#stats" data-page="stats" class="block py-2 text-slate-400 hover:text-indigo-300 text-sm">📊
-                    İstatistikler</a>
-            </div>
+        </div>
+
+        <div id="mobile-menu">
+            <a href="#home"     data-page="home">Anasayfa</a>
+            <a href="#about"    data-page="about">Hakkımda</a>
+            <a href="#projects" data-page="projects">Projeler</a>
+            <a href="#cv"       data-page="cv">CV</a>
+            <a href="#contact"  data-page="contact">İletişim</a>
+            <a href="#stats"    data-page="stats">İstatistikler</a>
+            <a href="cv.pdf" download="Suleyman-Emre-Arli-CV.pdf" class="mobile-cv"><i class="bi bi-download"></i> CV İndir</a>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main id="app-container" class="pt-16">
-        <!-- Content will be loaded here -->
-    </main>
+    <main id="app-container" aria-live="polite"></main>
 
-    <!-- Footer -->
-    <footer class="glass border-t border-white/5 text-gray-400 py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-                <div class="text-center">
-                    <h3 class="text-sm font-bold text-indigo-400 mb-3 uppercase tracking-widest">Hızlı Bağlantılar</h3>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#home" data-page="home" class="hover:text-indigo-300 transition">Anasayfa</a></li>
-                        <li><a href="#about" data-page="about" class="hover:text-indigo-300 transition">Hakkımda</a>
-                        </li>
-                        <li><a href="#projects" data-page="projects"
-                                class="hover:text-indigo-300 transition">Projelerim</a></li>
-                        <li><a href="#contact" data-page="contact" class="hover:text-indigo-300 transition">İletişim</a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="text-center">
-                    <h3 class="text-sm font-bold text-indigo-400 mb-3 uppercase tracking-widest">İletişim</h3>
-                    <ul class="space-y-2 text-sm">
-                        <li>Bandırma, Balıkesir, Türkiye</li>
-                        <li><a href="mailto:suleymanarli0666@gmail.com"
-                                class="hover:text-indigo-300 transition">suleymanarli0666@gmail.com</a></li>
-                        <li><a href="tel:+905444530125" class="hover:text-indigo-300 transition">+90 544 453 0125</a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="text-center">
-                    <h3 class="text-sm font-bold text-indigo-400 mb-3 uppercase tracking-widest">Sosyal</h3>
-                    <div class="flex justify-center gap-5">
-                        <a href="https://github.com/AllenVB" target="_blank"
-                            class="social-icon text-gray-400 text-2xl"><i class="bi bi-github"></i></a>
-                        <a href="https://www.linkedin.com/in/s%C3%BCleyman-emre-arl%C4%B1-608491330/" target="_blank"
-                            class="social-icon text-gray-400 text-2xl"><i class="bi bi-linkedin"></i></a>
-                    </div>
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <span class="brand-mark">SA</span>
+                <div>
+                    <p class="fb-name">Süleyman Emre Arlı</p>
+                    <p class="fb-role">Backend / Full-Stack Developer</p>
                 </div>
             </div>
-            <div class="border-t border-white/5 pt-6 text-center text-xs text-slate-600">
-                © 2026 Süleyman Emre ARLI — Tüm Hakları Saklıdır
+
+            <nav class="footer-nav" aria-label="Alt menü">
+                <a href="#home" data-page="home">Anasayfa</a>
+                <a href="#about" data-page="about">Hakkımda</a>
+                <a href="#projects" data-page="projects">Projeler</a>
+                <a href="#cv" data-page="cv">CV</a>
+                <a href="#contact" data-page="contact">İletişim</a>
+            </nav>
+
+            <div class="footer-social">
+                <a href="https://github.com/AllenVB" target="_blank" rel="noopener" aria-label="GitHub"><i class="bi bi-github"></i></a>
+                <a href="https://www.linkedin.com/in/suleymanemrearlii" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                <a href="mailto:suleymanarli0666@gmail.com" aria-label="E-posta"><i class="bi bi-envelope-fill"></i></a>
             </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© <span id="year">2026</span> Süleyman Emre Arlı</span>
+            <span class="dot">·</span>
+            <span>Bandırma, Balıkesir</span>
         </div>
     </footer>
 
+    <button id="to-top" aria-label="Yukarı çık"><i class="bi bi-arrow-up"></i></button>
+
     <script src="app.js"></script>
-
-    <!-- Three.js Minimal Background -->
-    <script>
-        (function () {
-            const canvas = document.getElementById('bg-canvas');
-            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.setClearColor(0x06080f, 1);
-
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 400);
-            camera.position.set(0, 0, 90);
-
-            function resize() {
-                renderer.setSize(innerWidth, innerHeight);
-                camera.aspect = innerWidth / innerHeight;
-                camera.updateProjectionMatrix();
-            }
-            resize(); window.addEventListener('resize', resize);
-
-            // Minimal particle field — tek renk, düşük opaklık
-            const N = 220;
-            const pos = new Float32Array(N * 3);
-            const speeds = new Float32Array(N * 3);
-            for (let i = 0; i < N; i++) {
-                pos[i * 3]     = (Math.random() - .5) * 260;
-                pos[i * 3 + 1] = (Math.random() - .5) * 160;
-                pos[i * 3 + 2] = (Math.random() - .5) * 100;
-                speeds[i * 3]     = (Math.random() - .5) * 0.003;
-                speeds[i * 3 + 1] = (Math.random() - .5) * 0.002;
-                speeds[i * 3 + 2] = 0;
-            }
-            const geom = new THREE.BufferGeometry();
-            geom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-            const mat = new THREE.PointsMaterial({
-                size: .35, color: 0xa5b4fc, transparent: true, opacity: .28, sizeAttenuation: true
-            });
-            const pts = new THREE.Points(geom, mat);
-            scene.add(pts);
-
-            // Çok ince bağlantı çizgileri — yalnızca yakın noktalar arası
-            const lineMat = new THREE.LineBasicMaterial({ color: 0x6366f1, transparent: true, opacity: 0.05 });
-            const sample = 40;
-            const sPos = Array.from({ length: sample }, (_, i) => new THREE.Vector3(
-                pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]
-            ));
-            for (let i = 0; i < sample; i++) {
-                for (let j = i + 1; j < sample; j++) {
-                    if (sPos[i].distanceTo(sPos[j]) < 50) {
-                        scene.add(new THREE.Line(
-                            new THREE.BufferGeometry().setFromPoints([sPos[i], sPos[j]]),
-                            lineMat
-                        ));
-                    }
-                }
-            }
-
-            // Mouse parallax
-            let mx = 0, my = 0;
-            document.addEventListener('mousemove', e => {
-                mx = (e.clientX / innerWidth - .5) * 2;
-                my = (e.clientY / innerHeight - .5) * 2;
-            });
-
-            let t = 0;
-            (function animate() {
-                requestAnimationFrame(animate);
-                t += .01;
-                // Parçacıklar yavaşça kayar
-                const p = geom.attributes.position.array;
-                for (let i = 0; i < N; i++) {
-                    p[i * 3]     += speeds[i * 3];
-                    p[i * 3 + 1] += speeds[i * 3 + 1];
-                    // Sınırı aşarsa karşı tarafa geç
-                    if (p[i * 3] > 130 || p[i * 3] < -130) speeds[i * 3] *= -1;
-                    if (p[i * 3 + 1] > 80 || p[i * 3 + 1] < -80) speeds[i * 3 + 1] *= -1;
-                }
-                geom.attributes.position.needsUpdate = true;
-
-                // Hafif parallax
-                camera.position.x += (mx * 4 - camera.position.x) * .025;
-                camera.position.y += (-my * 2.5 - camera.position.y) * .025;
-                camera.lookAt(scene.position);
-                renderer.render(scene, camera);
-            })();
-        })();
-    </script>
 </body>
 
 </html>

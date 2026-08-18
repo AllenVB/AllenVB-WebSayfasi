@@ -1,864 +1,1385 @@
-// --- COREMETRICS ANALYTICS START ---
-const CORE_CONFIG = {
-    API_KEY: "db281f63-a569-47e4-b30d-e6637451e890",
-    BASE_URL: "https://coremetrics-service-665359087509.europe-west3.run.app/api/Collector"
+/* ═══════════════════════════════════════════════════════════════
+   Süleyman Emre Arlı — Portföy SPA
+   Hash tabanlı router + canlı GitHub verisi + CoreMetrics takibi
+   ═══════════════════════════════════════════════════════════════ */
+
+'use strict';
+
+// ── Yapılandırma ──────────────────────────────────────────────
+const CORE = {
+    API_KEY: 'db281f63-a569-47e4-b30d-e6637451e890',
+    BASE_URL: 'https://coremetrics-service-665359087509.europe-west3.run.app/api/Collector'
 };
 
-async function trackCoreMetrics(path) {
-    console.log("%c📊 CoreMetrics: Veri Frankfurt'a uçuyor -> " + path, "color: #00ff00; font-weight: bold; background: #000; padding: 2px 5px;");
+const GH = {
+    user: 'AllenVB',
+    reposUrl: 'https://api.github.com/users/AllenVB/repos?per_page=100&sort=updated',
+    contribUrl: 'https://github-contributions-api.jogruber.de/v4/AllenVB?y=last',
+    // GitHub profilinde pinlenmiş depolar
+    pinned: [
+        'Vehicle-Tracking-Simulation',
+        'event-driven-pipeline',
+        'CoreMetrics',
+        'n8n_Finans',
+        'BizimSite',
+        'AllenVB-WebSayfasi'
+    ]
+};
+
+// Pinli projeler için elle zenginleştirilmiş bilgi (API'de olmayan detaylar)
+const PROJECT_META = {
+    'Vehicle-Tracking-Simulation': {
+        title: 'Vehicle Tracking & Fleet Telematics',
+        icon: 'bi-truck',
+        tags: ['Java 21', 'Spring Boot', 'Kafka Streams', 'TimescaleDB', 'PostGIS', 'Redis', 'Docker'],
+        desc: 'Türkiye genelinde gerçek OSRM rotalarında hareket eden 100 aracın telemetrisini işleyen event-driven filo platformu. Canlı harita, operatör konsolu, geofencing, ihlal cooldown\'lu kural motoru, sefer tespiti ve sürücü skorlaması.'
+    },
+    'event-driven-pipeline': {
+        title: 'Event-Driven Microservices Pipeline',
+        icon: 'bi-diagram-3',
+        tags: ['Java', 'Spring Boot', 'Kafka', 'RabbitMQ', 'Redis', 'Hazelcast', 'PostgreSQL'],
+        desc: 'Bağımsız servisler arasında asenkron iletişim kuran event-driven mikroservis mimarisi. Kafka ile event streaming, RabbitMQ ile bildirim akışları, Redis ile cache ve idempotency, Hazelcast ile dağıtık veri yönetimi.'
+    },
+    'CoreMetrics': {
+        title: 'CoreMetrics — SaaS Analytics',
+        icon: 'bi-graph-up-arrow',
+        tags: ['C#', 'ASP.NET Core', 'PostgreSQL', 'Cloud Run', 'SSE', 'Chart.js'],
+        desc: 'Web siteleri için gerçek zamanlı ziyaretçi analitiği platformu. Server-Sent Events ile anlık güncelleme, API key doğrulaması, oturum takibi ve Google Cloud Run üzerinde serverless dağıtım. Bu sitenin istatistikleri de bu servisten geliyor.'
+    },
+    'n8n_Finans': {
+        title: 'n8n Finans Asistanı',
+        icon: 'bi-robot',
+        tags: ['n8n', 'Automation', 'LLM', 'Webhook'],
+        desc: 'n8n ile tasarlanmış, yapay zekâ analizleri sonucunda harcamaları yorumlayan ve öneri sunan kapsamlı finans takip otomasyonu.'
+    },
+    'BizimSite': {
+        title: 'BizimSite — Apartman Yönetimi',
+        icon: 'bi-buildings',
+        tags: ['React', 'C#', 'ASP.NET Core', 'PostgreSQL'],
+        desc: 'Apartman yönetimi için aidat takibi, sakin yönetimi ve duyuru akışı içeren full-stack sistem. React arayüz, ASP.NET Core API ve PostgreSQL veri katmanı.'
+    },
+    'AllenVB-WebSayfasi': {
+        title: 'Kişisel Portföy Sitesi',
+        icon: 'bi-window-stack',
+        tags: ['JavaScript', 'SPA', 'Tailwind', 'Canvas'],
+        desc: 'Şu an baktığınız site. Bağımlılıksız hash router, canlı GitHub verisi, katkı ısı haritası ve gerçek zamanlı ziyaret analitiği içeren tek sayfa uygulaması.'
+    }
+};
+
+const LANG_COLOR = {
+    Java: '#b07219', JavaScript: '#f1e05a', TypeScript: '#3178c6', 'C#': '#178600',
+    Python: '#3572A5', HTML: '#e34c26', CSS: '#563d7c', 'Jupyter Notebook': '#DA5B0B',
+    Vue: '#41b883', Shell: '#89e051', Dockerfile: '#384d54'
+};
+
+const SKILL_GROUPS = [
+    { icon: 'bi-code-slash', title: 'Programlama Dilleri', items: ['Java', 'C#', 'Python', 'JavaScript', 'C / C++'] },
+    { icon: 'bi-hdd-stack', title: 'Backend Geliştirme', items: ['Spring Boot', 'Spring MVC', 'Spring Data JPA', 'Spring Security', 'ASP.NET Core', 'RESTful API', 'JWT'] },
+    { icon: 'bi-diagram-3', title: 'Dağıtık Sistemler & Mesajlaşma', items: ['Apache Kafka', 'RabbitMQ', 'Redis', 'Hazelcast', 'Microservices', 'Event-Driven'] },
+    { icon: 'bi-database', title: 'Veritabanları', items: ['PostgreSQL', 'SQL', 'TimescaleDB', 'PostGIS'] },
+    { icon: 'bi-window', title: 'Frontend Geliştirme', items: ['React', 'JavaScript', 'HTML5', 'CSS3', 'Tailwind CSS', 'Bootstrap'] },
+    { icon: 'bi-tools', title: 'DevOps & Araçlar', items: ['Docker', 'Git', 'GitHub', 'Postman', 'Linux'] }
+];
+
+const TIMELINE = [
+    {
+        date: 'Temmuz 2026 — Ağustos 2026',
+        title: 'Software Engineering Intern',
+        org: 'Mobiliz',
+        desc: 'Araç takip ve filo yönetimi projelerinde görev aldım. Telemetri verisinin işlenmesi, event tabanlı akışlar ve gerçek zamanlı izleme tarafında geliştirme yaptım.'
+    },
+    {
+        date: 'Mart 2025 — Haziran 2026',
+        title: 'IT Support / Programlama Asistanı',
+        org: 'Bandırma Onyedi Eylül Üniversitesi · İŞKUR Gençlik Programı',
+        desc: 'Üniversite bünyesinde teknik destek sağladım ve programlama eğitimlerine asistanlık ettim.'
+    },
+    {
+        date: '2023 — 2027',
+        title: 'Yazılım Mühendisliği (Lisans)',
+        org: 'Bandırma Onyedi Eylül Üniversitesi',
+        desc: '4. sınıf öğrencisiyim. Dağıtık sistemler, veri tabanları ve yazılım mimarisi alanlarına yoğunlaşıyorum.'
+    }
+];
+
+// ── Yardımcılar ───────────────────────────────────────────────
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+function esc(str) {
+    return String(str ?? '').replace(/[&<>"']/g, c =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function prettyName(name) {
+    return name.replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function animateCounter(el, target, suffix = '') {
+    if (!el) return;
+    const final = target.toLocaleString('tr-TR') + suffix;
+
+    // Sekme arka plandayken rAF çalışmaz; animasyon yerine son değeri yaz
+    if (document.hidden || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        el.textContent = final;
+        return;
+    }
+
+    const duration = 1100;
+    const start = performance.now();
+    let done = false;
+
+    const step = (now) => {
+        if (done) return;
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        if (p < 1) {
+            el.textContent = Math.round(eased * target) + suffix;
+            requestAnimationFrame(step);
+        } else {
+            done = true;
+            el.textContent = final;
+        }
+    };
+
+    el.textContent = '0' + suffix;
+    requestAnimationFrame(step);
+
+    // Güvenlik ağı: rAF kısıtlanırsa değer yine de doğru görünsün
+    setTimeout(() => {
+        if (!done) { done = true; el.textContent = final; }
+    }, duration + 500);
+}
+
+// ── CoreMetrics takibi ────────────────────────────────────────
+async function track(path) {
     try {
-        await fetch(CORE_CONFIG.BASE_URL + "/track", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+        await fetch(CORE.BASE_URL + '/track', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                apiKey: CORE_CONFIG.API_KEY,
-                path: path,
-                referrer: document.referrer || "Doğrudan Giriş",
+                apiKey: CORE.API_KEY,
+                path,
+                referrer: document.referrer || 'Doğrudan Giriş',
                 userAgent: navigator.userAgent
             })
         });
-    } catch (err) {
-        console.warn("CoreMetrics: Bağlantı hatası.");
-    }
+    } catch { /* takip başarısız olsa da site çalışmaya devam eder */ }
 }
 
-// --- SESSION TRACKING (anonim, giriş gerekmez) ---
-const _sessionStart = Date.now();
-const _sessionPath = window.location.hash || "/";
-
-window.addEventListener("beforeunload", () => {
-    const duration = Math.round((Date.now() - _sessionStart) / 1000);
-    if (duration < 2) return; // 2 saniyeden kısa oturumları sayma
-    navigator.sendBeacon(
-        CORE_CONFIG.BASE_URL + "/session",
-        new Blob([JSON.stringify({
-            apiKey: CORE_CONFIG.API_KEY,
-            duration: duration,
-            path: _sessionPath
-        })], { type: "application/json" })
-    );
+const SESSION_START = Date.now();
+window.addEventListener('beforeunload', () => {
+    const duration = Math.round((Date.now() - SESSION_START) / 1000);
+    if (duration < 2) return;
+    try {
+        navigator.sendBeacon(
+            CORE.BASE_URL + '/session',
+            new Blob([JSON.stringify({
+                apiKey: CORE.API_KEY,
+                duration,
+                path: location.hash || '/'
+            })], { type: 'application/json' })
+        );
+    } catch { /* yoksayılır */ }
 });
-// --- COREMETRICS ANALYTICS END ---
 
+// ── GitHub veri katmanı (sekme ömrü boyunca önbellekli) ───────
+let _reposPromise = null;
+let _contribPromise = null;
 
-const pages = {
-    home: `
-        <section class="min-h-screen relative overflow-hidden flex items-center">
-            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 w-full">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                    <div class="animate-fade-in-up">
-                        <div class="inline-flex items-center gap-2 glass px-4 py-2 rounded-full text-xs font-semibold text-indigo-300 mb-6 border border-indigo-500/30">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400 live-dot"></span>
-                            Yazılım Mühendisi &amp; Web Developer
-                        </div>
-                        <h1 class="text-6xl md:text-7xl font-black text-white mb-4 leading-none tracking-tight">
-                            Merhaba<br>
-                            <span class="gradient-text">Süleyman Emre</span>
-                        </h1>
-                        <p class="text-slate-400 text-lg mb-10 leading-relaxed max-w-md">
-                            Modern teknolojiler ile yaratıcı ve ölçeklenebilir çözümler üretiyorum. Bandırma Onyedi Eylül Üniversitesi Yazılım Mühendisliği öğrencisiyim.
-                        </p>
-                        <div class="flex flex-col sm:flex-row gap-3 mb-10">
-                            <button data-page="projects" class="btn-glow px-7 py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg shadow-indigo-500/30">Projelerimi Gör</button>
-                            <a href="cv.pdf" download="Süleyman_Emre_Arlı_CV.pdf" class="px-7 py-3.5 rounded-xl font-bold text-slate-200 border border-white/10 hover:bg-white/6 transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
-                                <i class="bi bi-download text-sm"></i> CV İndir
-                            </a>
-                            <button data-page="contact" class="px-7 py-3.5 rounded-xl font-bold text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/8 transition-all duration-200 hover:scale-105 active:scale-95">İletişim</button>
-                        </div>
-                        <div class="flex gap-5">
-                            <a href="https://github.com/AllenVB" target="_blank" class="social-icon text-slate-400 text-2xl"><i class="bi bi-github"></i></a>
-                            <a href="https://www.linkedin.com/in/s%C3%BCleyman-emre-arl%C4%B1-608491330/" target="_blank" class="social-icon text-slate-400 text-2xl"><i class="bi bi-linkedin"></i></a>
-                        </div>
-                    </div>
-                    <div class="flex justify-center">
-                        <div class="relative">
-                            <div class="absolute inset-0 rounded-3xl bg-gradient-to-br from-indigo-500 to-purple-600 blur-2xl opacity-25 scale-105"></div>
-                            <div class="relative border-2 border-indigo-500/30 rounded-3xl overflow-hidden shadow-2xl hover-image-scale">
-                                <img src="ben1.jpeg" alt="Süleyman Emre Arlı" class="w-full h-auto max-w-sm">
-                            </div>
-                        </div>
-                    </div>
+function cached(key, ttlMs, fetcher) {
+    try {
+        const raw = sessionStorage.getItem(key);
+        if (raw) {
+            const { t, v } = JSON.parse(raw);
+            if (Date.now() - t < ttlMs) return Promise.resolve(v);
+        }
+    } catch { /* sessionStorage kapalıysa doğrudan çek */ }
+
+    return fetcher().then(v => {
+        try { sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), v })); } catch { }
+        return v;
+    });
+}
+
+function getRepos() {
+    if (!_reposPromise) {
+        _reposPromise = cached('gh_repos', 30 * 60 * 1000, async () => {
+            const res = await fetch(GH.reposUrl);
+            if (!res.ok) throw new Error('GitHub API: ' + res.status);
+            const data = await res.json();
+            return data
+                .filter(r => !r.fork && !r.archived)
+                .map(r => ({
+                    name: r.name,
+                    desc: r.description,
+                    lang: r.language,
+                    stars: r.stargazers_count,
+                    forks: r.forks_count,
+                    url: r.html_url,
+                    homepage: r.homepage,
+                    updated: r.updated_at
+                }));
+        }).catch(err => { _reposPromise = null; throw err; });
+    }
+    return _reposPromise;
+}
+
+function getContributions() {
+    if (!_contribPromise) {
+        _contribPromise = cached('gh_contrib', 60 * 60 * 1000, async () => {
+            const res = await fetch(GH.contribUrl);
+            if (!res.ok) throw new Error('Katkı API: ' + res.status);
+            return res.json();
+        }).catch(err => { _contribPromise = null; throw err; });
+    }
+    return _contribPromise;
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SAYFA ŞABLONLARI
+// ═══════════════════════════════════════════════════════════════
+
+function projectCardHTML(repo, isPinned) {
+    const meta = PROJECT_META[repo.name] || {};
+    const title = meta.title || prettyName(repo.name);
+    const desc = meta.desc || repo.desc || 'Açıklama eklenmemiş bir depo.';
+    const tags = meta.tags || (repo.lang ? [repo.lang] : []);
+    const icon = meta.icon || 'bi-folder2-open';
+    const color = LANG_COLOR[repo.lang] || '#6366f1';
+
+    return `
+    <article class="card card-hover project-card reveal" data-lang="${esc(repo.lang || 'Diğer')}">
+        ${isPinned ? '<span class="pin-flag">Pinli</span>' : ''}
+        <div class="pc-top">
+            <div class="pc-icon"><i class="bi ${esc(icon)}"></i></div>
+            <div class="pc-stats" style="margin-top:6px">
+                ${repo.stars ? `<span><i class="bi bi-star-fill"></i> ${repo.stars}</span>` : ''}
+                ${repo.forks ? `<span><i class="bi bi-diagram-2"></i> ${repo.forks}</span>` : ''}
+            </div>
+        </div>
+        <h3 class="pc-title">${esc(title)}</h3>
+        <p class="pc-desc">${esc(desc)}</p>
+        <div class="pc-tags">${tags.slice(0, 6).map(t => `<span class="chip">${esc(t)}</span>`).join('')}</div>
+        <div class="pc-foot">
+            <span class="pc-lang">
+                ${repo.lang ? `<i class="pc-dot" style="background:${color}"></i> ${esc(repo.lang)}` : '<span class="dim">—</span>'}
+            </span>
+            <a class="pc-link" href="${esc(repo.url)}" target="_blank" rel="noopener" data-project="${esc(title)}">
+                Kaynak kodu <i class="bi bi-arrow-up-right"></i>
+            </a>
+        </div>
+    </article>`;
+}
+
+function contribSectionHTML() {
+    return `
+    <div class="card contrib-card reveal">
+        <div class="contrib-head">
+            <div>
+                <h3 style="font-size:16px;font-weight:750;margin-bottom:3px">GitHub Katkı Geçmişi</h3>
+                <p class="dim" style="font-size:12.5px">Son 12 ayda <strong id="contrib-total" style="color:var(--accent-light)">—</strong> katkı</p>
+            </div>
+            <a class="btn btn-sm btn-ghost" href="https://github.com/AllenVB" target="_blank" rel="noopener">
+                <i class="bi bi-github"></i> @AllenVB
+            </a>
+        </div>
+        <div class="contrib-scroll">
+            <div id="contrib-months" class="contrib-months"></div>
+            <div id="contrib-grid" class="contrib-grid"></div>
+        </div>
+        <div class="contrib-legend">
+            <span>Az</span>
+            <span class="contrib-cell"></span>
+            <span class="contrib-cell" data-level="1"></span>
+            <span class="contrib-cell" data-level="2"></span>
+            <span class="contrib-cell" data-level="3"></span>
+            <span class="contrib-cell" data-level="4"></span>
+            <span>Çok</span>
+        </div>
+    </div>`;
+}
+
+const PAGES = {
+    // ── ANASAYFA ─────────────────────────────────────────────
+    home: () => `
+    <section class="wrap hero">
+        <div>
+            <span class="badge"><span class="live-dot"></span> Yeni projelere açığım</span>
+            <h1>Merhaba, ben<br><span class="gradient-text">Süleyman Emre</span></h1>
+            <p class="role-line"><span id="role-text"></span><span class="caret"></span></p>
+            <p class="hero-lead" style="margin-top:18px">
+                Bandırma Onyedi Eylül Üniversitesi <strong>Yazılım Mühendisliği</strong> 4. sınıf öğrencisiyim.
+                <strong>Java 21, Spring Boot ve Apache Kafka</strong> ile event-driven, gerçek zamanlı sistemler kuruyorum;
+                gerektiğinde React ve ASP.NET Core ile uçtan uca teslim ediyorum.
+            </p>
+            <div class="hero-actions">
+                <a href="#projects" data-page="projects" class="btn btn-primary">
+                    <i class="bi bi-collection"></i> Projelerimi Gör
+                </a>
+                <a href="cv.pdf" download="Suleyman-Emre-Arli-CV.pdf" class="btn btn-ghost" data-track="cv-download-hero">
+                    <i class="bi bi-download"></i> CV İndir
+                </a>
+                <a href="#contact" data-page="contact" class="btn btn-outline">
+                    <i class="bi bi-envelope"></i> İletişime Geç
+                </a>
+            </div>
+            <div class="hero-meta">
+                <span><i class="bi bi-geo-alt-fill"></i> Bandırma, Balıkesir</span>
+                <span><i class="bi bi-mortarboard-fill"></i> Yazılım Mühendisliği · 2023–2027</span>
+                <span><i class="bi bi-briefcase-fill"></i> Mobiliz stajyeri</span>
+            </div>
+        </div>
+
+        <div class="portrait-wrap reveal d2">
+            <div class="portrait-glow"></div>
+            <picture>
+                <source srcset="ben1.webp" type="image/webp">
+                <img src="ben1-opt.jpg" alt="Süleyman Emre Arlı" class="portrait" loading="eager"
+                     width="300" height="380" fetchpriority="high">
+            </picture>
+            <div class="portrait-tag">
+                <i class="bi bi-cpu-fill"></i>
+                <div>
+                    <p class="pt-title">Backend / Full-Stack</p>
+                    <p class="pt-sub">Java · Spring · Kafka</p>
                 </div>
             </div>
-        </section>
-    `,
-    about: `
-        <section class="min-h-screen relative overflow-hidden py-24">
-            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        </div>
+    </section>
 
-                <!-- Başlık -->
-                <div class="reveal mb-16">
-                    <div class="flex items-center gap-3 mb-5">
-                        <span class="w-5 h-px bg-indigo-500/70"></span>
-                        <span class="text-indigo-400 text-[11px] font-bold uppercase tracking-widest">Hakkımda</span>
-                    </div>
-                    <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
-                        Yazılım Geliştirici
-                    </h2>
-                    <p class="text-slate-500 text-lg mt-2 font-normal">Full-Stack · Android · AI Entegrasyonu</p>
-                </div>
+    <section class="wrap section-sm">
+        <div class="stat-strip reveal">
+            <div class="stat-cell"><p class="stat-num" data-count="45" data-suffix="+">0</p><p class="stat-label">Genel Depo</p></div>
+            <div class="stat-cell"><p class="stat-num" id="stat-contrib">0</p><p class="stat-label">Yıllık Katkı</p></div>
+            <div class="stat-cell"><p class="stat-num" data-count="6" data-suffix="">0</p><p class="stat-label">Öne Çıkan Proje</p></div>
+            <div class="stat-cell"><p class="stat-num" data-count="2" data-suffix="">0</p><p class="stat-label">İş Deneyimi</p></div>
+        </div>
+    </section>
 
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+    <section class="wrap section-sm">
+        ${contribSectionHTML()}
+    </section>
 
-                    <!-- Sol sütun: Profil + İstatistik + Teknoloji -->
-                    <div class="reveal reveal-d1 lg:col-span-4 flex flex-col gap-5">
+    <section class="wrap section">
+        <div class="reveal mb-32">
+            <span class="eyebrow">Öne Çıkanlar</span>
+            <h2 class="section-title">Pinlediğim <span class="gradient-text">projeler</span></h2>
+            <p class="section-sub">GitHub profilimde öne çıkardığım çalışmalar — canlı olarak GitHub API'den çekiliyor.</p>
+        </div>
+        <div id="featured-grid" class="project-grid">
+            <div class="state-box" style="grid-column:1/-1"><div class="spinner"></div>Projeler yükleniyor…</div>
+        </div>
+        <div class="center mt-40">
+            <a href="#projects" data-page="projects" class="btn btn-ghost">
+                Tüm projeleri gör <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </section>
 
-                        <!-- Profil kartı -->
-                        <div class="glass rounded-2xl p-6 border border-white/5">
-                            <div class="flex items-center gap-4 mb-5 pb-5 border-b border-white/5">
-                                <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/15 flex items-center justify-center flex-shrink-0">
-                                    <i class="bi bi-person text-indigo-400"></i>
-                                </div>
-                                <div>
-                                    <p class="text-white font-semibold text-sm leading-tight">Süleyman Emre Arlı</p>
-                                    <p class="text-slate-500 text-xs mt-0.5">Yazılım Mühendisliği, 3. Sınıf</p>
-                                </div>
-                                <div class="ml-auto flex items-center gap-1.5">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                                    <span class="text-emerald-400 text-[10px] font-medium">Müsait</span>
-                                </div>
-                            </div>
-                            <p class="text-slate-400 text-sm leading-relaxed mb-5">
-                                Bandırma Onyedi Eylül Üniversitesi'nde öğrenimimi sürdürüyorum. Web, mobil ve backend alanlarında çalışıyorum; ürün odaklı düşünmeyi severim.
-                            </p>
-                            <div class="space-y-2.5">
-                                <div class="flex items-center gap-3">
-                                    <i class="bi bi-envelope text-slate-600 text-xs w-3.5 text-center"></i>
-                                    <span class="text-slate-400 text-xs">suleymanarli0666@gmail.com</span>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <i class="bi bi-geo-alt text-slate-600 text-xs w-3.5 text-center"></i>
-                                    <span class="text-slate-400 text-xs">Bandırma, Balıkesir, Türkiye</span>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <i class="bi bi-github text-slate-600 text-xs w-3.5 text-center"></i>
-                                    <a href="https://github.com/AllenVB" target="_blank" class="text-slate-400 text-xs hover:text-indigo-300 transition">github.com/AllenVB</a>
-                                </div>
-                            </div>
-                        </div>
+    <section class="wrap section-sm">
+        <div class="cta-band reveal">
+            <h2 class="section-title" style="font-size:clamp(24px,3.6vw,34px)">Birlikte bir şey inşa edelim</h2>
+            <p class="section-sub mx-auto center" style="margin-bottom:26px">
+                Staj, yarı zamanlı iş veya freelance bir proje — backend ağırlıklı işlerde memnuniyetle yer alırım.
+            </p>
+            <div class="hero-actions" style="justify-content:center;margin:0">
+                <a href="#contact" data-page="contact" class="btn btn-primary"><i class="bi bi-send"></i> Mesaj Gönder</a>
+                <a href="#cv" data-page="cv" class="btn btn-ghost"><i class="bi bi-file-earmark-text"></i> CV'yi İncele</a>
+            </div>
+        </div>
+    </section>`,
 
-                        <!-- İstatistikler -->
-                        <div class="grid grid-cols-3 gap-3">
-                            <div class="glass rounded-xl p-4 border border-white/5 text-center">
-                                <p class="text-xl font-black text-white">6+</p>
-                                <p class="text-slate-600 text-[10px] uppercase tracking-wider mt-1">Proje</p>
-                            </div>
-                            <div class="glass rounded-xl p-4 border border-white/5 text-center">
-                                <p class="text-xl font-black text-white">2+</p>
-                                <p class="text-slate-600 text-[10px] uppercase tracking-wider mt-1">Yıl</p>
-                            </div>
-                            <div class="glass rounded-xl p-4 border border-white/5 text-center">
-                                <p class="text-xl font-black text-white">7+</p>
-                                <p class="text-slate-600 text-[10px] uppercase tracking-wider mt-1">Teknoloji</p>
-                            </div>
-                        </div>
+    // ── HAKKIMDA ─────────────────────────────────────────────
+    about: () => `
+    <section class="wrap section">
+        <div class="reveal mb-32">
+            <span class="eyebrow">Hakkımda</span>
+            <h2 class="section-title">Kısaca <span class="gradient-text">ben</span></h2>
+        </div>
 
-                        <!-- Teknoloji etiketleri -->
-                        <div class="glass rounded-2xl p-5 border border-white/5">
-                            <p class="text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-3.5">Teknoloji Yığını</p>
-                            <div class="flex flex-wrap gap-2">
-                                ${['JavaScript','React','Java','C# .NET','Spring Boot','PostgreSQL','Tailwind CSS','Android'].map(t =>
-                                    `<span class="text-[11px] text-slate-400 bg-white/4 border border-white/6 px-2.5 py-1 rounded-md">${t}</span>`
-                                ).join('')}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Sağ sütun: Yetkinlikler -->
-                    <div class="reveal reveal-d2 lg:col-span-8 glass rounded-2xl p-7 border border-white/5">
-                        <div class="flex items-center gap-3 mb-7">
-                            <div class="w-8 h-8 rounded-lg bg-white/4 border border-white/6 flex items-center justify-center">
-                                <i class="bi bi-lightning-charge text-indigo-400 text-sm"></i>
-                            </div>
-                            <h3 class="text-sm font-semibold text-white">Teknik Yetkinlikler</h3>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
-                            <!-- Frontend -->
-                            <div>
-                                <div class="flex items-center gap-2 mb-5">
-                                    <span class="w-0.5 h-3.5 bg-indigo-500 rounded-full"></span>
-                                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Frontend</span>
-                                </div>
-                                <div class="space-y-4">
-                                    <div>
-                                        <div class="flex justify-between text-xs mb-1.5">
-                                            <span class="text-slate-300">HTML5 &amp; CSS3</span>
-                                            <span class="text-slate-600">90%</span>
-                                        </div>
-                                        <div class="h-0.5 bg-white/5 rounded-full overflow-hidden">
-                                            <div class="skill-bar-fill h-full" data-width="90%" style="width:0%"></div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between text-xs mb-1.5">
-                                            <span class="text-slate-300">JavaScript</span>
-                                            <span class="text-slate-600">80%</span>
-                                        </div>
-                                        <div class="h-0.5 bg-white/5 rounded-full overflow-hidden">
-                                            <div class="skill-bar-fill h-full" data-width="80%" style="width:0%"></div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between text-xs mb-1.5">
-                                            <span class="text-slate-300">Tailwind CSS</span>
-                                            <span class="text-slate-600">85%</span>
-                                        </div>
-                                        <div class="h-0.5 bg-white/5 rounded-full overflow-hidden">
-                                            <div class="skill-bar-fill h-full" data-width="85%" style="width:0%"></div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between text-xs mb-1.5">
-                                            <span class="text-slate-300">React</span>
-                                            <span class="text-slate-600">65%</span>
-                                        </div>
-                                        <div class="h-0.5 bg-white/5 rounded-full overflow-hidden">
-                                            <div class="skill-bar-fill h-full" data-width="65%" style="width:0%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Backend -->
-                            <div>
-                                <div class="flex items-center gap-2 mb-5">
-                                    <span class="w-0.5 h-3.5 bg-emerald-500 rounded-full"></span>
-                                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Backend</span>
-                                </div>
-                                <div class="space-y-4">
-                                    <div>
-                                        <div class="flex justify-between text-xs mb-1.5">
-                                            <span class="text-slate-300">Java &amp; Spring Boot</span>
-                                            <span class="text-slate-600">75%</span>
-                                        </div>
-                                        <div class="h-0.5 bg-white/5 rounded-full overflow-hidden">
-                                            <div class="skill-bar-fill skill-bar-green h-full" data-width="75%" style="width:0%"></div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between text-xs mb-1.5">
-                                            <span class="text-slate-300">C# &amp; ASP.NET Core</span>
-                                            <span class="text-slate-600">70%</span>
-                                        </div>
-                                        <div class="h-0.5 bg-white/5 rounded-full overflow-hidden">
-                                            <div class="skill-bar-fill skill-bar-green h-full" data-width="70%" style="width:0%"></div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between text-xs mb-1.5">
-                                            <span class="text-slate-300">PostgreSQL</span>
-                                            <span class="text-slate-600">72%</span>
-                                        </div>
-                                        <div class="h-0.5 bg-white/5 rounded-full overflow-hidden">
-                                            <div class="skill-bar-fill skill-bar-green h-full" data-width="72%" style="width:0%"></div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between text-xs mb-1.5">
-                                            <span class="text-slate-300">Android / Java</span>
-                                            <span class="text-slate-600">68%</span>
-                                        </div>
-                                        <div class="h-0.5 bg-white/5 rounded-full overflow-hidden">
-                                            <div class="skill-bar-fill skill-bar-green h-full" data-width="68%" style="width:0%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Eğitim -->
-                        <div class="mt-8 pt-7 border-t border-white/5">
-                            <div class="flex items-center gap-2 mb-5">
-                                <span class="w-0.5 h-3.5 bg-violet-500 rounded-full"></span>
-                                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Eğitim</span>
-                            </div>
-                            <div class="flex items-start gap-4">
-                                <div class="w-9 h-9 rounded-lg bg-violet-500/10 border border-violet-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                    <i class="bi bi-mortarboard text-violet-400 text-sm"></i>
-                                </div>
-                                <div>
-                                    <p class="text-slate-200 text-sm font-medium">Yazılım Mühendisliği</p>
-                                    <p class="text-slate-500 text-xs mt-0.5">Bandırma Onyedi Eylül Üniversitesi · 2022 – Devam Ediyor</p>
-                                    <p class="text-slate-600 text-xs mt-2 leading-relaxed">Web geliştirme, algoritmalar, veri tabanı tasarımı ve yazılım mimarisi üzerine kapsamlı müfredat.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <div class="grid-2 reveal" style="align-items:start;gap:28px">
+            <div class="card" style="padding:28px">
+                <p class="muted" style="font-size:15px;line-height:1.85">
+                    Dördüncü sınıf Yazılım Mühendisliği öğrencisiyim. IT desteği, programlama eğitimi asistanlığı ve
+                    yazılım geliştirme tarafında deneyim kazandım. Bandırma Onyedi Eylül Üniversitesi'nde
+                    <strong style="color:var(--text)">İŞKUR Gençlik Programı</strong> kapsamında çalıştım;
+                    <strong style="color:var(--text)">Mobiliz</strong>'deki stajım boyunca araç takip ve filo yönetimi
+                    projelerine katkı verdim.
+                </p>
+                <p class="muted" style="font-size:15px;line-height:1.85;margin-top:16px">
+                    İlgi alanım <strong style="color:var(--text)">backend geliştirme, dağıtık sistemler ve gerçek zamanlı
+                    uygulamalar</strong>. Kafka ile event streaming, Redis ile idempotency, PostGIS/TimescaleDB ile
+                    zaman-serisi ve konum verisi üzerinde çalışmayı seviyorum.
+                </p>
+                <div class="sg-chips" style="margin-top:22px">
+                    <span class="chip"><i class="bi bi-geo-alt"></i> Bandırma, Balıkesir</span>
+                    <span class="chip"><i class="bi bi-translate"></i> Türkçe · İngilizce</span>
+                    <span class="chip"><i class="bi bi-clock-history"></i> Uzaktan / Hibrit</span>
                 </div>
             </div>
-        </section>
-    `,
-    projects: `
-        <section class="min-h-screen relative overflow-hidden py-24">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div class="reveal mb-14">
-                    <p class="text-indigo-400 text-xs font-bold uppercase tracking-widest mb-2">Neler yaptım?</p>
-                    <h2 class="text-5xl font-black text-white tracking-tight">Projelerim</h2>
-                    <p class="text-slate-500 mt-3 text-sm flex items-center gap-2">
-                        <i class="bi bi-pin-fill text-indigo-400"></i> GitHub'da pinlenmiş projeler
+
+            <div class="card" style="padding:28px">
+                <h3 style="font-size:15px;font-weight:750;margin-bottom:22px">Deneyim & Eğitim</h3>
+                <div class="timeline">
+                    ${TIMELINE.map(t => `
+                    <div class="tl-item">
+                        <p class="tl-date">${esc(t.date)}</p>
+                        <p class="tl-title">${esc(t.title)}</p>
+                        <p class="tl-org">${esc(t.org)}</p>
+                        <p class="tl-desc">${esc(t.desc)}</p>
+                    </div>`).join('')}
+                </div>
+            </div>
+        </div>
+
+        <div class="reveal" style="margin:56px 0 26px">
+            <span class="eyebrow">Yetenekler</span>
+            <h2 class="section-title" style="font-size:clamp(24px,3.4vw,32px)">Çalıştığım <span class="gradient-text">teknolojiler</span></h2>
+        </div>
+
+        <div class="project-grid">
+            ${SKILL_GROUPS.map((g, i) => `
+            <div class="card card-hover skill-group reveal d${(i % 3) + 1}">
+                <div class="sg-head">
+                    <div class="sg-icon"><i class="bi ${esc(g.icon)}"></i></div>
+                    <p class="sg-title">${esc(g.title)}</p>
+                </div>
+                <div class="sg-chips">
+                    ${g.items.map(s => `<span class="chip">${esc(s)}</span>`).join('')}
+                </div>
+            </div>`).join('')}
+        </div>
+
+        <div style="margin-top:48px">${contribSectionHTML()}</div>
+    </section>`,
+
+    // ── PROJELER ─────────────────────────────────────────────
+    projects: () => `
+    <section class="wrap section">
+        <div class="reveal mb-32">
+            <span class="eyebrow">Portföy</span>
+            <h2 class="section-title">Geliştirdiğim <span class="gradient-text">projeler</span></h2>
+            <p class="section-sub">
+                GitHub hesabımdaki tüm açık depolar canlı olarak listeleniyor. Pinlediklerim en üstte,
+                geri kalanlar son güncellenme sırasına göre.
+            </p>
+        </div>
+
+        <div id="lang-filter" class="filter-bar reveal"></div>
+
+        <div id="all-grid" class="project-grid">
+            <div class="state-box" style="grid-column:1/-1"><div class="spinner"></div>GitHub'dan çekiliyor…</div>
+        </div>
+    </section>`,
+
+    // ── CV ───────────────────────────────────────────────────
+    cv: () => `
+    <section class="wrap section">
+        <div class="reveal mb-32">
+            <span class="eyebrow">Özgeçmiş</span>
+            <h2 class="section-title">CV — <span class="gradient-text">Süleyman Emre Arlı</span></h2>
+            <p class="section-sub">Belgeyi doğrudan burada inceleyebilir veya PDF olarak indirebilirsiniz.</p>
+        </div>
+
+        <div class="cv-layout">
+            <div class="card cv-viewer reveal">
+                <iframe id="cv-frame" class="cv-frame" src="cv.pdf#toolbar=0&navpanes=0&view=FitH"
+                        title="Süleyman Emre Arlı CV"></iframe>
+                <div id="cv-fallback" class="cv-fallback">
+                    <i class="bi bi-file-earmark-pdf" style="font-size:38px;color:var(--accent-light)"></i>
+                    <p class="muted" style="margin:14px 0 4px;font-weight:600">PDF önizlemesi bu cihazda açılamıyor</p>
+                    <p class="dim" style="font-size:13px">Aşağıdaki butonlardan indirebilir veya yeni sekmede açabilirsiniz.</p>
+                </div>
+                <div class="cv-toolbar">
+                    <a href="cv.pdf" download="Suleyman-Emre-Arli-CV.pdf" class="btn btn-primary" data-track="cv-download-page">
+                        <i class="bi bi-download"></i> PDF İndir
+                    </a>
+                    <a href="cv.pdf" target="_blank" rel="noopener" class="btn btn-ghost">
+                        <i class="bi bi-box-arrow-up-right"></i> Yeni Sekmede Aç
+                    </a>
+                </div>
+            </div>
+
+            <div class="card reveal d2" style="padding:28px">
+                <div class="cv-block">
+                    <p class="cv-block-title"><i class="bi bi-person-badge"></i> Profil</p>
+                    <p class="muted" style="font-size:13.5px;line-height:1.8">
+                        Backend / Full-Stack Developer. Dördüncü sınıf Yazılım Mühendisliği öğrencisi; IT desteği,
+                        programlama eğitimi ve yazılım geliştirme deneyimine sahip. Backend geliştirme, dağıtık
+                        sistemler ve gerçek zamanlı uygulamalara odaklı.
                     </p>
+                    <div class="sg-chips" style="margin-top:16px">
+                        <a class="chip" href="mailto:suleymanarli0666@gmail.com"><i class="bi bi-envelope"></i> suleymanarli0666@gmail.com</a>
+                        <a class="chip" href="tel:+905444530125"><i class="bi bi-telephone"></i> +90 544 453 01 25</a>
+                        <a class="chip" href="https://github.com/AllenVB" target="_blank" rel="noopener"><i class="bi bi-github"></i> AllenVB</a>
+                        <a class="chip" href="https://www.linkedin.com/in/suleymanemrearlii" target="_blank" rel="noopener"><i class="bi bi-linkedin"></i> LinkedIn</a>
+                    </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
 
-                    <!-- Smart Home Security -->
-                    <div class="reveal reveal-d1 project-card glass border border-white/5 rounded-3xl overflow-hidden group">
-                        <div class="h-44 bg-gradient-to-br from-blue-600 to-cyan-700 flex items-center justify-center relative overflow-hidden">
-                            <div class="absolute inset-0 opacity-15" style="background-image:radial-gradient(circle at 50% 50%, white 1px, transparent 1px);background-size:24px 24px"></div>
-                            <div class="absolute w-32 h-32 rounded-full border border-white/10 animate-pulse"></div>
-                            <div class="absolute w-20 h-20 rounded-full border border-white/20"></div>
-                            <i class="bi bi-house-gear text-white text-5xl relative z-10 drop-shadow-lg group-hover:scale-110 transition-transform duration-300"></i>
-                            <div class="absolute top-3 right-3 flex items-center gap-1 bg-black/30 backdrop-blur-sm rounded-full px-2 py-0.5 text-[10px] text-white/80 font-semibold">
-                                <i class="bi bi-star-fill text-yellow-400"></i> 1
-                            </div>
-                            <div class="absolute bottom-3 left-3 bg-black/30 backdrop-blur-sm rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white/80">HTML</div>
+                <div class="cv-block">
+                    <p class="cv-block-title"><i class="bi bi-briefcase"></i> İş Deneyimi</p>
+                    <div class="cv-entry">
+                        <div class="cv-entry-head">
+                            <p class="cv-entry-title">Software Engineering Intern</p>
+                            <p class="cv-entry-date">Tem 2026 — Ağu 2026</p>
                         </div>
-                        <div class="p-6">
-                            <h5 class="text-lg font-bold text-white mb-2">Smart Home Security</h5>
-                            <p class="text-slate-400 text-sm mb-4 leading-relaxed">Akıllı ev güvenlik arayüzü — veritabanı entegrasyonlu gerçek zamanlı izleme ve güvenlik simülasyonu.</p>
-                            <div class="flex flex-wrap gap-2 mb-5">
-                                <span class="text-[10px] font-bold bg-blue-500/15 text-blue-300 px-2.5 py-1 rounded-lg">HTML</span>
-                                <span class="text-[10px] font-bold bg-cyan-500/15 text-cyan-300 px-2.5 py-1 rounded-lg">Tailwind</span>
-                                <span class="text-[10px] font-bold bg-indigo-500/15 text-indigo-300 px-2.5 py-1 rounded-lg">PostgreSQL</span>
-                            </div>
-                            <div class="flex gap-2">
-                                <a href="https://smart-home-security-veri-taban.vercel.app/" target="_blank" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white transition-all">Canlı Demo <i class="bi bi-arrow-up-right"></i></a>
-                                <a href="https://github.com/AllenVB/SmartHomeSecurity-VeriTaban-" target="_blank" class="px-3 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-slate-400 transition-all flex items-center"><i class="bi bi-github"></i></a>
-                            </div>
-                        </div>
+                        <p class="cv-entry-org">Mobiliz</p>
+                        <ul class="cv-list">
+                            <li>Araç takip ve filo yönetimi projelerinde geliştirme.</li>
+                            <li>Telemetri işleme ve event tabanlı akışlar üzerinde çalışma.</li>
+                        </ul>
                     </div>
-
-                    <!-- CoreMetrics -->
-                    <div class="reveal reveal-d2 project-card glass border border-white/5 rounded-3xl overflow-hidden group">
-                        <div class="h-44 bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center relative overflow-hidden">
-                            <div class="absolute inset-0 opacity-10" style="background-image:linear-gradient(45deg, white 1px, transparent 1px), linear-gradient(-45deg, white 1px, transparent 1px);background-size:30px 30px"></div>
-                            <div class="absolute bottom-0 left-0 right-0 h-16 flex items-end justify-around px-4 pb-2 opacity-30">
-                                <div class="w-3 bg-white rounded-t" style="height:60%"></div>
-                                <div class="w-3 bg-white rounded-t" style="height:90%"></div>
-                                <div class="w-3 bg-white rounded-t" style="height:40%"></div>
-                                <div class="w-3 bg-white rounded-t" style="height:75%"></div>
-                                <div class="w-3 bg-white rounded-t" style="height:55%"></div>
-                                <div class="w-3 bg-white rounded-t" style="height:85%"></div>
-                            </div>
-                            <i class="bi bi-bar-chart-line text-white text-5xl relative z-10 drop-shadow-lg group-hover:scale-110 transition-transform duration-300"></i>
-                            <div class="absolute top-3 right-3 flex items-center gap-1 bg-black/30 backdrop-blur-sm rounded-full px-2 py-0.5 text-[10px] text-white/80 font-semibold">
-                                <i class="bi bi-star-fill text-yellow-400"></i> 1
-                            </div>
-                            <div class="absolute bottom-3 left-3 bg-black/30 backdrop-blur-sm rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white/80">C#</div>
+                    <div class="cv-entry">
+                        <div class="cv-entry-head">
+                            <p class="cv-entry-title">IT Support / Programlama Asistanı</p>
+                            <p class="cv-entry-date">Mar 2025 — Haz 2026</p>
                         </div>
-                        <div class="p-6">
-                            <h5 class="text-lg font-bold text-white mb-2">CoreMetrics</h5>
-                            <p class="text-slate-400 text-sm mb-4 leading-relaxed">Gerçek zamanlı analitik platformu — ziyaretçi takibi, oturum ölçümü, konum tespiti ve canlı SSE güncellemeleri.</p>
-                            <div class="flex flex-wrap gap-2 mb-5">
-                                <span class="text-[10px] font-bold bg-indigo-500/15 text-indigo-300 px-2.5 py-1 rounded-lg">C# .NET</span>
-                                <span class="text-[10px] font-bold bg-purple-500/15 text-purple-300 px-2.5 py-1 rounded-lg">PostgreSQL</span>
-                                <span class="text-[10px] font-bold bg-violet-500/15 text-violet-300 px-2.5 py-1 rounded-lg">Google Cloud</span>
-                            </div>
-                            <div class="flex gap-2">
-                                <a href="dashboard.html" target="_blank" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white transition-all">Dashboard <i class="bi bi-arrow-up-right"></i></a>
-                                <a href="https://github.com/AllenVB/CoreMetrics" target="_blank" class="px-3 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-slate-400 transition-all flex items-center"><i class="bi bi-github"></i></a>
-                            </div>
-                        </div>
+                        <p class="cv-entry-org">Bandırma Onyedi Eylül Üniversitesi · İŞKUR Gençlik Programı</p>
+                        <ul class="cv-list">
+                            <li>Teknik destek ve sistem bakımı.</li>
+                            <li>Programlama eğitimlerinde asistanlık.</li>
+                        </ul>
                     </div>
+                </div>
 
-                    <!-- BizimSite -->
-                    <div class="reveal reveal-d3 project-card glass border border-white/5 rounded-3xl overflow-hidden group">
-                        <div class="h-44 bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center relative overflow-hidden">
-                            <div class="absolute inset-0 opacity-15" style="background-image:radial-gradient(circle at 30% 70%, white 1px, transparent 1px);background-size:20px 20px"></div>
-                            <div class="absolute top-4 left-4 right-4 h-8 bg-white/10 rounded-lg flex items-center px-3 gap-2">
-                                <div class="w-2 h-2 rounded-full bg-red-400/70"></div>
-                                <div class="w-2 h-2 rounded-full bg-yellow-400/70"></div>
-                                <div class="w-2 h-2 rounded-full bg-green-400/70"></div>
-                                <div class="flex-1 h-1.5 bg-white/20 rounded-full ml-2"></div>
-                            </div>
-                            <i class="bi bi-building text-white text-5xl relative z-10 drop-shadow-lg group-hover:scale-110 transition-transform duration-300"></i>
-                            <div class="absolute top-3 right-3 flex items-center gap-1 bg-black/30 backdrop-blur-sm rounded-full px-2 py-0.5 text-[10px] text-white/80 font-semibold">
-                                <i class="bi bi-star-fill text-yellow-400"></i> 1
-                            </div>
-                            <div class="absolute bottom-3 left-3 bg-black/30 backdrop-blur-sm rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white/80">JavaScript</div>
+                <div class="cv-block">
+                    <p class="cv-block-title"><i class="bi bi-mortarboard"></i> Eğitim</p>
+                    <div class="cv-entry">
+                        <div class="cv-entry-head">
+                            <p class="cv-entry-title">Yazılım Mühendisliği (Lisans)</p>
+                            <p class="cv-entry-date">2023 — 2027</p>
                         </div>
-                        <div class="p-6">
-                            <h5 class="text-lg font-bold text-white mb-2">BizimSite</h5>
-                            <p class="text-slate-400 text-sm mb-4 leading-relaxed">Çok kiracılı apartman yönetim sistemi — aidat, duyuru ve şikayet takibi ayrı dashboardlar ile.</p>
-                            <div class="flex flex-wrap gap-2 mb-5">
-                                <span class="text-[10px] font-bold bg-emerald-500/15 text-emerald-300 px-2.5 py-1 rounded-lg">React 19</span>
-                                <span class="text-[10px] font-bold bg-teal-500/15 text-teal-300 px-2.5 py-1 rounded-lg">ASP.NET Core</span>
-                                <span class="text-[10px] font-bold bg-cyan-500/15 text-cyan-300 px-2.5 py-1 rounded-lg">PostgreSQL</span>
-                            </div>
-                            <div class="flex gap-2">
-                                <a href="https://bizim-site.vercel.app" target="_blank" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white transition-all">Canlı Demo <i class="bi bi-arrow-up-right"></i></a>
-                                <a href="https://github.com/AllenVB/BizimSite" target="_blank" class="px-3 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-slate-400 transition-all flex items-center"><i class="bi bi-github"></i></a>
-                            </div>
-                        </div>
+                        <p class="cv-entry-org">Bandırma Onyedi Eylül Üniversitesi</p>
                     </div>
+                </div>
 
-                    <!-- TraveLog -->
-                    <div class="reveal reveal-d4 project-card glass border border-white/5 rounded-3xl overflow-hidden group">
-                        <div class="h-44 bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center relative overflow-hidden">
-                            <div class="absolute inset-0 opacity-20" style="background-image:radial-gradient(circle at 25% 25%, white 1px, transparent 1px), radial-gradient(circle at 75% 75%, white 1px, transparent 1px);background-size:30px 30px"></div>
-                            <div class="absolute inset-0 flex items-center justify-center opacity-15">
-                                <div class="w-40 h-40 rounded-full border-2 border-white"></div>
-                                <div class="absolute w-32 h-8 border border-white rounded-full"></div>
-                            </div>
-                            <i class="bi bi-airplane text-white text-5xl relative z-10 drop-shadow-lg group-hover:scale-110 transition-transform duration-300" style="transform:rotate(-45deg)"></i>
-                            <div class="absolute top-3 right-3 flex items-center gap-1 bg-black/30 backdrop-blur-sm rounded-full px-2 py-0.5 text-[10px] text-white/80 font-semibold">
-                                <i class="bi bi-star-fill text-yellow-400"></i> 1
-                            </div>
-                            <div class="absolute bottom-3 left-3 bg-black/30 backdrop-blur-sm rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white/80">Java</div>
-                        </div>
-                        <div class="p-6">
-                            <h5 class="text-lg font-bold text-white mb-2">TraveLog</h5>
-                            <p class="text-slate-400 text-sm mb-4 leading-relaxed">Android tabanlı kişisel seyahat günlüğü — haritalar, hava durumu ve şehir anı defteri.</p>
-                            <div class="flex flex-wrap gap-2 mb-5">
-                                <span class="text-[10px] font-bold bg-orange-500/15 text-orange-300 px-2.5 py-1 rounded-lg">Java</span>
-                                <span class="text-[10px] font-bold bg-amber-500/15 text-amber-300 px-2.5 py-1 rounded-lg">Android</span>
-                                <span class="text-[10px] font-bold bg-yellow-500/15 text-yellow-300 px-2.5 py-1 rounded-lg">OpenStreetMap</span>
-                            </div>
-                            <div class="flex gap-2">
-                                <a href="https://github.com/AllenVB/TraveLog/releases" target="_blank" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white transition-all">APK İndir <i class="bi bi-download"></i></a>
-                                <a href="https://github.com/AllenVB/TraveLog" target="_blank" class="px-3 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-slate-400 transition-all flex items-center"><i class="bi bi-github"></i></a>
-                            </div>
-                        </div>
+                <div class="cv-block">
+                    <p class="cv-block-title"><i class="bi bi-kanban"></i> Öne Çıkan Proje Deneyimi</p>
+                    <div class="cv-entry">
+                        <p class="cv-entry-title" style="margin-bottom:6px">Vehicle Tracking & Fleet Telematics Platform</p>
+                        <p class="dim mono" style="font-size:11.5px;margin-bottom:8px">Java 21 · Spring Boot · Kafka Streams · TimescaleDB · PostGIS · Redis · WebSocket · Docker</p>
+                        <ul class="cv-list">
+                            <li>Gerçek zamanlı araç takibi ve filo yönetimi için event-driven platform geliştirdim.</li>
+                            <li>Telemetri işleme, geofencing, sefer tespiti ve rota takibi bileşenlerini kurdum.</li>
+                            <li>Kafka tabanlı event streaming, kural tabanlı ihlal tespiti ve zaman-serisi/konumsal veri yönetimi uyguladım.</li>
+                        </ul>
                     </div>
-
-                    <!-- FitMetrics -->
-                    <div class="reveal reveal-d5 project-card glass border border-white/5 rounded-3xl overflow-hidden group">
-                        <div class="h-44 bg-gradient-to-br from-rose-600 to-pink-700 flex items-center justify-center relative overflow-hidden">
-                            <div class="absolute inset-0 opacity-15" style="background-image:radial-gradient(circle at 80% 20%, white 1px, transparent 1px);background-size:18px 18px"></div>
-                            <svg class="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 200 100" preserveAspectRatio="none">
-                                <polyline points="0,70 30,50 60,65 90,30 120,45 150,20 180,35 200,25" fill="none" stroke="white" stroke-width="2"/>
-                                <polyline points="0,85 30,70 60,80 90,50 120,60 150,40 180,55 200,45" fill="none" stroke="white" stroke-width="1" opacity="0.5"/>
-                            </svg>
-                            <i class="bi bi-activity text-white text-5xl relative z-10 drop-shadow-lg group-hover:scale-110 transition-transform duration-300"></i>
-                            <div class="absolute top-3 right-3 flex items-center gap-1 bg-black/30 backdrop-blur-sm rounded-full px-2 py-0.5 text-[10px] text-white/80 font-semibold">
-                                <i class="bi bi-star-fill text-yellow-400"></i> 1
-                            </div>
-                            <div class="absolute bottom-3 left-3 bg-black/30 backdrop-blur-sm rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white/80">C#</div>
-                        </div>
-                        <div class="p-6">
-                            <h5 class="text-lg font-bold text-white mb-2">FitMetrics</h5>
-                            <p class="text-slate-400 text-sm mb-4 leading-relaxed">AI destekli beslenme, antrenman ve sağlık takip platformu — Claude API ile kişisel koçluk.</p>
-                            <div class="flex flex-wrap gap-2 mb-5">
-                                <span class="text-[10px] font-bold bg-rose-500/15 text-rose-300 px-2.5 py-1 rounded-lg">ASP.NET Core</span>
-                                <span class="text-[10px] font-bold bg-pink-500/15 text-pink-300 px-2.5 py-1 rounded-lg">React</span>
-                                <span class="text-[10px] font-bold bg-purple-500/15 text-purple-300 px-2.5 py-1 rounded-lg">Claude AI</span>
-                            </div>
-                            <div class="flex gap-2">
-                                <a href="https://github.com/AllenVB/FitMetrics" target="_blank" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white transition-all">GitHub'da Gör <i class="bi bi-arrow-up-right"></i></a>
-                            </div>
-                        </div>
+                    <div class="cv-entry">
+                        <p class="cv-entry-title" style="margin-bottom:6px">Event-Driven Microservices Pipeline</p>
+                        <p class="dim mono" style="font-size:11.5px;margin-bottom:8px">Java · Spring Boot · Kafka · RabbitMQ · Redis · Hazelcast · PostgreSQL · Docker</p>
+                        <ul class="cv-list">
+                            <li>Bağımsız servisler arasında asenkron iletişim kuran mikroservis mimarisi tasarladım.</li>
+                            <li>Kafka ile event streaming, RabbitMQ ile bildirim akışları, Redis ile cache ve idempotency, Hazelcast ile dağıtık veri yönetimi kurguladım.</li>
+                        </ul>
                     </div>
-
-                    <!-- AllenVB-WebSayfasi -->
-                    <div class="reveal reveal-d6 project-card glass border border-white/5 rounded-3xl overflow-hidden group">
-                        <div class="h-44 bg-gradient-to-br from-violet-600 to-indigo-700 flex items-center justify-center relative overflow-hidden">
-                            <div class="absolute inset-0 flex flex-col justify-center gap-2 px-6 opacity-20 font-mono text-white text-[10px]">
-                                <div>&lt;<span class="text-cyan-300">html</span> lang="tr"&gt;</div>
-                                <div class="pl-3">&lt;<span class="text-green-300">head</span>&gt;...&lt;/<span class="text-green-300">head</span>&gt;</div>
-                                <div class="pl-3">&lt;<span class="text-green-300">body</span>&gt;</div>
-                                <div class="pl-6">&lt;<span class="text-yellow-300">nav</span>&gt;...&lt;/<span class="text-yellow-300">nav</span>&gt;</div>
-                                <div class="pl-3">&lt;/<span class="text-green-300">body</span>&gt;</div>
-                            </div>
-                            <i class="bi bi-code-slash text-white text-5xl relative z-10 drop-shadow-lg group-hover:scale-110 transition-transform duration-300"></i>
-                            <div class="absolute bottom-3 left-3 bg-black/30 backdrop-blur-sm rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white/80">HTML</div>
-                        </div>
-                        <div class="p-6">
-                            <h5 class="text-lg font-bold text-white mb-2">Kişisel Portföy</h5>
-                            <p class="text-slate-400 text-sm mb-4 leading-relaxed">Tailwind CSS tabanlı, çoklu tema destekli, Three.js 3D arkaplan ve CoreMetrics entegrasyonlu modern SPA.</p>
-                            <div class="flex flex-wrap gap-2 mb-5">
-                                <span class="text-[10px] font-bold bg-violet-500/15 text-violet-300 px-2.5 py-1 rounded-lg">HTML</span>
-                                <span class="text-[10px] font-bold bg-indigo-500/15 text-indigo-300 px-2.5 py-1 rounded-lg">Tailwind</span>
-                                <span class="text-[10px] font-bold bg-blue-500/15 text-blue-300 px-2.5 py-1 rounded-lg">Three.js</span>
-                            </div>
-                            <div class="flex gap-2">
-                                <a href="https://github.com/AllenVB/AllenVB-WebSayfasi" target="_blank" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white transition-all">GitHub'da Gör <i class="bi bi-arrow-up-right"></i></a>
-                            </div>
-                        </div>
+                    <div class="cv-entry">
+                        <p class="cv-entry-title" style="margin-bottom:6px">CoreMetrics — Real-Time SaaS Analytics Platform</p>
+                        <p class="dim mono" style="font-size:11.5px;margin-bottom:8px">C# · ASP.NET Core · PostgreSQL · Google Cloud Run · SSE · Chart.js</p>
+                        <ul class="cv-list">
+                            <li>Ziyaretçi, oturum, sayfa etkileşimi ve coğrafi veri takibi yapan gerçek zamanlı analitik platformu geliştirdim.</li>
+                            <li>RESTful API, Server-Sent Events, API key doğrulaması ve Cloud Run üzerinde serverless dağıtım uyguladım.</li>
+                        </ul>
                     </div>
+                </div>
 
+                <div class="cv-block">
+                    <p class="cv-block-title"><i class="bi bi-stars"></i> Teknik Yetenekler</p>
+                    ${SKILL_GROUPS.map(g => `
+                    <div class="cv-skill-row">
+                        <span class="cv-skill-key">${esc(g.title)}</span>
+                        <span class="muted" style="font-size:12.5px">${esc(g.items.join(' · '))}</span>
+                    </div>`).join('')}
                 </div>
             </div>
-        </section>
-    `,
-    contact: `
-        <section class="min-h-screen relative overflow-hidden py-24">
-            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div class="reveal mb-14">
-                    <p class="text-indigo-400 text-xs font-bold uppercase tracking-widest mb-2">Ulaşın</p>
-                    <h2 class="text-5xl font-black text-white tracking-tight">İletişim</h2>
-                </div>
-                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+        </div>
+    </section>`,
 
-                    <div class="reveal reveal-d1 lg:col-span-3 glass p-8 rounded-3xl border border-white/5">
-                        <h3 class="text-lg font-bold text-white mb-6">Mesaj Gönderin</h3>
-                        <form id="contactForm" class="space-y-5">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Adınız</label>
-                                <input type="text" name="name" class="w-full bg-slate-900/60 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 transition" required>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">E-posta</label>
-                                <input type="email" name="email" class="w-full bg-slate-900/60 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 transition" required>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Konu</label>
-                                <input type="text" name="subject" class="w-full bg-slate-900/60 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 transition" required>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Mesaj</label>
-                                <textarea name="message" class="w-full bg-slate-900/60 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 transition h-32 resize-none" required></textarea>
-                            </div>
-                            <button type="submit" class="btn-glow w-full py-3.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 transition-all hover:scale-105 active:scale-95">Gönder</button>
-                            <div id="formMessage" class="mt-2 text-center text-sm text-slate-400"></div>
-                        </form>
-                    </div>
+    // ── İLETİŞİM ─────────────────────────────────────────────
+    contact: () => `
+    <section class="wrap section">
+        <div class="reveal mb-32">
+            <span class="eyebrow">İletişim</span>
+            <h2 class="section-title">Bir şey mi <span class="gradient-text">konuşalım?</span></h2>
+            <p class="section-sub">Staj, proje ya da sadece merhaba demek için — formu doldurun, en kısa sürede döneyim.</p>
+        </div>
 
-                    <div class="reveal reveal-d2 lg:col-span-2 space-y-4">
-                        <div class="glass p-5 rounded-2xl border border-white/5 flex items-center gap-4 card-hover">
-                            <div class="w-10 h-10 rounded-xl bg-indigo-500/15 flex items-center justify-center flex-shrink-0"><i class="bi bi-envelope text-indigo-400"></i></div>
-                            <div><p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-0.5">E-posta</p><p class="text-sm text-slate-300">suleymanarli0666@gmail.com</p></div>
-                        </div>
-                        <div class="glass p-5 rounded-2xl border border-white/5 flex items-center gap-4 card-hover">
-                            <div class="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center flex-shrink-0"><i class="bi bi-telephone text-emerald-400"></i></div>
-                            <div><p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-0.5">Telefon</p><p class="text-sm text-slate-300">+90 544 453 0125</p></div>
-                        </div>
-                        <div class="glass p-5 rounded-2xl border border-white/5 flex items-center gap-4 card-hover">
-                            <div class="w-10 h-10 rounded-xl bg-purple-500/15 flex items-center justify-center flex-shrink-0"><i class="bi bi-geo-alt text-purple-400"></i></div>
-                            <div><p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-0.5">Konum</p><p class="text-sm text-slate-300">Bandırma, Balıkesir</p></div>
-                        </div>
-                        <div class="glass p-5 rounded-2xl border border-white/5 flex items-center gap-4 card-hover">
-                            <div class="w-10 h-10 rounded-xl bg-sky-500/15 flex items-center justify-center flex-shrink-0"><i class="bi bi-github text-sky-400"></i></div>
-                            <div><p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-0.5">GitHub</p><a href="https://github.com/AllenVB" target="_blank" class="text-sm text-slate-300 hover:text-indigo-300 transition">@AllenVB</a></div>
-                        </div>
-                    </div>
-
+        <div class="contact-layout">
+            <div class="stack-lg reveal">
+                <a class="contact-item" href="mailto:suleymanarli0666@gmail.com">
+                    <span class="ci-icon"><i class="bi bi-envelope-fill"></i></span>
+                    <span><span class="ci-label">E-posta</span><br><span class="ci-value">suleymanarli0666@gmail.com</span></span>
+                </a>
+                <a class="contact-item" href="tel:+905444530125">
+                    <span class="ci-icon"><i class="bi bi-telephone-fill"></i></span>
+                    <span><span class="ci-label">Telefon</span><br><span class="ci-value">+90 544 453 01 25</span></span>
+                </a>
+                <a class="contact-item" href="https://github.com/AllenVB" target="_blank" rel="noopener">
+                    <span class="ci-icon"><i class="bi bi-github"></i></span>
+                    <span><span class="ci-label">GitHub</span><br><span class="ci-value">github.com/AllenVB</span></span>
+                </a>
+                <a class="contact-item" href="https://www.linkedin.com/in/suleymanemrearlii" target="_blank" rel="noopener">
+                    <span class="ci-icon"><i class="bi bi-linkedin"></i></span>
+                    <span><span class="ci-label">LinkedIn</span><br><span class="ci-value">suleymanemrearlii</span></span>
+                </a>
+                <div class="contact-item" style="cursor:default">
+                    <span class="ci-icon"><i class="bi bi-geo-alt-fill"></i></span>
+                    <span><span class="ci-label">Konum</span><br><span class="ci-value">Bandırma / Balıkesir, Türkiye</span></span>
                 </div>
             </div>
-        </section>
-    `,
-    stats: `
-        <section class="min-h-screen relative overflow-hidden py-24">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div class="reveal mb-12">
-                    <p class="text-indigo-400 text-xs font-bold uppercase tracking-widest mb-2">Canlı Veri</p>
-                    <h2 class="text-5xl font-black text-white tracking-tight">📊 Site İstatistikleri</h2>
-                    <p class="text-slate-500 mt-2 text-sm">Son 30 günlük ziyaret verileri — gerçek zamanlı</p>
-                </div>
 
-                <div id="stats-loading" class="text-center py-20">
-                    <div class="inline-block animate-spin text-indigo-400 text-4xl mb-4">⏳</div>
-                    <p class="text-slate-500">Veriler yükleniyor...</p>
-                </div>
-
-                <div id="stats-content" class="hidden">
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-                        <div class="glass border border-indigo-500/20 p-6 rounded-2xl card-hover">
-                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Toplam Ziyaret</p>
-                            <p id="stat-total" class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-300 to-indigo-500">-</p>
-                        </div>
-                        <div class="glass border border-purple-500/20 p-6 rounded-2xl card-hover">
-                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Farklı Sayfa</p>
-                            <p id="stat-pages" class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-purple-300 to-purple-500">-</p>
-                        </div>
-                        <div class="glass border border-emerald-500/20 p-6 rounded-2xl card-hover">
-                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Oturum Sayısı</p>
-                            <p id="stat-sessions" class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-emerald-300 to-emerald-500">-</p>
-                        </div>
-                        <div class="glass border border-amber-500/20 p-6 rounded-2xl card-hover">
-                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Ort. Süre</p>
-                            <p id="stat-duration" class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-amber-300 to-amber-500">-</p>
-                        </div>
+            <form id="contact-form" class="card reveal d2" style="padding:28px" novalidate>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label class="form-label" for="cf-name">Ad Soyad</label>
+                        <input class="form-input" id="cf-name" name="name" type="text" required placeholder="Adınız" autocomplete="name">
                     </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div class="glass border border-white/5 p-6 rounded-2xl">
-                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">📄 Sayfa Ziyaretleri</h3>
-                            <div id="pages-list" class="space-y-4"></div>
-                        </div>
-                        <div class="glass border border-white/5 p-6 rounded-2xl">
-                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">🌍 Lokasyonlar</h3>
-                            <div id="locations-list" class="space-y-3"></div>
-                        </div>
+                    <div class="form-field">
+                        <label class="form-label" for="cf-email">E-posta</label>
+                        <input class="form-input" id="cf-email" name="email" type="email" required placeholder="ornek@mail.com" autocomplete="email">
+                    </div>
+                    <div class="form-field full">
+                        <label class="form-label" for="cf-subject">Konu</label>
+                        <input class="form-input" id="cf-subject" name="subject" type="text" required placeholder="Neden yazıyorsunuz?">
+                    </div>
+                    <div class="form-field full">
+                        <label class="form-label" for="cf-message">Mesaj</label>
+                        <textarea class="form-input" id="cf-message" name="message" rows="6" required placeholder="Mesajınız…"></textarea>
+                    </div>
+                    <div class="form-field full">
+                        <button type="submit" class="btn btn-primary" style="width:100%">
+                            <i class="bi bi-send-fill"></i> Gönder
+                        </button>
+                        <p id="form-msg" class="form-msg" role="status" style="margin-top:10px"></p>
                     </div>
                 </div>
+            </form>
+        </div>
+    </section>`,
 
-                <div id="stats-error" class="hidden text-center py-20">
-                    <p class="text-red-400">⚠️ Veriler yüklenemedi. Sunucu bağlantısını kontrol edin.</p>
+    // ── İSTATİSTİKLER ────────────────────────────────────────
+    stats: () => `
+    <section class="wrap section">
+        <div class="reveal mb-32">
+            <span class="eyebrow"><span class="live-dot" style="margin-right:2px"></span> Canlı Veri</span>
+            <h2 class="section-title">Site <span class="gradient-text">istatistikleri</span></h2>
+            <p class="section-sub">Son 30 günlük ziyaret verileri — kendi geliştirdiğim CoreMetrics servisinden gerçek zamanlı akıyor.</p>
+        </div>
+
+        <div id="stats-loading" class="state-box"><div class="spinner"></div>Veriler yükleniyor…</div>
+
+        <div id="stats-content" hidden>
+            <div class="metric-grid">
+                <div class="card metric-card reveal"><p class="metric-label">Toplam Ziyaret</p><p class="metric-value" id="m-visits">0</p></div>
+                <div class="card metric-card reveal d1"><p class="metric-label">Farklı Sayfa</p><p class="metric-value" id="m-pages">0</p></div>
+                <div class="card metric-card reveal d2"><p class="metric-label">Oturum</p><p class="metric-value" id="m-sessions">0</p></div>
+                <div class="card metric-card reveal d3"><p class="metric-label">Ort. Süre</p><p class="metric-value" id="m-duration">—</p></div>
+            </div>
+            <div class="grid-2">
+                <div class="card reveal" style="padding:26px">
+                    <p class="cv-block-title"><i class="bi bi-file-earmark-text"></i> Sayfa Ziyaretleri</p>
+                    <div id="pages-bars"></div>
+                </div>
+                <div class="card reveal d2" style="padding:26px">
+                    <p class="cv-block-title"><i class="bi bi-globe2"></i> Lokasyonlar</p>
+                    <div id="loc-bars"></div>
                 </div>
             </div>
-        </section>
-    `
+        </div>
+
+        <div id="stats-error" class="state-box" hidden>
+            <i class="bi bi-exclamation-triangle" style="font-size:30px;color:var(--warn)"></i>
+            <p style="margin-top:12px">İstatistik servisine ulaşılamadı. Lütfen daha sonra tekrar deneyin.</p>
+        </div>
+    </section>`
 };
 
-// --- STATS: SAYAÇ ANİMASYONU ---
-function animateCounter(id, target) {
-    const el = document.getElementById(id);
+const PAGE_TITLES = {
+    home: 'Süleyman Emre Arlı | Backend & Full-Stack Developer',
+    about: 'Hakkımda | Süleyman Emre Arlı',
+    projects: 'Projeler | Süleyman Emre Arlı',
+    cv: 'CV | Süleyman Emre Arlı',
+    contact: 'İletişim | Süleyman Emre Arlı',
+    stats: 'İstatistikler | Süleyman Emre Arlı'
+};
+
+// ═══════════════════════════════════════════════════════════════
+//  SAYFA BAŞLATICILARI
+// ═══════════════════════════════════════════════════════════════
+
+const ROLES = [
+    'Backend Developer',
+    'Full-Stack Developer',
+    'Java & Spring Boot',
+    'Event-Driven Systems'
+];
+
+let _roleTimer = null;
+
+function initRoleTyper() {
+    const el = $('#role-text');
     if (!el) return;
-    const duration = 1200;
-    const start = Date.now();
+    clearTimeout(_roleTimer);
+
+    let ri = 0, ci = 0, deleting = false;
+
     const tick = () => {
-        const elapsed = Date.now() - start;
-        const progress = Math.min(elapsed / duration, 1);
-        const ease = 1 - Math.pow(1 - progress, 3);
-        el.textContent = Math.round(ease * target);
-        if (progress < 1) requestAnimationFrame(tick);
+        if (!document.body.contains(el)) return;
+        const word = ROLES[ri];
+        ci += deleting ? -1 : 1;
+        el.textContent = word.slice(0, ci);
+
+        let delay = deleting ? 40 : 78;
+        if (!deleting && ci === word.length) { delay = 1700; deleting = true; }
+        else if (deleting && ci === 0) { deleting = false; ri = (ri + 1) % ROLES.length; delay = 260; }
+
+        _roleTimer = setTimeout(tick, delay);
     };
-    requestAnimationFrame(tick);
+    tick();
 }
 
-// --- SCROLL REVEAL ---
-function initScrollReveal() {
-    const els = document.querySelectorAll('.reveal:not(.visible)');
-    if (!els.length) return;
-    const io = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                io.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-    els.forEach(el => io.observe(el));
+function initCounters(root) {
+    $$('[data-count]', root).forEach(el => {
+        animateCounter(el, Number(el.dataset.count), el.dataset.suffix || '');
+    });
 }
 
-// --- SKILL BAR ANİMASYONU ---
-function animateSkillBars() {
-    setTimeout(() => {
-        document.querySelectorAll('.skill-bar-fill[data-width]').forEach(bar => {
-            bar.style.width = bar.getAttribute('data-width');
+// ── Katkı ısı haritası ────────────────────────────────────────
+const MONTHS_TR = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+
+function initContributions() {
+    const grid = $('#contrib-grid');
+    if (!grid) return;
+
+    getContributions().then(data => {
+        if (!document.body.contains(grid)) return;
+
+        const days = (data.contributions || []).slice(-371);
+        if (!days.length) throw new Error('veri yok');
+
+        const total = data.total?.lastYear ?? days.reduce((s, d) => s + d.count, 0);
+        const totalEl = $('#contrib-total');
+        if (totalEl) totalEl.textContent = total.toLocaleString('tr-TR');
+
+        const homeStat = $('#stat-contrib');
+        if (homeStat) animateCounter(homeStat, total);
+
+        // İlk sütun Pazar'dan başlasın diye baştaki boş hücreleri ekle
+        const firstDow = new Date(days[0].date + 'T00:00:00').getDay();
+        const cells = [];
+        for (let i = 0; i < firstDow; i++) cells.push('<span class="contrib-cell" style="visibility:hidden"></span>');
+
+        days.forEach(d => {
+            const dt = new Date(d.date + 'T00:00:00');
+            const label = `${dt.getDate()} ${MONTHS_TR[dt.getMonth()]} ${dt.getFullYear()} · ${d.count} katkı`;
+            cells.push(`<span class="contrib-cell" data-level="${d.level}" data-tip="${esc(label)}"></span>`);
         });
-    }, 150);
+        grid.innerHTML = cells.join('');
+
+        // Ay etiketleri — her ayın ilk göründüğü sütunun üstüne
+        const weeks = Math.ceil((firstDow + days.length) / 7);
+        const monthsEl = $('#contrib-months');
+        if (monthsEl) {
+            const labels = new Array(weeks).fill('');
+            let lastMonth = -1;
+            days.forEach((d, i) => {
+                const w = Math.floor((firstDow + i) / 7);
+                const m = new Date(d.date + 'T00:00:00').getMonth();
+                if (m !== lastMonth && !labels[w]) { labels[w] = MONTHS_TR[m]; lastMonth = m; }
+            });
+            // 14px hücre adımı (11px hücre + 3px boşluk)
+            monthsEl.innerHTML = labels
+                .map(l => `<span style="width:14px;flex:0 0 14px;white-space:nowrap">${l}</span>`)
+                .join('');
+        }
+
+        initTooltips(grid);
+        initReveal();
+    }).catch(() => {
+        grid.innerHTML = `<p class="dim" style="font-size:13px">Katkı verisi şu an alınamadı —
+            <a href="https://github.com/AllenVB" target="_blank" rel="noopener" style="color:var(--accent-light)">GitHub profilinden</a> görebilirsiniz.</p>`;
+        grid.style.display = 'block';
+    });
 }
 
-// --- STATS: VERİ RENDER ---
-function renderStatsData(data) {
-    if (!document.getElementById('stat-total')) return;
+let _tipEl = null;
 
-    animateCounter('stat-total', data.totalVisits ?? 0);
-    animateCounter('stat-pages', data.topPages?.length ?? 0);
-    animateCounter('stat-sessions', data.totalSessions ?? 0);
-
-    const avgSec = data.avgSessionDuration ?? 0;
-    document.getElementById('stat-duration').textContent = avgSec >= 60
-        ? Math.floor(avgSec / 60) + 'dk ' + (avgSec % 60) + 'sn'
-        : avgSec + ' sn';
-
-    const pageNames = {
-        '/': '🏠 Anasayfa',
-        '/#about': '👤 Hakkımda',
-        '/#projects': '💼 Projelerim',
-        '/#contact': '✉️ İletişim',
-        '/#stats': '📊 İstatistikler'
-    };
-    const chartColors = [
-        'from-indigo-500 to-purple-500',
-        'from-blue-500 to-cyan-500',
-        'from-emerald-500 to-teal-500',
-        'from-violet-500 to-pink-500',
-        'from-amber-500 to-orange-500'
-    ];
-
-    const pagesList = document.getElementById('pages-list');
-    const maxCount = Math.max(...(data.topPages?.map(p => p.count) ?? [1]), 1);
-    pagesList.innerHTML = (data.topPages ?? []).map((p, i) => {
-        const label = pageNames[p.path] ?? p.path;
-        const pct = Math.round((p.count / maxCount) * 100);
-        const color = chartColors[i % chartColors.length];
-        return `
-            <div>
-                <div class="flex justify-between text-sm mb-2">
-                    <span class="text-gray-200 font-medium">${label}</span>
-                    <div class="flex items-center gap-2">
-                        <span class="text-slate-500 text-xs">${pct}%</span>
-                        <span class="text-indigo-400 font-bold text-sm">${p.count}</span>
-                    </div>
-                </div>
-                <div class="w-full bg-white/5 rounded-full h-2.5 overflow-hidden">
-                    <div class="h-full rounded-full bg-gradient-to-r ${color} transition-all duration-1000 ease-out chart-bar" data-width="${pct}%" style="width:0%"></div>
-                </div>
-            </div>`;
-    }).join('');
-
-    const locationsList = document.getElementById('locations-list');
-    const maxLocCount = Math.max(...(data.topLocations?.map(l => l.count) ?? [1]), 1);
-    locationsList.innerHTML = (data.topLocations ?? []).map(l => {
-        const pct = Math.round((l.count / maxLocCount) * 100);
-        return `
-        <div>
-            <div class="flex justify-between items-center mb-1.5">
-                <span class="text-gray-300 text-sm font-medium">🌐 ${l.city ?? '?'}, ${l.country ?? '?'}</span>
-                <span class="text-purple-400 font-bold text-sm">${l.count}</span>
-            </div>
-            <div class="w-full bg-white/5 rounded-full h-2 overflow-hidden">
-                <div class="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-1000 ease-out chart-bar" data-width="${pct}%" style="width:0%"></div>
-            </div>
-        </div>`;
-    }).join('');
-
-    document.getElementById('stats-loading')?.classList.add('hidden');
-    document.getElementById('stats-content')?.classList.remove('hidden');
-
-    setTimeout(() => {
-        document.querySelectorAll('.chart-bar[data-width]').forEach(bar => {
-            bar.style.width = bar.getAttribute('data-width');
-        });
-        initScrollReveal();
-    }, 150);
+function initTooltips(root) {
+    if (!_tipEl) {
+        _tipEl = document.createElement('div');
+        _tipEl.id = 'contrib-tip';
+        document.body.appendChild(_tipEl);
+    }
+    root.addEventListener('mouseover', e => {
+        const cell = e.target.closest('[data-tip]');
+        if (!cell) return;
+        const r = cell.getBoundingClientRect();
+        _tipEl.textContent = cell.dataset.tip;
+        _tipEl.style.left = (r.left + r.width / 2) + 'px';
+        _tipEl.style.top = r.top + 'px';
+        _tipEl.classList.add('show');
+    });
+    root.addEventListener('mouseout', e => {
+        if (e.target.closest('[data-tip]')) _tipEl.classList.remove('show');
+    });
 }
 
-// --- STATS: VERİ ÇEK ---
-async function fetchStatsData() {
-    const res = await fetch(
-        `${CORE_CONFIG.BASE_URL}/summary?apiKey=${CORE_CONFIG.API_KEY}&days=30`
-    );
-    if (!res.ok) throw new Error('Sunucu hatası');
-    return await res.json();
+// ── Projeler ──────────────────────────────────────────────────
+function sortWithPinned(repos) {
+    const byName = new Map(repos.map(r => [r.name, r]));
+    const pinned = GH.pinned.map(n => byName.get(n)).filter(Boolean);
+    const pinnedSet = new Set(pinned.map(r => r.name));
+    const rest = repos.filter(r => !pinnedSet.has(r.name));
+    return { pinned, rest, pinnedSet };
 }
 
-// --- STATS: GERÇEK ZAMANLI SSE BAĞLANTISI ---
-let _sseSource = null;
-let _pollInterval = null;
+function initFeatured() {
+    const grid = $('#featured-grid');
+    if (!grid) return;
 
-function startStatsLive() {
-    // Önceki bağlantıları temizle
-    stopStatsLive();
+    getRepos().then(repos => {
+        if (!document.body.contains(grid)) return;
+        const { pinned } = sortWithPinned(repos);
+        grid.innerHTML = pinned.map(r => projectCardHTML(r, true)).join('');
+        initCardGlow(grid);
+        initReveal();
+    }).catch(() => {
+        // API'ye ulaşılamazsa elle tanımlı meta ile göster
+        const fallback = GH.pinned.map(name => ({
+            name, url: `https://github.com/${GH.user}/${name}`, lang: null, stars: 0, forks: 0
+        }));
+        grid.innerHTML = fallback.map(r => projectCardHTML(r, true)).join('');
+        initCardGlow(grid);
+        initReveal();
+    });
+}
 
-    // İlk veriyi hemen yükle
-    fetchStatsData()
-        .then(renderStatsData)
-        .catch(() => {
-            document.getElementById('stats-loading')?.classList.add('hidden');
-            document.getElementById('stats-error')?.classList.remove('hidden');
+function initAllProjects() {
+    const grid = $('#all-grid');
+    const filterBar = $('#lang-filter');
+    if (!grid) return;
+
+    getRepos().then(repos => {
+        if (!document.body.contains(grid)) return;
+        const { pinned, rest, pinnedSet } = sortWithPinned(repos);
+        const ordered = [...pinned, ...rest];
+
+        grid.innerHTML = ordered.map(r => projectCardHTML(r, pinnedSet.has(r.name))).join('');
+
+        // Dil filtreleri — depo sayısına göre sıralı
+        const counts = {};
+        ordered.forEach(r => {
+            const l = r.lang || 'Diğer';
+            counts[l] = (counts[l] || 0) + 1;
+        });
+        const langs = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+
+        filterBar.innerHTML =
+            `<button class="filter-btn active" data-filter="all">Tümü <span class="dim">${ordered.length}</span></button>` +
+            langs.map(([l, c]) => `<button class="filter-btn" data-filter="${esc(l)}">${esc(l)} <span class="dim">${c}</span></button>`).join('');
+
+        filterBar.addEventListener('click', e => {
+            const btn = e.target.closest('.filter-btn');
+            if (!btn) return;
+            $$('.filter-btn', filterBar).forEach(b => b.classList.toggle('active', b === btn));
+            const f = btn.dataset.filter;
+            $$('.project-card', grid).forEach(card => {
+                card.style.display = (f === 'all' || card.dataset.lang === f) ? '' : 'none';
+            });
         });
 
-    // SSE bağlantısı dene
-    const sseUrl = `${CORE_CONFIG.BASE_URL}/live?apiKey=${CORE_CONFIG.API_KEY}`;
-    try {
-        _sseSource = new EventSource(sseUrl);
+        initCardGlow(grid);
+        initReveal();
+    }).catch(() => {
+        grid.innerHTML = `<div class="state-box" style="grid-column:1/-1">
+            <i class="bi bi-exclamation-triangle" style="font-size:28px;color:var(--warn)"></i>
+            <p style="margin-top:12px">GitHub API'ye şu an ulaşılamıyor (saatlik istek limiti olabilir).</p>
+            <a class="btn btn-ghost" style="margin-top:16px" href="https://github.com/AllenVB?tab=repositories" target="_blank" rel="noopener">
+                <i class="bi bi-github"></i> GitHub'da Aç
+            </a></div>`;
+    });
+}
 
-        _sseSource.addEventListener('visit', () => {
-            // Yeni ziyaret geldi → veriyi yenile
-            fetchStatsData().then(renderStatsData).catch(() => { });
-        });
+// Karta göre imleci takip eden yumuşak ışık
+function initCardGlow(root) {
+    root.addEventListener('pointermove', e => {
+        const card = e.target.closest('.project-card');
+        if (!card) return;
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+}
 
-        _sseSource.onerror = () => {
-            // SSE başarısız → polling'e geç
-            console.warn('SSE bağlanamadı, polling moduna geçiliyor...');
-            _sseSource.close();
-            _sseSource = null;
-            startPolling();
-        };
+// ── CV görüntüleyici ──────────────────────────────────────────
+function initCvViewer() {
+    const frame = $('#cv-frame');
+    const fallback = $('#cv-fallback');
+    if (!frame || !fallback) return;
 
-        console.log('%c📡 SSE bağlandı - anlık güncelleme aktif', 'color: #22c55e; font-weight: bold;');
-    } catch (e) {
-        startPolling();
+    // Mobil tarayıcıların çoğu iframe içinde PDF göstermez
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || innerWidth < 768;
+    if (isMobile) {
+        frame.style.display = 'none';
+        fallback.style.display = 'block';
     }
 }
 
-function startPolling() {
-    if (_pollInterval) return;
-    _pollInterval = setInterval(() => {
-        fetchStatsData().then(renderStatsData).catch(() => { });
-    }, 10000); // 10 saniyede bir
-    console.log('%c⏱ Polling modu aktif (10s)', 'color: #f59e0b; font-weight: bold;');
+// ── İletişim formu ────────────────────────────────────────────
+function initContactForm() {
+    const form = $('#contact-form');
+    if (!form) return;
+    const msg = $('#form-msg');
+
+    if (typeof emailjs !== 'undefined') emailjs.init('IYOSLI7CaXZvxytxf');
+
+    form.addEventListener('submit', async e => {
+        e.preventDefault();
+        const btn = form.querySelector('button[type="submit"]');
+
+        msg.textContent = '';
+        msg.className = 'form-msg';
+
+        if (!form.checkValidity()) {
+            msg.textContent = 'Lütfen tüm alanları eksiksiz doldurun.';
+            msg.classList.add('err');
+            form.reportValidity();
+            return;
+        }
+
+        if (typeof emailjs === 'undefined') {
+            msg.textContent = 'E-posta servisi yüklenemedi. Doğrudan suleymanarli0666@gmail.com adresine yazabilirsiniz.';
+            msg.classList.add('err');
+            return;
+        }
+
+        const original = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Gönderiliyor…';
+
+        try {
+            await emailjs.send('service_yaac4jp', 'template_juyhcsw', {
+                from_name: form.name.value,
+                from_email: form.email.value,
+                subject: form.subject.value,
+                message: form.message.value
+            });
+            msg.textContent = '✓ Mesajınız iletildi, teşekkürler! En kısa sürede döneceğim.';
+            msg.classList.add('ok');
+            form.reset();
+            track('/form/contact-success');
+        } catch (err) {
+            console.error('EmailJS hatası:', err);
+            msg.textContent = '✕ Gönderilemedi. Lütfen tekrar deneyin veya doğrudan e-posta yazın.';
+            msg.classList.add('err');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = original;
+        }
+    });
+}
+
+// ── İstatistik sayfası (CoreMetrics) ──────────────────────────
+let _sse = null;
+let _poll = null;
+
+const PAGE_LABELS = {
+    '/': 'Anasayfa', '/#home': 'Anasayfa', '/#about': 'Hakkımda', '/#projects': 'Projeler',
+    '/#cv': 'CV', '/#contact': 'İletişim', '/#stats': 'İstatistikler'
+};
+
+function barsHTML(items, labelFn, max) {
+    if (!items.length) return '<p class="dim" style="font-size:13px">Henüz veri yok.</p>';
+    return items.map(it => {
+        const pct = Math.max(3, Math.round((it.count / max) * 100));
+        return `
+        <div class="bar-row">
+            <div class="bar-head">
+                <span class="bar-name">${esc(labelFn(it))}</span>
+                <span class="bar-val">${it.count}</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" data-w="${pct}%"></div></div>
+        </div>`;
+    }).join('');
+}
+
+function renderStats(data) {
+    if (!$('#stats-content')) return;
+
+    animateCounter($('#m-visits'), data.totalVisits ?? 0);
+    animateCounter($('#m-pages'), (data.topPages ?? []).length);
+    animateCounter($('#m-sessions'), data.totalSessions ?? 0);
+
+    const sec = data.avgSessionDuration ?? 0;
+    $('#m-duration').textContent = sec >= 60
+        ? `${Math.floor(sec / 60)}dk ${sec % 60}sn`
+        : `${sec} sn`;
+
+    const pages = data.topPages ?? [];
+    const locs = data.topLocations ?? [];
+
+    $('#pages-bars').innerHTML = barsHTML(
+        pages,
+        p => PAGE_LABELS[p.path] ?? p.path,
+        Math.max(...pages.map(p => p.count), 1)
+    );
+    $('#loc-bars').innerHTML = barsHTML(
+        locs,
+        l => `${l.city ?? '?'}, ${l.country ?? '?'}`,
+        Math.max(...locs.map(l => l.count), 1)
+    );
+
+    $('#stats-loading').hidden = true;
+    $('#stats-error').hidden = true;
+    $('#stats-content').hidden = false;
+
+    setTimeout(() => {
+        $$('.bar-fill[data-w]').forEach(b => { b.style.width = b.dataset.w; });
+        initReveal();
+    }, 60);
+}
+
+async function fetchStats() {
+    const res = await fetch(`${CORE.BASE_URL}/summary?apiKey=${CORE.API_KEY}&days=30`);
+    if (!res.ok) throw new Error('Sunucu hatası ' + res.status);
+    return res.json();
+}
+
+function startStatsLive() {
+    stopStatsLive();
+
+    const refresh = () => fetchStats().then(renderStats).catch(() => { });
+
+    fetchStats().then(renderStats).catch(() => {
+        const l = $('#stats-loading'), e = $('#stats-error');
+        if (l) l.hidden = true;
+        if (e) e.hidden = false;
+    });
+
+    try {
+        _sse = new EventSource(`${CORE.BASE_URL}/live?apiKey=${CORE.API_KEY}`);
+        _sse.addEventListener('visit', refresh);
+        _sse.onerror = () => {
+            _sse?.close();
+            _sse = null;
+            if (!_poll) _poll = setInterval(refresh, 15000);
+        };
+    } catch {
+        _poll = setInterval(refresh, 15000);
+    }
 }
 
 function stopStatsLive() {
-    if (_sseSource) { _sseSource.close(); _sseSource = null; }
-    if (_pollInterval) { clearInterval(_pollInterval); _pollInterval = null; }
+    if (_sse) { _sse.close(); _sse = null; }
+    if (_poll) { clearInterval(_poll); _poll = null; }
 }
 
+// ═══════════════════════════════════════════════════════════════
+//  ROUTER
+// ═══════════════════════════════════════════════════════════════
 
-function loadPage(pageName) {
-    const container = document.getElementById('app-container');
-    if (!pages[pageName]) pageName = 'home';
+const PAGE_INIT = {
+    home: () => { initRoleTyper(); initCounters(); initContributions(); initFeatured(); },
+    about: () => { initContributions(); },
+    projects: () => { initAllProjects(); },
+    cv: () => { initCvViewer(); },
+    contact: () => { initContactForm(); },
+    stats: () => { startStatsLive(); }
+};
 
-    // Frankfurt Takibi
-    const trackPath = pageName === 'home' ? '/' : `/#${pageName}`;
-    trackCoreMetrics(trackPath);
+let _currentPage = null;
+let _navigating = false;
 
-    container.style.opacity = '0';
+function pageFromHash() {
+    const key = (location.hash || '').replace(/^#\/?/, '').split('?')[0];
+    return PAGES[key] ? key : 'home';
+}
+
+function syncNav(page) {
+    $$('#nav-links > a, #mobile-menu a[data-page], .footer-nav a').forEach(a => {
+        a.classList.toggle('active', a.dataset.page === page);
+    });
+    scheduleNavIndicator();
+}
+
+// Yazı tipleri ve düzen oturmadan ölçüm yanlış çıkabiliyor — birkaç kez dene
+function scheduleNavIndicator() {
+    moveNavIndicator();
+    setTimeout(moveNavIndicator, 80);
+    setTimeout(moveNavIndicator, 400);
+    document.fonts?.ready?.then(moveNavIndicator).catch(() => { });
+}
+
+function moveNavIndicator() {
+    const ind = $('#nav-indicator');
+    const active = $('#nav-links > a.active');
+    if (!ind) return;
+    if (!active || getComputedStyle($('#nav-links')).display === 'none') {
+        ind.style.opacity = '0';
+        return;
+    }
+    ind.style.left = active.offsetLeft + 'px';
+    ind.style.width = active.offsetWidth + 'px';
+    ind.style.opacity = '1';
+}
+
+function render(page, { scroll = true } = {}) {
+    const container = $('#app-container');
+    if (_navigating) return;
+
+    // Aynı sayfaya tekrar tıklandıysa sadece başa dön
+    if (page === _currentPage) {
+        if (scroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+    }
+
+    _navigating = true;
+    stopStatsLive();
+    clearTimeout(_roleTimer);
+    container.classList.add('leaving');
+
     setTimeout(() => {
-        container.innerHTML = pages[pageName];
-        container.style.opacity = '1';
+        container.innerHTML = PAGES[page]();
+        _currentPage = page;
 
-        // Stats sayfasıysa canlı bağlantı başlat, değilse durdur
-        if (pageName === 'stats') {
-            startStatsLive();
-        } else {
-            stopStatsLive();
+        document.title = PAGE_TITLES[page];
+        syncNav(page);
+
+        if (scroll) window.scrollTo({ top: 0, behavior: 'auto' });
+
+        // rAF'a bağlanmıyoruz: sekme arka plandayken çalışmaz ve
+        // geçiş yarıda kalıp sayfa görünmez şekilde kilitlenirdi
+        container.classList.remove('leaving');
+        initReveal();
+        PAGE_INIT[page]?.();
+        _navigating = false;
+
+        track(page === 'home' ? '/' : `/#${page}`);
+    }, 220);
+}
+
+function navigate(page) {
+    const target = PAGES[page] ? page : 'home';
+    if (location.hash.replace(/^#\/?/, '') !== target) {
+        location.hash = target;      // hashchange render'ı tetikler
+    } else {
+        render(target);
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  GENEL ARAYÜZ (navbar, reveal, arka plan, yukarı çık)
+// ═══════════════════════════════════════════════════════════════
+
+let _io = null;
+
+// IntersectionObserver çalışmazsa (eski tarayıcı, arka plan sekmesi) içerik
+// opacity:0 ile görünmez kalırdı — ekranda olması gerekenleri zorla göster
+function revealFallback() {
+    $$('.reveal:not(.visible)').forEach(el => {
+        if (el.getBoundingClientRect().top < innerHeight - 20) el.classList.add('visible');
+    });
+}
+
+function initReveal() {
+    if (!('IntersectionObserver' in window)) {
+        $$('.reveal').forEach(el => el.classList.add('visible'));
+        return;
+    }
+    if (!_io) {
+        _io = new IntersectionObserver(entries => {
+            entries.forEach(en => {
+                if (en.isIntersecting) {
+                    en.target.classList.add('visible');
+                    _io.unobserve(en.target);
+                }
+            });
+        }, { threshold: 0.06, rootMargin: '0px 0px -40px 0px' });
+    }
+    $$('.reveal:not(.visible)').forEach(el => _io.observe(el));
+    // 60ms: bir stil frame'i geçsin ki giriş animasyonu yine de oynasın
+    setTimeout(revealFallback, 60);
+    setTimeout(revealFallback, 900);
+}
+
+function initChrome() {
+    const nav = $('#navbar');
+    const progress = $('#scroll-progress');
+    const toTop = $('#to-top');
+    const menuBtn = $('#menu-btn');
+    const mobileMenu = $('#mobile-menu');
+
+    // Scroll'a bağlı durumlar — rAF ile kısmadan, zaman tabanlı hafif throttle.
+    // (rAF arka plan sekmesinde durur ve bayrak sıfırlanmadan kilitlenirdi.)
+    let lastReveal = 0;
+    const onScroll = () => {
+        const y = window.scrollY;
+        const max = document.documentElement.scrollHeight - innerHeight;
+        nav.classList.toggle('scrolled', y > 12);
+        progress.style.width = max > 0 ? (y / max * 100) + '%' : '0%';
+        toTop.classList.toggle('show', y > 500);
+
+        const now = Date.now();
+        if (now - lastReveal > 120) { lastReveal = now; revealFallback(); }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // Mobil menü
+    menuBtn.addEventListener('click', () => {
+        const open = mobileMenu.classList.toggle('open');
+        menuBtn.setAttribute('aria-expanded', String(open));
+        menuBtn.innerHTML = open ? '<i class="bi bi-x-lg"></i>' : '<i class="bi bi-list"></i>';
+    });
+
+    const closeMenu = () => {
+        mobileMenu.classList.remove('open');
+        menuBtn.setAttribute('aria-expanded', 'false');
+        menuBtn.innerHTML = '<i class="bi bi-list"></i>';
+    };
+
+    // Tüm [data-page] tıklamaları tek bir delege üzerinden
+    document.addEventListener('click', e => {
+        const link = e.target.closest('[data-page]');
+        if (link) {
+            e.preventDefault();
+            closeMenu();
+            navigate(link.dataset.page);
+            return;
         }
 
-        // About sayfasında skill barlarını animasyonlu doldur
-        if (pageName === 'about') {
-            animateSkillBars();
+        // Dış bağlantı takibi
+        const ext = e.target.closest('a[target="_blank"]');
+        if (ext) {
+            const label = ext.dataset.project || ext.getAttribute('href');
+            track(`/click/${label}`);
         }
 
-        // Tüm sayfalarda scroll reveal başlat
-        initScrollReveal();
+        // CV indirme takibi
+        const dl = e.target.closest('[data-track]');
+        if (dl) track(`/download/${dl.dataset.track}`);
+    });
 
-        // İletişim formu — EmailJS entegrasyonu
-        if (pageName === 'contact') {
-            emailjs.init('IYOSLI7CaXZvxytxf');
-            const form = document.getElementById('contactForm');
-            const msg = document.getElementById('formMessage');
-            if (form) {
-                form.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const btn = form.querySelector('button[type="submit"]');
-                    btn.disabled = true;
-                    btn.textContent = 'Gönderiliyor...';
-                    msg.textContent = '';
-                    msg.className = 'mt-2 text-center text-sm';
+    window.addEventListener('resize', moveNavIndicator);
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) scheduleNavIndicator();
+    });
+    window.addEventListener('hashchange', () => render(pageFromHash()));
 
-                    const params = {
-                        from_name: form.name.value,
-                        from_email: form.email.value,
-                        subject: form.subject.value,
-                        message: form.message.value,
-                    };
+    $('#year').textContent = new Date().getFullYear();
+}
 
-                    try {
-                        await emailjs.send('service_yaac4jp', 'template_juyhcsw', params);
-                        msg.textContent = '✅ Mesajınız iletildi, teşekkürler!';
-                        msg.classList.add('text-emerald-400');
-                        form.reset();
-                    } catch (err) {
-                        console.error(err);
-                        msg.textContent = '❌ Gönderilemedi, lütfen tekrar deneyin.';
-                        msg.classList.add('text-red-400');
-                    } finally {
-                        btn.disabled = false;
-                        btn.textContent = 'Gönder';
-                    }
-                });
+// ── Hafif parçacık arka planı (kütüphanesiz canvas) ───────────
+function initBackground() {
+    const canvas = $('#bg-canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        canvas.style.display = 'none';
+        return;
+    }
+
+    let w = 0, h = 0, dpr = 1, particles = [];
+    let mx = 0, my = 0, tx = 0, ty = 0;
+
+    function resize() {
+        dpr = Math.min(devicePixelRatio || 1, 2);
+        w = innerWidth;
+        h = innerHeight;
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        // Yoğunluk ekran alanına göre — mobilde daha az parçacık
+        const count = Math.min(110, Math.round(w * h / 16000));
+        particles = Array.from({ length: count }, () => ({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            vx: (Math.random() - .5) * .16,
+            vy: (Math.random() - .5) * .16,
+            r: Math.random() * 1.3 + .5,
+            a: Math.random() * .35 + .15
+        }));
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    window.addEventListener('pointermove', e => {
+        tx = (e.clientX / w - .5) * 22;
+        ty = (e.clientY / h - .5) * 14;
+    }, { passive: true });
+
+    const LINK_DIST = 118;
+
+    function frame() {
+        mx += (tx - mx) * .04;
+        my += (ty - my) * .04;
+
+        ctx.clearRect(0, 0, w, h);
+        ctx.save();
+        ctx.translate(mx, my);
+
+        for (const p of particles) {
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x < -30) p.x = w + 30; else if (p.x > w + 30) p.x = -30;
+            if (p.y < -30) p.y = h + 30; else if (p.y > h + 30) p.y = -30;
+        }
+
+        // Bağlantı çizgileri
+        ctx.lineWidth = 1;
+        for (let i = 0; i < particles.length; i++) {
+            const a = particles[i];
+            for (let j = i + 1; j < particles.length; j++) {
+                const b = particles[j];
+                const dx = a.x - b.x, dy = a.y - b.y;
+                const d2 = dx * dx + dy * dy;
+                if (d2 > LINK_DIST * LINK_DIST) continue;
+                const alpha = (1 - Math.sqrt(d2) / LINK_DIST) * .13;
+                ctx.strokeStyle = `rgba(99,102,241,${alpha})`;
+                ctx.beginPath();
+                ctx.moveTo(a.x, a.y);
+                ctx.lineTo(b.x, b.y);
+                ctx.stroke();
             }
         }
 
+        // Parçacıklar
+        for (const p of particles) {
+            ctx.fillStyle = `rgba(165,180,252,${p.a})`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fill();
+        }
 
-        container.querySelectorAll('[data-page]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                loadPage(e.currentTarget.getAttribute('data-page'));
-            });
-        });
+        ctx.restore();
+        requestAnimationFrame(frame);
+    }
 
-        // Proje tıklama takibi
-        container.querySelectorAll('a[target="_blank"]').forEach(link => {
-            link.addEventListener('click', (e) => {
-                const title = e.currentTarget.closest('div')?.querySelector('h5')?.innerText || "Proje";
-                trackCoreMetrics(`click/project/${title}`);
-            });
-        });
-    }, 300);
+    frame();
 }
 
+// ═══════════════════════════════════════════════════════════════
+//  BAŞLAT
+// ═══════════════════════════════════════════════════════════════
+
 document.addEventListener('DOMContentLoaded', () => {
-    loadPage('home');
-    document.querySelectorAll('[data-page]').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            loadPage(e.currentTarget.getAttribute('data-page'));
-        });
-    });
+    initChrome();
+    initBackground();
+
+    // İlk sayfa — derin bağlantı (#projects gibi) desteklenir
+    const first = pageFromHash();
+    _currentPage = null;
+    $('#app-container').classList.remove('leaving');
+    $('#app-container').innerHTML = PAGES[first]();
+    _currentPage = first;
+    document.title = PAGE_TITLES[first];
+    syncNav(first);
+    initReveal();
+    PAGE_INIT[first]?.();
+    track(first === 'home' ? '/' : `/#${first}`);
 });
