@@ -156,6 +156,14 @@ const SKILL_GROUPS = [
     { icon: 'bi-tools', title: 'DevOps & Araçlar', items: ['Docker', 'Git', 'GitHub', 'Postman', 'Linux'] }
 ];
 
+// Hero'da fotoğrafın altında alt alta listelenen roller
+const ROLES = [
+    'Backend Developer',
+    'Full-Stack Developer',
+    'Java & Spring Boot',
+    'Event-Driven Systems'
+];
+
 // Anasayfadaki kayan teknoloji şeridi
 const MARQUEE_ITEMS = [
     'Java 21', 'Spring Boot', 'Spring Security', 'Apache Kafka', 'RabbitMQ', 'Redis',
@@ -441,7 +449,9 @@ const PAGES = {
                 <img src="profile.jpg" alt="Süleyman Emre Arlı" class="portrait" loading="eager"
                      width="200" height="203" fetchpriority="high">
             </picture>
-            <p class="portrait-caption role-line"><span id="role-text"></span><span class="caret"></span></p>
+            <ul class="role-list">
+                ${ROLES.map((r, i) => `<li class="reveal d${i + 1}">${esc(r)}</li>`).join('')}
+            </ul>
         </div>
     </section>
 
@@ -656,6 +666,7 @@ const PAGES = {
                         <a class="chip" href="tel:+905444530125"><i class="bi bi-telephone"></i> +90 544 453 01 25</a>
                         <a class="chip" href="https://github.com/AllenVB" target="_blank" rel="noopener"><i class="bi bi-github"></i> AllenVB</a>
                         <a class="chip" href="https://www.linkedin.com/in/suleymanemrearlii" target="_blank" rel="noopener"><i class="bi bi-linkedin"></i> LinkedIn</a>
+                        <a class="chip" href="https://allenvb-websayfasi.vercel.app/" target="_blank" rel="noopener"><i class="bi bi-globe2"></i> Portföy</a>
                     </div>
                 </div>
 
@@ -848,37 +859,6 @@ const PAGE_TITLES = {
 // ═══════════════════════════════════════════════════════════════
 //  SAYFA BAŞLATICILARI
 // ═══════════════════════════════════════════════════════════════
-
-const ROLES = [
-    'Backend Developer',
-    'Full-Stack Developer',
-    'Java & Spring Boot',
-    'Event-Driven Systems'
-];
-
-let _roleTimer = null;
-
-function initRoleTyper() {
-    const el = $('#role-text');
-    if (!el) return;
-    clearTimeout(_roleTimer);
-
-    let ri = 0, ci = 0, deleting = false;
-
-    const tick = () => {
-        if (!document.body.contains(el)) return;
-        const word = ROLES[ri];
-        ci += deleting ? -1 : 1;
-        el.textContent = word.slice(0, ci);
-
-        let delay = deleting ? 40 : 78;
-        if (!deleting && ci === word.length) { delay = 1700; deleting = true; }
-        else if (deleting && ci === 0) { deleting = false; ri = (ri + 1) % ROLES.length; delay = 260; }
-
-        _roleTimer = setTimeout(tick, delay);
-    };
-    tick();
-}
 
 function initCounters(root) {
     $$('[data-count]', root).forEach(el => {
@@ -1226,7 +1206,7 @@ function stopStatsLive() {
 // ═══════════════════════════════════════════════════════════════
 
 const PAGE_INIT = {
-    home: () => { initRoleTyper(); initCounters(); initContributions(); initFeatured(); },
+    home: () => { initCounters(); initContributions(); initFeatured(); },
     about: () => { initContributions(); },
     projects: () => { initAllProjects(); },
     cv: () => { initCvViewer(); },
@@ -1282,7 +1262,6 @@ function render(page, { scroll = true } = {}) {
 
     _navigating = true;
     stopStatsLive();
-    clearTimeout(_roleTimer);
     container.classList.add('leaving');
 
     setTimeout(() => {
