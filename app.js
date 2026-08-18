@@ -439,21 +439,11 @@ const PAGES = {
             <picture>
                 <source srcset="profile.webp" type="image/webp">
                 <img src="profile.jpg" alt="Süleyman Emre Arlı" class="portrait" loading="eager"
-                     width="200" height="241" fetchpriority="high">
+                     width="200" height="203" fetchpriority="high">
             </picture>
-            <div class="portrait-caption">
-                <span class="live-dot"></span>
-                <span class="role-line"><span id="role-text"></span><span class="caret"></span></span>
-            </div>
+            <p class="portrait-caption role-line"><span id="role-text"></span><span class="caret"></span></p>
         </div>
     </section>
-
-    <div class="wrap scroll-cue-wrap">
-        <button id="scroll-cue" class="scroll-cue" aria-label="Aşağı kaydır">
-            <span class="sc-mouse"></span>
-            <span class="sc-label">Aşağı kaydır</span>
-        </button>
-    </div>
 
     <section class="wrap section-sm">
         <div class="stat-strip reveal">
@@ -890,14 +880,6 @@ function initRoleTyper() {
     tick();
 }
 
-function initScrollCue() {
-    const cue = $('#scroll-cue');
-    if (!cue) return;
-    cue.addEventListener('click', () => {
-        $('#after-hero')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-}
-
 function initCounters(root) {
     $$('[data-count]', root).forEach(el => {
         animateCounter(el, Number(el.dataset.count), el.dataset.suffix || '');
@@ -1244,7 +1226,7 @@ function stopStatsLive() {
 // ═══════════════════════════════════════════════════════════════
 
 const PAGE_INIT = {
-    home: () => { initRoleTyper(); initCounters(); initContributions(); initFeatured(); initScrollCue(); },
+    home: () => { initRoleTyper(); initCounters(); initContributions(); initFeatured(); },
     about: () => { initContributions(); },
     projects: () => { initAllProjects(); },
     cv: () => { initCvViewer(); },
@@ -1380,7 +1362,6 @@ function initChrome() {
         const y = window.scrollY;
         nav.classList.toggle('scrolled', y > 12);
         toTop.classList.toggle('show', y > 500);
-        document.getElementById('scroll-cue')?.classList.toggle('hide', y > 100);
 
         const now = Date.now();
         if (now - lastReveal > 120) { lastReveal = now; revealFallback(); }
