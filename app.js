@@ -15,6 +15,7 @@ const GH = {
     user: 'AllenVB',
     reposUrl: 'https://api.github.com/users/AllenVB/repos?per_page=100&sort=updated',
     contribUrl: 'https://github-contributions-api.jogruber.de/v4/AllenVB?y=last',
+    contribAllUrl: 'https://github-contributions-api.jogruber.de/v4/AllenVB',
     // GitHub profilinde pinlenmiş depolar
     pinned: [
         'Vehicle-Tracking-Simulation',
@@ -346,6 +347,20 @@ function getContributions() {
         }).catch(err => { _contribPromise = null; throw err; });
     }
     return _contribPromise;
+}
+
+// Tüm yılların katkı verisi (yıl kırılımı ve tüm zamanlar toplamı için)
+let _contribAllPromise = null;
+
+function getContributionsAllTime() {
+    if (!_contribAllPromise) {
+        _contribAllPromise = cached('gh_contrib_all', 60 * 60 * 1000, async () => {
+            const res = await fetch(GH.contribAllUrl);
+            if (!res.ok) throw new Error('Katkı API: ' + res.status);
+            return res.json();
+        }).catch(err => { _contribAllPromise = null; throw err; });
+    }
+    return _contribAllPromise;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -815,34 +830,81 @@ const PAGES = {
     <section class="wrap section">
         <div class="reveal mb-32">
             <span class="eyebrow"><span class="live-dot" style="margin-right:2px"></span> Canlı Veri</span>
-            <h2 class="section-title">Site <span class="gradient-text">istatistikleri</span></h2>
-            <p class="section-sub">Son 30 günlük ziyaret verileri — kendi geliştirdiğim CoreMetrics servisinden gerçek zamanlı akıyor.</p>
+            <h2 class="section-title">İstatistikler</h2>
+            <p class="section-sub">
+                GitHub aktivitem GitHub API'den, ziyaretçi verileri kendi geliştirdiğim
+                CoreMetrics servisinden canlı olarak çekiliyor.
+            </p>
         </div>
 
-        <div id="stats-loading" class="state-box"><div class="spinner"></div>Veriler yükleniyor…</div>
+        <!-- ── GitHub ────────────────────────────────────────── -->
+        <p class="cv-block-title reveal"><i class="bi bi-github"></i> GitHub Aktivitesi</p>
 
-        <div id="stats-content" hidden>
-            <div class="metric-grid">
-                <div class="card metric-card reveal"><p class="metric-label">Toplam Ziyaret</p><p class="metric-value" id="m-visits">0</p></div>
-                <div class="card metric-card reveal d1"><p class="metric-label">Farklı Sayfa</p><p class="metric-value" id="m-pages">0</p></div>
-                <div class="card metric-card reveal d2"><p class="metric-label">Oturum</p><p class="metric-value" id="m-sessions">0</p></div>
-                <div class="card metric-card reveal d3"><p class="metric-label">Ort. Süre</p><p class="metric-value" id="m-duration">—</p></div>
+        <div class="metric-grid">
+            <div class="card metric-card reveal"><p class="metric-label">Toplam Katkı</p><p class="metric-value" id="g-total">—</p><p class="metric-hint" id="g-total-hint">tüm zamanlar</p></div>
+            <div class="card metric-card reveal d1"><p class="metric-label">Son 1 Yıl</p><p class="metric-value" id="g-year">—</p><p class="metric-hint">son 365 gün</p></div>
+            <div class="card metric-card reveal d2"><p class="metric-label">Depo</p><p class="metric-value" id="g-repos">—</p><p class="metric-hint" id="g-stars">—</p></div>
+            <div class="card metric-card reveal d3"><p class="metric-label">En Uzun Seri</p><p class="metric-value" id="g-streak">—</p><p class="metric-hint">ardışık gün</p></div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:20px">
+            <div class="card reveal" style="padding:26px">
+                <p class="cv-block-title"><i class="bi bi-calendar3"></i> Yıllara Göre Katkı</p>
+                <div id="g-years"><div class="state-box" style="padding:24px"><div class="spinner"></div></div></div>
             </div>
+            <div class="card reveal d2" style="padding:26px">
+                <p class="cv-block-title"><i class="bi bi-activity"></i> Son Dönem Aktivitesi</p>
+                <div id="g-periods"><div class="state-box" style="padding:24px"><div class="spinner"></div></div></div>
+            </div>
+        </div>
+
+        <div class="card reveal" style="padding:26px;margin-bottom:20px">
+            <p class="cv-block-title"><i class="bi bi-code-slash"></i> Depolarda Dil Dağılımı</p>
+            <div id="g-langs"><div class="state-box" style="padding:24px"><div class="spinner"></div></div></div>
+        </div>
+
+        <div style="margin-bottom:44px">${contribSectionHTML()}</div>
+
+        <!-- ── Ziyaretçiler ──────────────────────────────────── -->
+        <p class="cv-block-title reveal"><i class="bi bi-people"></i> Site Ziyaretçileri</p>
+
+        <div id="v-loading" class="state-box"><div class="spinner"></div>Ziyaret verileri yükleniyor…</div>
+
+        <div id="v-content" hidden>
+            <div class="metric-grid">
+                <div class="card metric-card reveal"><p class="metric-label">Son 24 Saat</p><p class="metric-value" id="v-d1">0</p><p class="metric-hint">ziyaret</p></div>
+                <div class="card metric-card reveal d1"><p class="metric-label">Son 7 Gün</p><p class="metric-value" id="v-d7">0</p><p class="metric-hint">ziyaret</p></div>
+                <div class="card metric-card reveal d2"><p class="metric-label">Son 30 Gün</p><p class="metric-value" id="v-d30">0</p><p class="metric-hint">ziyaret</p></div>
+                <div class="card metric-card reveal d3"><p class="metric-label">Ort. Süre</p><p class="metric-value" id="v-dur">—</p><p class="metric-hint" id="v-sessions">—</p></div>
+            </div>
+
+            <div class="card reveal" style="padding:26px;margin-bottom:20px">
+                <p class="cv-block-title"><i class="bi bi-bar-chart"></i> Dönemsel Ziyaret Karşılaştırması</p>
+                <div id="v-periods"></div>
+            </div>
+
             <div class="grid-2">
                 <div class="card reveal" style="padding:26px">
                     <p class="cv-block-title"><i class="bi bi-file-earmark-text"></i> Sayfa Ziyaretleri</p>
-                    <div id="pages-bars"></div>
+                    <div id="v-pages"></div>
                 </div>
                 <div class="card reveal d2" style="padding:26px">
-                    <p class="cv-block-title"><i class="bi bi-globe2"></i> Lokasyonlar</p>
-                    <div id="loc-bars"></div>
+                    <p class="cv-block-title"><i class="bi bi-globe2"></i> Ziyaretçi Konumları</p>
+                    <div id="v-locs"></div>
                 </div>
             </div>
         </div>
 
-        <div id="stats-error" class="state-box" hidden>
-            <i class="bi bi-exclamation-triangle" style="font-size:30px;color:var(--warn)"></i>
-            <p style="margin-top:12px">İstatistik servisine ulaşılamadı. Lütfen daha sonra tekrar deneyin.</p>
+        <div id="v-error" class="card" hidden style="padding:30px;text-align:center">
+            <i class="bi bi-cloud-slash" style="font-size:32px;color:var(--warn)"></i>
+            <p style="margin-top:14px;font-weight:650">Ziyaret verilerine şu an ulaşılamıyor</p>
+            <p class="dim" style="font-size:13px;margin-top:8px;line-height:1.7">
+                CoreMetrics servisi (Google Cloud Run) yanıt vermiyor.<br>
+                Servis tekrar ayağa kalktığında bu bölüm kendiliğinden dolar.
+            </p>
+            <a class="btn btn-ghost" style="margin-top:18px" href="https://github.com/AllenVB/CoreMetrics" target="_blank" rel="noopener">
+                <i class="bi bi-github"></i> CoreMetrics deposu
+            </a>
         </div>
     </section>`
 };
@@ -1115,85 +1177,197 @@ const PAGE_LABELS = {
     '/#cv': 'CV', '/#contact': 'İletişim', '/#stats': 'İstatistikler'
 };
 
-function barsHTML(items, labelFn, max) {
-    if (!items.length) return '<p class="dim" style="font-size:13px">Henüz veri yok.</p>';
-    return items.map(it => {
-        const pct = Math.max(3, Math.round((it.count / max) * 100));
-        return `
-        <div class="bar-row">
-            <div class="bar-head">
-                <span class="bar-name">${esc(labelFn(it))}</span>
-                <span class="bar-val">${it.count}</span>
-            </div>
-            <div class="bar-track"><div class="bar-fill" data-w="${pct}%"></div></div>
-        </div>`;
-    }).join('');
-}
-
-function renderStats(data) {
-    if (!$('#stats-content')) return;
-
-    animateCounter($('#m-visits'), data.totalVisits ?? 0);
-    animateCounter($('#m-pages'), (data.topPages ?? []).length);
-    animateCounter($('#m-sessions'), data.totalSessions ?? 0);
-
-    const sec = data.avgSessionDuration ?? 0;
-    $('#m-duration').textContent = sec >= 60
-        ? `${Math.floor(sec / 60)}dk ${sec % 60}sn`
-        : `${sec} sn`;
-
-    const pages = data.topPages ?? [];
-    const locs = data.topLocations ?? [];
-
-    $('#pages-bars').innerHTML = barsHTML(
-        pages,
-        p => PAGE_LABELS[p.path] ?? p.path,
-        Math.max(...pages.map(p => p.count), 1)
-    );
-    $('#loc-bars').innerHTML = barsHTML(
-        locs,
-        l => `${l.city ?? '?'}, ${l.country ?? '?'}`,
-        Math.max(...locs.map(l => l.count), 1)
-    );
-
-    $('#stats-loading').hidden = true;
-    $('#stats-error').hidden = true;
-    $('#stats-content').hidden = false;
-
+function paintBars() {
     setTimeout(() => {
         $$('.bar-fill[data-w]').forEach(b => { b.style.width = b.dataset.w; });
         initReveal();
     }, 60);
 }
 
-async function fetchStats() {
-    const res = await fetch(`${CORE.BASE_URL}/summary?apiKey=${CORE.API_KEY}&days=30`);
+// ── GitHub istatistikleri ─────────────────────────────────────
+const TODAY_ISO = new Date().toISOString().slice(0, 10);
+
+// Bugüne kadarki günleri döndürür (API gelecek tarihleri de 0 sayımla veriyor)
+function pastDays(contributions) {
+    return (contributions || []).filter(d => d.date <= TODAY_ISO);
+}
+
+function sumLast(days, n) {
+    return days.slice(-n).reduce((s, d) => s + d.count, 0);
+}
+
+function longestStreak(days) {
+    let best = 0, cur = 0;
+    for (const d of days) {
+        if (d.count > 0) { cur++; if (cur > best) best = cur; }
+        else cur = 0;
+    }
+    return best;
+}
+
+function initGithubStats() {
+    if (!$('#g-total')) return;
+
+    // Yıl kırılımı + tüm zamanlar
+    getContributionsAllTime().then(data => {
+        if (!$('#g-total')) return;
+        const totals = data.total || {};
+        const allTime = Object.values(totals).reduce((a, b) => a + b, 0);
+        animateCounter($('#g-total'), allTime);
+
+        const years = Object.keys(totals).sort();
+        const hint = $('#g-total-hint');
+        if (hint && years.length) hint.textContent = `${years[0]} – ${years[years.length - 1]}`;
+
+        const max = Math.max(...Object.values(totals), 1);
+        $('#g-years').innerHTML = years.slice().reverse()
+            .map(y => barRow(y, totals[y], Math.round(totals[y] / max * 100))).join('');
+        paintBars();
+    }).catch(() => {
+        setText('#g-total', '—');
+        $('#g-years').innerHTML = apiErrorHTML();
+    });
+
+    // Son 1 yıl + dönemsel aktivite + seri
+    getContributions().then(data => {
+        if (!$('#g-year')) return;
+        const days = pastDays(data.contributions);
+        animateCounter($('#g-year'), data.total?.lastYear ?? sumLast(days, 365));
+        animateCounter($('#g-streak'), longestStreak(days));
+
+        const periods = [
+            ['Bugün', sumLast(days, 1)],
+            ['Son 7 gün', sumLast(days, 7)],
+            ['Son 30 gün', sumLast(days, 30)],
+            ['Son 90 gün', sumLast(days, 90)]
+        ];
+        const max = Math.max(...periods.map(p => p[1]), 1);
+        $('#g-periods').innerHTML = periods
+            .map(([l, v]) => barRow(l, v, Math.round(v / max * 100))).join('');
+        paintBars();
+    }).catch(() => {
+        setText('#g-year', '—');
+        setText('#g-streak', '—');
+        $('#g-periods').innerHTML = apiErrorHTML();
+    });
+
+    // Depo sayısı, yıldız, dil dağılımı
+    getRepos().then(repos => {
+        if (!$('#g-repos')) return;
+        animateCounter($('#g-repos'), repos.length);
+        const stars = repos.reduce((s, r) => s + r.stars, 0);
+        setText('#g-stars', `${stars} yıldız aldı`);
+
+        const counts = {};
+        repos.forEach(r => { const l = r.lang || 'Diğer'; counts[l] = (counts[l] || 0) + 1; });
+        const langs = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+        const max = Math.max(...langs.map(l => l[1]), 1);
+        $('#g-langs').innerHTML = langs
+            .map(([l, c]) => barRow(`${l} — ${c} depo`, c, Math.round(c / max * 100),
+                LANG_COLOR[l] || null)).join('');
+        paintBars();
+    }).catch(() => {
+        setText('#g-repos', '—');
+        $('#g-langs').innerHTML = apiErrorHTML();
+    });
+}
+
+function setText(sel, txt) { const el = $(sel); if (el) el.textContent = txt; }
+
+function apiErrorHTML() {
+    return '<p class="dim" style="font-size:13px">Veri şu an alınamadı.</p>';
+}
+
+function barRow(name, value, pct, color) {
+    const fill = color
+        ? `background:linear-gradient(90deg, ${color}, ${color}aa)`
+        : '';
+    return `
+    <div class="bar-row">
+        <div class="bar-head">
+            <span class="bar-name">${esc(name)}</span>
+            <span class="bar-val">${value.toLocaleString('tr-TR')}</span>
+        </div>
+        <div class="bar-track">
+            <div class="bar-fill" data-w="${Math.max(3, pct)}%" style="${fill}"></div>
+        </div>
+    </div>`;
+}
+
+// ── Ziyaretçi istatistikleri (CoreMetrics) ────────────────────
+async function fetchSummary(days) {
+    const res = await fetch(`${CORE.BASE_URL}/summary?apiKey=${CORE.API_KEY}&days=${days}`);
     if (!res.ok) throw new Error('Sunucu hatası ' + res.status);
     return res.json();
 }
 
+function renderVisitors(d1, d7, d30) {
+    if (!$('#v-content')) return;
+
+    const v1 = d1.totalVisits ?? 0, v7 = d7.totalVisits ?? 0, v30 = d30.totalVisits ?? 0;
+    animateCounter($('#v-d1'), v1);
+    animateCounter($('#v-d7'), v7);
+    animateCounter($('#v-d30'), v30);
+
+    const sec = d30.avgSessionDuration ?? 0;
+    setText('#v-dur', sec >= 60 ? `${Math.floor(sec / 60)}dk ${sec % 60}sn` : `${sec} sn`);
+    setText('#v-sessions', `${(d30.totalSessions ?? 0).toLocaleString('tr-TR')} oturum`);
+
+    const max = Math.max(v1, v7, v30, 1);
+    $('#v-periods').innerHTML = [
+        ['Son 24 saat', v1], ['Son 7 gün', v7], ['Son 30 gün', v30]
+    ].map(([l, v]) => barRow(l, v, Math.round(v / max * 100))).join('');
+
+    const pages = d30.topPages ?? [];
+    const locs = d30.topLocations ?? [];
+
+    $('#v-pages').innerHTML = pages.length
+        ? pages.map(p => barRow(PAGE_LABELS[p.path] ?? p.path, p.count,
+            Math.round(p.count / Math.max(...pages.map(x => x.count), 1) * 100))).join('')
+        : '<p class="dim" style="font-size:13px">Henüz veri yok.</p>';
+
+    $('#v-locs').innerHTML = locs.length
+        ? locs.map(l => barRow(`${l.city ?? '?'}, ${l.country ?? '?'}`, l.count,
+            Math.round(l.count / Math.max(...locs.map(x => x.count), 1) * 100))).join('')
+        : '<p class="dim" style="font-size:13px">Henüz konum verisi yok.</p>';
+
+    $('#v-loading').hidden = true;
+    $('#v-error').hidden = true;
+    $('#v-content').hidden = false;
+    paintBars();
+}
+
+function loadVisitors() {
+    return Promise.all([fetchSummary(1), fetchSummary(7), fetchSummary(30)])
+        .then(([d1, d7, d30]) => renderVisitors(d1, d7, d30))
+        .catch(err => {
+            console.warn('CoreMetrics:', err.message);
+            const l = $('#v-loading'), e = $('#v-error');
+            if (l) l.hidden = true;
+            if (e) e.hidden = false;
+            throw err;
+        });
+}
+
 function startStatsLive() {
     stopStatsLive();
+    initGithubStats();
+    initContributions();
 
-    const refresh = () => fetchStats().then(renderStats).catch(() => { });
-
-    fetchStats().then(renderStats).catch(() => {
-        const l = $('#stats-loading'), e = $('#stats-error');
-        if (l) l.hidden = true;
-        if (e) e.hidden = false;
-    });
-
-    try {
-        _sse = new EventSource(`${CORE.BASE_URL}/live?apiKey=${CORE.API_KEY}`);
-        _sse.addEventListener('visit', refresh);
-        _sse.onerror = () => {
-            _sse?.close();
-            _sse = null;
-            if (!_poll) _poll = setInterval(refresh, 15000);
-        };
-    } catch {
-        _poll = setInterval(refresh, 15000);
-    }
+    loadVisitors().then(() => {
+        // Veri geldiyse canlı güncellemeyi de bağla
+        try {
+            _sse = new EventSource(`${CORE.BASE_URL}/live?apiKey=${CORE.API_KEY}`);
+            _sse.addEventListener('visit', () => loadVisitors().catch(() => { }));
+            _sse.onerror = () => {
+                _sse?.close();
+                _sse = null;
+                if (!_poll) _poll = setInterval(() => loadVisitors().catch(() => { }), 20000);
+            };
+        } catch {
+            _poll = setInterval(() => loadVisitors().catch(() => { }), 20000);
+        }
+    }).catch(() => { /* servis kapalı — hata kutusu gösterildi, yeniden deneme yok */ });
 }
 
 function stopStatsLive() {

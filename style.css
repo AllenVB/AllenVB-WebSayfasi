@@ -495,10 +495,10 @@ button { font: inherit; cursor: pointer; }
 
 .role-list li {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11.5px;
-    letter-spacing: -.015em;
-    line-height: 1.45;
-    color: var(--text-dim);
+    font-size: 14px;
+    letter-spacing: -.02em;
+    line-height: 1.5;
+    color: var(--accent-light);
     white-space: nowrap;
 }
 
@@ -507,9 +507,6 @@ button { font: inherit; cursor: pointer; }
 .role-list li.reveal { transform: translateY(7px); }
 .role-list li.reveal.visible { transform: none; }
 
-.role-list li:first-child { color: var(--accent-light); font-weight: 600; }
-.portrait-wrap:hover .role-list li { color: var(--text-soft); }
-.portrait-wrap:hover .role-list li:first-child { color: var(--accent-light); }
 
 @keyframes floatY {
     0%, 100% { transform: translateY(0); }
@@ -981,6 +978,7 @@ button { font: inherit; cursor: pointer; }
 .metric-card { padding: 22px; }
 .metric-label { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
 .metric-value { font-size: 32px; font-weight: 900; letter-spacing: -.04em; line-height: 1; color: var(--accent-light); }
+.metric-hint { font-size: 11.5px; color: var(--text-dim); margin-top: 7px; }
 
 .bar-row { margin-bottom: 16px; }
 .bar-row:last-child { margin-bottom: 0; }
