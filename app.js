@@ -334,9 +334,9 @@ const PAGES = {
         <div class="portrait-wrap reveal d2">
             <div class="portrait-glow"></div>
             <picture>
-                <source srcset="ben1.webp" type="image/webp">
-                <img src="ben1-opt.jpg" alt="Süleyman Emre Arlı" class="portrait" loading="eager"
-                     width="300" height="380" fetchpriority="high">
+                <source srcset="profile.webp" type="image/webp">
+                <img src="profile.jpg" alt="Süleyman Emre Arlı" class="portrait" loading="eager"
+                     width="248" height="298" fetchpriority="high">
             </picture>
             <div class="portrait-tag">
                 <i class="bi bi-cpu-fill"></i>
@@ -1204,7 +1204,6 @@ function initReveal() {
 
 function initChrome() {
     const nav = $('#navbar');
-    const progress = $('#scroll-progress');
     const toTop = $('#to-top');
     const menuBtn = $('#menu-btn');
     const mobileMenu = $('#mobile-menu');
@@ -1214,9 +1213,7 @@ function initChrome() {
     let lastReveal = 0;
     const onScroll = () => {
         const y = window.scrollY;
-        const max = document.documentElement.scrollHeight - innerHeight;
         nav.classList.toggle('scrolled', y > 12);
-        progress.style.width = max > 0 ? (y / max * 100) + '%' : '0%';
         toTop.classList.toggle('show', y > 500);
 
         const now = Date.now();

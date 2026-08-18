@@ -42,8 +42,8 @@
 html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(99, 102, 241, .3) transparent;
+    scrollbar-width: none;          /* Firefox */
+    -ms-overflow-style: none;       /* eski Edge/IE */
 }
 
 body {
@@ -65,14 +65,14 @@ img { max-width: 100%; display: block; }
 button { font: inherit; cursor: pointer; }
 ::selection { background: var(--accent); color: #fff; }
 
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-    background: rgba(99, 102, 241, .25);
-    border-radius: 99px;
-    border: 3px solid var(--bg);
-}
-::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, .45); }
+/* Dikey scrollbar gizli — sayfa yine normal kaydırılır */
+::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
+/* Yatay kaydırılan iç kutular (katkı haritası) için ince bir çubuk kalsın */
+.contrib-scroll { scrollbar-width: thin; scrollbar-color: rgba(99, 102, 241, .3) transparent; }
+.contrib-scroll::-webkit-scrollbar { display: block; height: 6px; }
+.contrib-scroll::-webkit-scrollbar-track { background: transparent; }
+.contrib-scroll::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, .3); border-radius: 99px; }
 
 :focus-visible {
     outline: 2px solid var(--accent-light);
@@ -111,17 +111,6 @@ button { font: inherit; cursor: pointer; }
         radial-gradient(ellipse 85% 42% at 50% -8%,  rgba(99, 102, 241, .13) 0%, transparent 62%),
         radial-gradient(ellipse 45% 32% at 3% 42%,   rgba(168, 85, 247, .07) 0%, transparent 55%),
         radial-gradient(ellipse 42% 30% at 97% 82%,  rgba(34, 211, 238, .055) 0%, transparent 52%);
-}
-
-/* ── Scroll progress ──────────────────────────────────────── */
-#scroll-progress {
-    position: fixed;
-    top: 0; left: 0;
-    height: 2px;
-    width: 0%;
-    z-index: 200;
-    background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3));
-    transition: width .1s linear;
 }
 
 /* ── Navbar ───────────────────────────────────────────────── */
@@ -277,8 +266,11 @@ button { font: inherit; cursor: pointer; }
 #app-container.leaving { opacity: 0; transform: translateY(10px); }
 
 .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
-.section { padding: 88px 0; }
-.section-sm { padding: 52px 0; }
+
+/* Dikkat: kısayol `padding` kullanma — .wrap'in yatay padding'ini silip
+   içeriği navbar/footer ile hizasız bırakıyor, mobilde ekran kenarına yapıştırıyor */
+.section { padding-block: 88px; }
+.section-sm { padding-block: 52px; }
 
 /* ── Bölüm başlıkları ─────────────────────────────────────── */
 .eyebrow {
@@ -420,7 +412,7 @@ button { font: inherit; cursor: pointer; }
     grid-template-columns: 1.15fr .85fr;
     gap: 64px;
     align-items: center;
-    padding: 84px 0 68px;
+    padding-block: 84px 68px;
 }
 
 .hero h1 {
@@ -465,57 +457,64 @@ button { font: inherit; cursor: pointer; }
 
 @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
 
-/* Portre */
-.portrait-wrap { position: relative; justify-self: center; }
-
-.portrait {
-    width: 300px;
-    height: 380px;
-    object-fit: cover;
-    object-position: center 18%;
-    border-radius: var(--r-xl);
-    border: 1px solid var(--border-strong);
-    box-shadow: var(--shadow-lg), 0 0 0 1px rgba(99, 102, 241, .1);
-    transition: transform .5s var(--ease);
+/* Portre — sağ üste yaslı, kaynak oranını koruyan küçük kart */
+.portrait-wrap {
+    position: relative;
+    justify-self: end;
+    align-self: start;
 }
 
-.portrait-wrap:hover .portrait { transform: translateY(-6px) scale(1.015); }
+.portrait {
+    width: 248px;
+    aspect-ratio: 788 / 948;   /* fotoğrafın kendi oranı — kırpma/gerilme yok */
+    height: auto;
+    object-fit: cover;
+    border-radius: var(--r-lg);
+    border: 1px solid var(--border-strong);
+    box-shadow: var(--shadow-md), 0 0 0 1px rgba(99, 102, 241, .08);
+    transition: transform .45s var(--ease), box-shadow .45s var(--ease);
+}
+
+.portrait-wrap:hover .portrait {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg), 0 0 0 1px rgba(99, 102, 241, .18);
+}
 
 .portrait-glow {
     position: absolute;
-    inset: -28px;
+    inset: -18px;
     z-index: -1;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(99, 102, 241, .3) 0%, transparent 68%);
-    filter: blur(38px);
+    background: radial-gradient(circle, rgba(99, 102, 241, .2) 0%, transparent 70%);
+    filter: blur(34px);
     animation: breathe 7s ease-in-out infinite;
 }
 
 @keyframes breathe {
-    0%, 100% { transform: scale(1); opacity: .75; }
-    50%      { transform: scale(1.12); opacity: 1; }
+    0%, 100% { transform: scale(1); opacity: .6; }
+    50%      { transform: scale(1.1); opacity: .85; }
 }
 
 .portrait-tag {
     position: absolute;
-    left: -22px;
-    bottom: 26px;
-    padding: 11px 15px;
-    border-radius: var(--r-md);
-    background: rgba(13, 18, 34, .93);
+    left: -16px;
+    bottom: 18px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: rgba(13, 18, 34, .94);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border: 1px solid var(--border-strong);
     box-shadow: var(--shadow-md);
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 9px;
     animation: floatY 5.5s ease-in-out infinite;
 }
 
-.portrait-tag i { color: var(--accent-light); font-size: 17px; }
-.portrait-tag .pt-title { font-size: 12.5px; font-weight: 700; }
-.portrait-tag .pt-sub { font-size: 11px; color: var(--text-dim); }
+.portrait-tag i { color: var(--accent-light); font-size: 15px; }
+.portrait-tag .pt-title { font-size: 11.5px; font-weight: 700; line-height: 1.3; }
+.portrait-tag .pt-sub { font-size: 10.5px; color: var(--text-dim); line-height: 1.3; }
 
 @keyframes floatY {
     0%, 100% { transform: translateY(0); }
@@ -1122,14 +1121,14 @@ footer {
     .hero {
         grid-template-columns: 1fr;
         gap: 44px;
-        padding: 52px 0 44px;
+        padding-block: 52px 44px;
         text-align: center;
     }
     .hero-lead { margin-left: auto; margin-right: auto; }
     .hero-actions, .hero-meta, .eyebrow { justify-content: center; }
-    .portrait-wrap { order: -1; }
-    .portrait { width: 230px; height: 290px; }
-    .portrait-tag { left: auto; right: -10px; bottom: 14px; }
+    .portrait-wrap { order: -1; justify-self: center; align-self: center; }
+    .portrait { width: 205px; }
+    .portrait-tag { left: auto; right: -12px; bottom: 14px; }
     .cv-layout, .contact-layout, .grid-2, .grid-3 { grid-template-columns: 1fr; }
     .cv-viewer { position: static; }
     .metric-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1137,7 +1136,7 @@ footer {
 
 @media (max-width: 640px) {
     .wrap { padding: 0 18px; }
-    .section { padding: 56px 0; }
+    .section { padding-block: 56px; }
     .stat-strip { grid-template-columns: repeat(2, 1fr); }
     .form-grid { grid-template-columns: 1fr; }
     .project-grid { grid-template-columns: 1fr; }
@@ -1163,6 +1162,6 @@ footer {
 
 /* ── Yazdırma ─────────────────────────────────────────────── */
 @media print {
-    #navbar, footer, #to-top, #bg-canvas, #bg-overlay, #scroll-progress { display: none !important; }
+    #navbar, footer, #to-top, #bg-canvas, #bg-overlay { display: none !important; }
     body { background: #fff; color: #000; }
 }
