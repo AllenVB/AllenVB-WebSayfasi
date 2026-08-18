@@ -23,6 +23,27 @@ const GH = {
         'n8n_Finans',
         'BizimSite',
         'AllenVB-WebSayfasi'
+    ],
+    // Projeler sayfasında gösterilecek depolar (elle seçili).
+    // Buraya eklenmeyen depolar listelenmez; sıralama son güncellenme tarihine göre yapılır.
+    showcase: [
+        // pinliler
+        'Vehicle-Tracking-Simulation',
+        'event-driven-pipeline',
+        'CoreMetrics',
+        'n8n_Finans',
+        'BizimSite',
+        'AllenVB-WebSayfasi',
+        // diğer seçilenler
+        'n8n_News',
+        'TraveLog',
+        'SmartHomeSecurity-VeriTaban-',
+        'Project-Management-Systems',
+        'usersso',
+        'Login-Form',
+        'VeriBilimi',
+        'Market-Alisveris-Sistemi',
+        'Ogrenci-Bilgi-Sistemi'
     ]
 };
 
@@ -61,8 +82,62 @@ const PROJECT_META = {
     'AllenVB-WebSayfasi': {
         title: 'Kişisel Portföy Sitesi',
         icon: 'bi-window-stack',
-        tags: ['JavaScript', 'SPA', 'Tailwind', 'Canvas'],
+        tags: ['JavaScript', 'SPA', 'Canvas', 'GitHub API'],
         desc: 'Şu an baktığınız site. Bağımlılıksız hash router, canlı GitHub verisi, katkı ısı haritası ve gerçek zamanlı ziyaret analitiği içeren tek sayfa uygulaması.'
+    },
+    'n8n_News': {
+        title: 'n8n Haber Özetleyici',
+        icon: 'bi-newspaper',
+        tags: ['n8n', 'Automation', 'Workflow'],
+        desc: 'Her sabah haber kaynaklarını tarayıp özet çıkaran n8n otomasyonu. Haber takip ve özetleme akışının tamamı tek bir workflow olarak tasarlandı.'
+    },
+    'TraveLog': {
+        title: 'TraveLog — Tatil ve Anı Deposu',
+        icon: 'bi-geo-alt',
+        tags: ['Java', 'Android', 'Gradle'],
+        desc: 'Gezilen yerleri ve anıları kaydetmek için geliştirilen Android uygulaması. Java ile yazıldı, Gradle Kotlin DSL ile yapılandırıldı.'
+    },
+    'SmartHomeSecurity-VeriTaban-': {
+        title: 'S-Home — Akıllı Ev Güvenliği',
+        icon: 'bi-house-lock',
+        tags: ['HTML', 'JavaScript', 'CSS', 'CRUD'],
+        desc: 'Veritabanı yönetimi (CRUD) ve güvenlik simülasyonu içeren responsive akıllı ev arayüzü. Veritabanı dersi kapsamında geliştirildi.'
+    },
+    'Project-Management-Systems': {
+        title: 'Proje Yönetim Sistemi',
+        icon: 'bi-kanban',
+        tags: ['JavaScript', 'HTML', 'CSS'],
+        desc: 'Yazılım Tasarımı ve Mimarisi dersi için geliştirilen proje yönetim arayüzü. Görev takibi ve proje organizasyonu üzerine kurgulandı.'
+    },
+    'usersso': {
+        title: 'UserSSO — JWT Kullanıcı Yönetimi',
+        icon: 'bi-shield-lock',
+        tags: ['Java', 'Spring Boot 3', 'Spring Security 6', 'JWT'],
+        desc: 'Spring Boot 3 ve Spring Security 6 ile geliştirilmiş, JWT tabanlı güvenli kullanıcı yönetim sistemi. Kimlik doğrulama ve yetkilendirme akışlarını kapsıyor.'
+    },
+    'Login-Form': {
+        title: 'Login Form Arayüzü',
+        icon: 'bi-box-arrow-in-right',
+        tags: ['HTML', 'CSS'],
+        desc: 'Saf HTML ve CSS ile hazırlanmış, arka plan görseli ve modern form stiliyle tasarlanmış giriş ekranı çalışması.'
+    },
+    'VeriBilimi': {
+        title: 'Veri Bilimi Çalışmaları',
+        icon: 'bi-bar-chart-line',
+        tags: ['Python', 'Jupyter', 'Matplotlib', 'Seaborn'],
+        desc: 'Veri analizi ve görselleştirme üzerine Jupyter notebook çalışmaları. Matplotlib ve Seaborn ile grafik üretimi ve veri inceleme pratikleri.'
+    },
+    'Market-Alisveris-Sistemi': {
+        title: 'Market Alışveriş Sistemi',
+        icon: 'bi-cart3',
+        tags: ['Python', 'SQLite'],
+        desc: 'Python ile geliştirilen, SQLite veritabanı üzerinde ürün ve alışveriş işlemlerini yöneten market otomasyonu.'
+    },
+    'Ogrenci-Bilgi-Sistemi': {
+        title: 'Öğrenci Bilgi Sistemi',
+        icon: 'bi-mortarboard',
+        tags: ['Python', 'SQLite'],
+        desc: 'Öğrenci kayıt ve bilgi takibi için Python ile yazılmış, SQLite veritabanı kullanan bilgi sistemi uygulaması.'
     }
 };
 
@@ -461,8 +536,8 @@ const PAGES = {
             <span class="eyebrow">Portföy</span>
             <h2 class="section-title">Geliştirdiğim <span class="gradient-text">projeler</span></h2>
             <p class="section-sub">
-                GitHub hesabımdaki tüm açık depolar canlı olarak listeleniyor. Pinlediklerim en üstte,
-                geri kalanlar son güncellenme sırasına göre.
+                Seçtiğim projeler, en yeniden eskiye doğru sıralı. Depo bilgileri
+                (yıldız, dil, güncellenme) GitHub API'den canlı çekiliyor.
             </p>
         </div>
 
@@ -825,12 +900,10 @@ function initTooltips(root) {
 }
 
 // ── Projeler ──────────────────────────────────────────────────
-function sortWithPinned(repos) {
+// Pinli depoları GH.pinned'deki sırayla döndürür
+function pinnedRepos(repos) {
     const byName = new Map(repos.map(r => [r.name, r]));
-    const pinned = GH.pinned.map(n => byName.get(n)).filter(Boolean);
-    const pinnedSet = new Set(pinned.map(r => r.name));
-    const rest = repos.filter(r => !pinnedSet.has(r.name));
-    return { pinned, rest, pinnedSet };
+    return GH.pinned.map(n => byName.get(n)).filter(Boolean);
 }
 
 function initFeatured() {
@@ -839,8 +912,7 @@ function initFeatured() {
 
     getRepos().then(repos => {
         if (!document.body.contains(grid)) return;
-        const { pinned } = sortWithPinned(repos);
-        grid.innerHTML = pinned.map(r => projectCardHTML(r, true)).join('');
+        grid.innerHTML = pinnedRepos(repos).map(r => projectCardHTML(r, true)).join('');
         initCardGlow(grid);
         initReveal();
     }).catch(() => {
@@ -861,8 +933,12 @@ function initAllProjects() {
 
     getRepos().then(repos => {
         if (!document.body.contains(grid)) return;
-        const { pinned, rest, pinnedSet } = sortWithPinned(repos);
-        const ordered = [...pinned, ...rest];
+
+        // Yalnızca seçili depolar, en yeniden eskiye
+        const pinnedSet = new Set(GH.pinned);
+        const ordered = repos
+            .filter(r => GH.showcase.includes(r.name))
+            .sort((a, b) => new Date(b.updated) - new Date(a.updated));
 
         grid.innerHTML = ordered.map(r => projectCardHTML(r, pinnedSet.has(r.name))).join('');
 
