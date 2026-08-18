@@ -156,6 +156,35 @@ const SKILL_GROUPS = [
     { icon: 'bi-tools', title: 'DevOps & Araçlar', items: ['Docker', 'Git', 'GitHub', 'Postman', 'Linux'] }
 ];
 
+// Anasayfadaki kayan teknoloji şeridi
+const MARQUEE_ITEMS = [
+    'Java 21', 'Spring Boot', 'Spring Security', 'Apache Kafka', 'RabbitMQ', 'Redis',
+    'Hazelcast', 'PostgreSQL', 'TimescaleDB', 'PostGIS', 'Docker', 'REST API', 'JWT',
+    'C#', 'ASP.NET Core', 'React', 'JavaScript', 'Tailwind CSS', 'Python', 'Git', 'Linux'
+];
+
+// Anasayfa "Ne üzerine çalışıyorum" kartları
+const FOCUS_AREAS = [
+    {
+        icon: 'bi-hdd-stack',
+        title: 'Backend & API',
+        desc: 'Spring Boot ile katmanlı, test edilebilir servisler; JWT tabanlı kimlik doğrulama ve temiz REST sözleşmeleri.',
+        tags: ['Spring Boot', 'REST', 'JPA', 'JWT']
+    },
+    {
+        icon: 'bi-diagram-3',
+        title: 'Dağıtık & Event-Driven',
+        desc: 'Kafka ile event streaming, RabbitMQ ile bildirim akışları, Redis ile cache ve idempotency kurgusu.',
+        tags: ['Kafka', 'RabbitMQ', 'Redis', 'Microservices']
+    },
+    {
+        icon: 'bi-window-stack',
+        title: 'Uçtan Uca Teslim',
+        desc: 'Gerektiğinde arayüzü de ben yazıyorum: React veya ASP.NET Core ile çalışan, Docker ile paketlenmiş tam ürün.',
+        tags: ['React', 'ASP.NET Core', 'PostgreSQL', 'Docker']
+    }
+];
+
 const TIMELINE = [
     {
         date: 'Temmuz 2026 — Ağustos 2026',
@@ -382,8 +411,7 @@ const PAGES = {
         <div>
             <span class="badge"><span class="live-dot"></span> Yeni projelere açığım</span>
             <h1>Merhaba, ben<br><span class="gradient-text">Süleyman Emre</span></h1>
-            <p class="role-line"><span id="role-text"></span><span class="caret"></span></p>
-            <p class="hero-lead" style="margin-top:18px">
+            <p class="hero-lead">
                 Bandırma Onyedi Eylül Üniversitesi <strong>Yazılım Mühendisliği</strong> 4. sınıf öğrencisiyim.
                 <strong>Java 21, Spring Boot ve Apache Kafka</strong> ile event-driven, gerçek zamanlı sistemler kuruyorum;
                 gerektiğinde React ve ASP.NET Core ile uçtan uca teslim ediyorum.
@@ -411,17 +439,21 @@ const PAGES = {
             <picture>
                 <source srcset="profile.webp" type="image/webp">
                 <img src="profile.jpg" alt="Süleyman Emre Arlı" class="portrait" loading="eager"
-                     width="248" height="298" fetchpriority="high">
+                     width="200" height="241" fetchpriority="high">
             </picture>
-            <div class="portrait-tag">
-                <i class="bi bi-cpu-fill"></i>
-                <div>
-                    <p class="pt-title">Backend / Full-Stack</p>
-                    <p class="pt-sub">Java · Spring · Kafka</p>
-                </div>
+            <div class="portrait-caption">
+                <span class="live-dot"></span>
+                <span class="role-line"><span id="role-text"></span><span class="caret"></span></span>
             </div>
         </div>
     </section>
+
+    <div class="wrap scroll-cue-wrap">
+        <button id="scroll-cue" class="scroll-cue" aria-label="Aşağı kaydır">
+            <span class="sc-mouse"></span>
+            <span class="sc-label">Aşağı kaydır</span>
+        </button>
+    </div>
 
     <section class="wrap section-sm">
         <div class="stat-strip reveal">
@@ -429,6 +461,30 @@ const PAGES = {
             <div class="stat-cell"><p class="stat-num" id="stat-contrib">0</p><p class="stat-label">Yıllık Katkı</p></div>
             <div class="stat-cell"><p class="stat-num" data-count="6" data-suffix="">0</p><p class="stat-label">Öne Çıkan Proje</p></div>
             <div class="stat-cell"><p class="stat-num" data-count="2" data-suffix="">0</p><p class="stat-label">İş Deneyimi</p></div>
+        </div>
+    </section>
+
+    <section class="wrap section-sm" id="after-hero">
+        <div class="marquee reveal" aria-hidden="true">
+            <div class="marquee-track">
+                ${MARQUEE_ITEMS.concat(MARQUEE_ITEMS).map(t => `<span class="chip">${esc(t)}</span>`).join('')}
+            </div>
+        </div>
+    </section>
+
+    <section class="wrap section-sm">
+        <div class="reveal" style="margin-bottom:26px">
+            <span class="eyebrow">Odak Alanlarım</span>
+            <h2 class="section-title" style="font-size:clamp(24px,3.4vw,32px)">Ne üzerine <span class="gradient-text">çalışıyorum</span></h2>
+        </div>
+        <div class="grid-3">
+            ${FOCUS_AREAS.map((f, i) => `
+            <div class="card card-hover focus-card reveal d${i + 1}">
+                <div class="sg-icon"><i class="bi ${esc(f.icon)}"></i></div>
+                <h3 class="focus-title">${esc(f.title)}</h3>
+                <p class="focus-desc">${esc(f.desc)}</p>
+                <div class="sg-chips">${f.tags.map(t => `<span class="chip">${esc(t)}</span>`).join('')}</div>
+            </div>`).join('')}
         </div>
     </section>
 
@@ -448,6 +504,27 @@ const PAGES = {
         <div class="center mt-40">
             <a href="#projects" data-page="projects" class="btn btn-ghost">
                 Tüm projeleri gör <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </section>
+
+    <section class="wrap section-sm">
+        <div class="reveal" style="margin-bottom:26px">
+            <span class="eyebrow">Deneyim</span>
+            <h2 class="section-title" style="font-size:clamp(24px,3.4vw,32px)">Nerelerde <span class="gradient-text">çalıştım</span></h2>
+        </div>
+        <div class="grid-2">
+            ${TIMELINE.slice(0, 2).map((t, i) => `
+            <div class="card card-hover exp-card reveal d${i + 1}">
+                <p class="tl-date">${esc(t.date)}</p>
+                <p class="exp-title">${esc(t.title)}</p>
+                <p class="tl-org">${esc(t.org)}</p>
+                <p class="tl-desc">${esc(t.desc)}</p>
+            </div>`).join('')}
+        </div>
+        <div class="center mt-40">
+            <a href="#about" data-page="about" class="btn btn-ghost">
+                Eğitim ve yetenekler <i class="bi bi-arrow-right"></i>
             </a>
         </div>
     </section>
@@ -813,6 +890,14 @@ function initRoleTyper() {
     tick();
 }
 
+function initScrollCue() {
+    const cue = $('#scroll-cue');
+    if (!cue) return;
+    cue.addEventListener('click', () => {
+        $('#after-hero')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+}
+
 function initCounters(root) {
     $$('[data-count]', root).forEach(el => {
         animateCounter(el, Number(el.dataset.count), el.dataset.suffix || '');
@@ -934,11 +1019,15 @@ function initAllProjects() {
     getRepos().then(repos => {
         if (!document.body.contains(grid)) return;
 
-        // Yalnızca seçili depolar, en yeniden eskiye
+        // Yalnızca seçili depolar: önce 6 pinli, sonra diğerleri.
+        // Her iki grup kendi içinde en yeniden eskiye sıralanır.
         const pinnedSet = new Set(GH.pinned);
-        const ordered = repos
-            .filter(r => GH.showcase.includes(r.name))
-            .sort((a, b) => new Date(b.updated) - new Date(a.updated));
+        const byNewest = (a, b) => new Date(b.updated) - new Date(a.updated);
+        const showcase = repos.filter(r => GH.showcase.includes(r.name));
+        const ordered = [
+            ...showcase.filter(r => pinnedSet.has(r.name)).sort(byNewest),
+            ...showcase.filter(r => !pinnedSet.has(r.name)).sort(byNewest)
+        ];
 
         grid.innerHTML = ordered.map(r => projectCardHTML(r, pinnedSet.has(r.name))).join('');
 
@@ -1155,7 +1244,7 @@ function stopStatsLive() {
 // ═══════════════════════════════════════════════════════════════
 
 const PAGE_INIT = {
-    home: () => { initRoleTyper(); initCounters(); initContributions(); initFeatured(); },
+    home: () => { initRoleTyper(); initCounters(); initContributions(); initFeatured(); initScrollCue(); },
     about: () => { initContributions(); },
     projects: () => { initAllProjects(); },
     cv: () => { initCvViewer(); },
@@ -1291,6 +1380,7 @@ function initChrome() {
         const y = window.scrollY;
         nav.classList.toggle('scrolled', y > 12);
         toTop.classList.toggle('show', y > 500);
+        document.getElementById('scroll-cue')?.classList.toggle('hide', y > 100);
 
         const now = Date.now();
         if (now - lastReveal > 120) { lastReveal = now; revealFallback(); }
