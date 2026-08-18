@@ -1,16 +1,11 @@
 /* ═══════════════════════════════════════════════════════════════
    Süleyman Emre Arlı — Portföy SPA
-   Hash tabanlı router + canlı GitHub verisi + CoreMetrics takibi
+   Hash tabanlı router + canlı GitHub verisi
    ═══════════════════════════════════════════════════════════════ */
 
 'use strict';
 
 // ── Yapılandırma ──────────────────────────────────────────────
-const CORE = {
-    API_KEY: 'db281f63-a569-47e4-b30d-e6637451e890',
-    BASE_URL: 'https://coremetrics-service-665359087509.europe-west3.run.app/api/Collector'
-};
-
 const GH = {
     user: 'AllenVB',
     reposUrl: 'https://api.github.com/users/AllenVB/repos?per_page=100&sort=updated',
@@ -66,7 +61,7 @@ const PROJECT_META = {
         title: 'CoreMetrics — SaaS Analytics',
         icon: 'bi-graph-up-arrow',
         tags: ['C#', 'ASP.NET Core', 'PostgreSQL', 'Cloud Run', 'SSE', 'Chart.js'],
-        desc: 'Web siteleri için gerçek zamanlı ziyaretçi analitiği platformu. Server-Sent Events ile anlık güncelleme, API key doğrulaması, oturum takibi ve Google Cloud Run üzerinde serverless dağıtım. Bu sitenin istatistikleri de bu servisten geliyor.'
+        desc: 'Web siteleri için gerçek zamanlı ziyaretçi analitiği platformu. Server-Sent Events ile anlık güncelleme, API key doğrulaması, oturum takibi ve Google Cloud Run üzerinde serverless dağıtım.'
     },
     'n8n_Finans': {
         title: 'n8n Finans Asistanı',
@@ -264,38 +259,6 @@ function animateCounter(el, target, suffix = '') {
     }, duration + 500);
 }
 
-// ── CoreMetrics takibi ────────────────────────────────────────
-async function track(path) {
-    try {
-        await fetch(CORE.BASE_URL + '/track', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                apiKey: CORE.API_KEY,
-                path,
-                referrer: document.referrer || 'Doğrudan Giriş',
-                userAgent: navigator.userAgent
-            })
-        });
-    } catch { /* takip başarısız olsa da site çalışmaya devam eder */ }
-}
-
-const SESSION_START = Date.now();
-window.addEventListener('beforeunload', () => {
-    const duration = Math.round((Date.now() - SESSION_START) / 1000);
-    if (duration < 2) return;
-    try {
-        navigator.sendBeacon(
-            CORE.BASE_URL + '/session',
-            new Blob([JSON.stringify({
-                apiKey: CORE.API_KEY,
-                duration,
-                path: location.hash || '/'
-            })], { type: 'application/json' })
-        );
-    } catch { /* yoksayılır */ }
-});
-
 // ── GitHub veri katmanı (sekme ömrü boyunca önbellekli) ───────
 let _reposPromise = null;
 let _contribPromise = null;
@@ -443,7 +406,7 @@ const PAGES = {
                 <a href="#projects" data-page="projects" class="btn btn-primary">
                     <i class="bi bi-collection"></i> Projelerimi Gör
                 </a>
-                <a href="cv.pdf" download="Suleyman-Emre-Arli-CV.pdf" class="btn btn-ghost" data-track="cv-download-hero">
+                <a href="cv.pdf" download="Suleyman-Emre-Arli-CV.pdf" class="btn btn-ghost">
                     <i class="bi bi-download"></i> CV İndir
                 </a>
                 <a href="#contact" data-page="contact" class="btn btn-outline">
@@ -659,7 +622,7 @@ const PAGES = {
                     <p class="dim" style="font-size:13px">Aşağıdaki butonlardan indirebilir veya yeni sekmede açabilirsiniz.</p>
                 </div>
                 <div class="cv-toolbar">
-                    <a href="cv.pdf" download="Suleyman-Emre-Arli-CV.pdf" class="btn btn-primary" data-track="cv-download-page">
+                    <a href="cv.pdf" download="Suleyman-Emre-Arli-CV.pdf" class="btn btn-primary">
                         <i class="bi bi-download"></i> PDF İndir
                     </a>
                     <a href="cv.pdf" target="_blank" rel="noopener" class="btn btn-ghost">
@@ -832,8 +795,7 @@ const PAGES = {
             <span class="eyebrow"><span class="live-dot" style="margin-right:2px"></span> Canlı Veri</span>
             <h2 class="section-title">İstatistikler</h2>
             <p class="section-sub">
-                GitHub aktivitem GitHub API'den, ziyaretçi verileri kendi geliştirdiğim
-                CoreMetrics servisinden canlı olarak çekiliyor.
+                Depolarım, katkı geçmişim ve aktivite dökümüm — hepsi GitHub API'den canlı çekiliyor.
             </p>
         </div>
 
@@ -865,47 +827,6 @@ const PAGES = {
 
         <div style="margin-bottom:44px">${contribSectionHTML()}</div>
 
-        <!-- ── Ziyaretçiler ──────────────────────────────────── -->
-        <p class="cv-block-title reveal"><i class="bi bi-people"></i> Site Ziyaretçileri</p>
-
-        <div id="v-loading" class="state-box"><div class="spinner"></div>Ziyaret verileri yükleniyor…</div>
-
-        <div id="v-content" hidden>
-            <div class="metric-grid">
-                <div class="card metric-card reveal"><p class="metric-label">Son 24 Saat</p><p class="metric-value" id="v-d1">0</p><p class="metric-hint">ziyaret</p></div>
-                <div class="card metric-card reveal d1"><p class="metric-label">Son 7 Gün</p><p class="metric-value" id="v-d7">0</p><p class="metric-hint">ziyaret</p></div>
-                <div class="card metric-card reveal d2"><p class="metric-label">Son 30 Gün</p><p class="metric-value" id="v-d30">0</p><p class="metric-hint">ziyaret</p></div>
-                <div class="card metric-card reveal d3"><p class="metric-label">Ort. Süre</p><p class="metric-value" id="v-dur">—</p><p class="metric-hint" id="v-sessions">—</p></div>
-            </div>
-
-            <div class="card reveal" style="padding:26px;margin-bottom:20px">
-                <p class="cv-block-title"><i class="bi bi-bar-chart"></i> Dönemsel Ziyaret Karşılaştırması</p>
-                <div id="v-periods"></div>
-            </div>
-
-            <div class="grid-2">
-                <div class="card reveal" style="padding:26px">
-                    <p class="cv-block-title"><i class="bi bi-file-earmark-text"></i> Sayfa Ziyaretleri</p>
-                    <div id="v-pages"></div>
-                </div>
-                <div class="card reveal d2" style="padding:26px">
-                    <p class="cv-block-title"><i class="bi bi-globe2"></i> Ziyaretçi Konumları</p>
-                    <div id="v-locs"></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="v-error" class="card" hidden style="padding:30px;text-align:center">
-            <i class="bi bi-cloud-slash" style="font-size:32px;color:var(--warn)"></i>
-            <p style="margin-top:14px;font-weight:650">Ziyaret verilerine şu an ulaşılamıyor</p>
-            <p class="dim" style="font-size:13px;margin-top:8px;line-height:1.7">
-                CoreMetrics servisi (Google Cloud Run) yanıt vermiyor.<br>
-                Servis tekrar ayağa kalktığında bu bölüm kendiliğinden dolar.
-            </p>
-            <a class="btn btn-ghost" style="margin-top:18px" href="https://github.com/AllenVB/CoreMetrics" target="_blank" rel="noopener">
-                <i class="bi bi-github"></i> CoreMetrics deposu
-            </a>
-        </div>
     </section>`
 };
 
@@ -1156,7 +1077,6 @@ function initContactForm() {
             msg.textContent = '✓ Mesajınız iletildi, teşekkürler! En kısa sürede döneceğim.';
             msg.classList.add('ok');
             form.reset();
-            track('/form/contact-success');
         } catch (err) {
             console.error('EmailJS hatası:', err);
             msg.textContent = '✕ Gönderilemedi. Lütfen tekrar deneyin veya doğrudan e-posta yazın.';
@@ -1168,15 +1088,7 @@ function initContactForm() {
     });
 }
 
-// ── İstatistik sayfası (CoreMetrics) ──────────────────────────
-let _sse = null;
-let _poll = null;
-
-const PAGE_LABELS = {
-    '/': 'Anasayfa', '/#home': 'Anasayfa', '/#about': 'Hakkımda', '/#projects': 'Projeler',
-    '/#cv': 'CV', '/#contact': 'İletişim', '/#stats': 'İstatistikler'
-};
-
+// ── İstatistik sayfası ────────────────────────────────────────
 function paintBars() {
     setTimeout(() => {
         $$('.bar-fill[data-w]').forEach(b => { b.style.width = b.dataset.w; });
@@ -1294,85 +1206,9 @@ function barRow(name, value, pct, color) {
     </div>`;
 }
 
-// ── Ziyaretçi istatistikleri (CoreMetrics) ────────────────────
-async function fetchSummary(days) {
-    const res = await fetch(`${CORE.BASE_URL}/summary?apiKey=${CORE.API_KEY}&days=${days}`);
-    if (!res.ok) throw new Error('Sunucu hatası ' + res.status);
-    return res.json();
-}
-
-function renderVisitors(d1, d7, d30) {
-    if (!$('#v-content')) return;
-
-    const v1 = d1.totalVisits ?? 0, v7 = d7.totalVisits ?? 0, v30 = d30.totalVisits ?? 0;
-    animateCounter($('#v-d1'), v1);
-    animateCounter($('#v-d7'), v7);
-    animateCounter($('#v-d30'), v30);
-
-    const sec = d30.avgSessionDuration ?? 0;
-    setText('#v-dur', sec >= 60 ? `${Math.floor(sec / 60)}dk ${sec % 60}sn` : `${sec} sn`);
-    setText('#v-sessions', `${(d30.totalSessions ?? 0).toLocaleString('tr-TR')} oturum`);
-
-    const max = Math.max(v1, v7, v30, 1);
-    $('#v-periods').innerHTML = [
-        ['Son 24 saat', v1], ['Son 7 gün', v7], ['Son 30 gün', v30]
-    ].map(([l, v]) => barRow(l, v, Math.round(v / max * 100))).join('');
-
-    const pages = d30.topPages ?? [];
-    const locs = d30.topLocations ?? [];
-
-    $('#v-pages').innerHTML = pages.length
-        ? pages.map(p => barRow(PAGE_LABELS[p.path] ?? p.path, p.count,
-            Math.round(p.count / Math.max(...pages.map(x => x.count), 1) * 100))).join('')
-        : '<p class="dim" style="font-size:13px">Henüz veri yok.</p>';
-
-    $('#v-locs').innerHTML = locs.length
-        ? locs.map(l => barRow(`${l.city ?? '?'}, ${l.country ?? '?'}`, l.count,
-            Math.round(l.count / Math.max(...locs.map(x => x.count), 1) * 100))).join('')
-        : '<p class="dim" style="font-size:13px">Henüz konum verisi yok.</p>';
-
-    $('#v-loading').hidden = true;
-    $('#v-error').hidden = true;
-    $('#v-content').hidden = false;
-    paintBars();
-}
-
-function loadVisitors() {
-    return Promise.all([fetchSummary(1), fetchSummary(7), fetchSummary(30)])
-        .then(([d1, d7, d30]) => renderVisitors(d1, d7, d30))
-        .catch(err => {
-            console.warn('CoreMetrics:', err.message);
-            const l = $('#v-loading'), e = $('#v-error');
-            if (l) l.hidden = true;
-            if (e) e.hidden = false;
-            throw err;
-        });
-}
-
-function startStatsLive() {
-    stopStatsLive();
+function initStatsPage() {
     initGithubStats();
     initContributions();
-
-    loadVisitors().then(() => {
-        // Veri geldiyse canlı güncellemeyi de bağla
-        try {
-            _sse = new EventSource(`${CORE.BASE_URL}/live?apiKey=${CORE.API_KEY}`);
-            _sse.addEventListener('visit', () => loadVisitors().catch(() => { }));
-            _sse.onerror = () => {
-                _sse?.close();
-                _sse = null;
-                if (!_poll) _poll = setInterval(() => loadVisitors().catch(() => { }), 20000);
-            };
-        } catch {
-            _poll = setInterval(() => loadVisitors().catch(() => { }), 20000);
-        }
-    }).catch(() => { /* servis kapalı — hata kutusu gösterildi, yeniden deneme yok */ });
-}
-
-function stopStatsLive() {
-    if (_sse) { _sse.close(); _sse = null; }
-    if (_poll) { clearInterval(_poll); _poll = null; }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1385,7 +1221,7 @@ const PAGE_INIT = {
     projects: () => { initAllProjects(); },
     cv: () => { initCvViewer(); },
     contact: () => { initContactForm(); },
-    stats: () => { startStatsLive(); }
+    stats: () => { initStatsPage(); }
 };
 
 let _currentPage = null;
@@ -1435,7 +1271,6 @@ function render(page, { scroll = true } = {}) {
     }
 
     _navigating = true;
-    stopStatsLive();
     container.classList.add('leaving');
 
     setTimeout(() => {
@@ -1453,8 +1288,6 @@ function render(page, { scroll = true } = {}) {
         initReveal();
         PAGE_INIT[page]?.();
         _navigating = false;
-
-        track(page === 'home' ? '/' : `/#${page}`);
     }, 220);
 }
 
@@ -1544,19 +1377,7 @@ function initChrome() {
             e.preventDefault();
             closeMenu();
             navigate(link.dataset.page);
-            return;
         }
-
-        // Dış bağlantı takibi
-        const ext = e.target.closest('a[target="_blank"]');
-        if (ext) {
-            const label = ext.dataset.project || ext.getAttribute('href');
-            track(`/click/${label}`);
-        }
-
-        // CV indirme takibi
-        const dl = e.target.closest('[data-track]');
-        if (dl) track(`/download/${dl.dataset.track}`);
     });
 
     window.addEventListener('resize', moveNavIndicator);
@@ -1678,5 +1499,4 @@ document.addEventListener('DOMContentLoaded', () => {
     syncNav(first);
     initReveal();
     PAGE_INIT[first]?.();
-    track(first === 'home' ? '/' : `/#${first}`);
 });
