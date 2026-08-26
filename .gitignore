@@ -1,0 +1,33 @@
+# Bağımlılıklar
+node_modules/
+
+# Derleme / önbellek
+dist/
+build/
+.cache/
+.vercel/
+
+# Ortam değişkenleri — asla commit'lenmez
+.env
+.env.*
+!.env.example
+
+# Editör / IDE
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+
+# İşletim sistemi
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# Log
+*.log
+npm-debug.log*
+
+# Claude Code kisisel ayarlari
+.claude/settings.local.json

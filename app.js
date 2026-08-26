@@ -337,6 +337,7 @@ function projectCardHTML(repo, isPinned) {
     const tags = meta.tags || (repo.lang ? [repo.lang] : []);
     const icon = meta.icon || 'bi-folder2-open';
     const color = LANG_COLOR[repo.lang] || '#6366f1';
+    const demo = demoUrl(repo);
 
     return `
     <article class="card card-hover project-card reveal" data-lang="${esc(repo.lang || 'Diğer')}">
@@ -355,11 +356,30 @@ function projectCardHTML(repo, isPinned) {
             <span class="pc-lang">
                 ${repo.lang ? `<i class="pc-dot" style="background:${color}"></i> ${esc(repo.lang)}` : '<span class="dim">—</span>'}
             </span>
-            <a class="pc-link" href="${esc(repo.url)}" target="_blank" rel="noopener" data-project="${esc(title)}">
-                Kaynak kodu <i class="bi bi-arrow-up-right"></i>
-            </a>
+            <span class="pc-links">
+                ${demo ? `<a class="pc-demo" href="${esc(demo)}" target="_blank" rel="noopener">
+                    <i class="bi bi-box-arrow-up-right"></i> Canlı Demo
+                </a>` : ''}
+                <a class="pc-link" href="${esc(repo.url)}" target="_blank" rel="noopener">
+                    <i class="bi bi-github"></i> Kod
+                </a>
+            </span>
         </div>
     </article>`;
+}
+
+// Depodaki `homepage` alanı canlı demo adresidir. Kendi alan adımıza dönenleri
+// gösterme — ziyaretçiyi zaten bulunduğu siteye yollamanın anlamı yok.
+function demoUrl(repo) {
+    if (!repo.homepage) return null;
+    try {
+        const host = new URL(repo.homepage).hostname.replace(/^www\./, '');
+        if (host === location.hostname.replace(/^www\./, '')) return null;
+        if (host === 'allenvb-websayfasi.vercel.app') return null;
+        return repo.homepage;
+    } catch {
+        return null;   // geçersiz URL
+    }
 }
 
 function contribSectionHTML() {
