@@ -1004,6 +1004,7 @@ button { font: inherit; cursor: pointer; }
 .metric-label { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
 .metric-value { font-size: 32px; font-weight: 900; letter-spacing: -.04em; line-height: 1; color: var(--accent-light); }
 .metric-hint { font-size: 11.5px; color: var(--text-dim); margin-top: 7px; }
+.metric-hint { font-size: 11.5px; color: var(--text-dim); margin-top: 7px; }
 
 .bar-row { margin-bottom: 16px; }
 .bar-row:last-child { margin-bottom: 0; }

@@ -455,9 +455,9 @@ const PAGES = {
 
     <section class="wrap section-sm">
         <div class="stat-strip reveal">
-            <div class="stat-cell"><p class="stat-num" data-count="45" data-suffix="+">0</p><p class="stat-label">Genel Depo</p></div>
+            <div class="stat-cell"><p class="stat-num" id="stat-repos">0</p><p class="stat-label">Genel Depo</p></div>
             <div class="stat-cell"><p class="stat-num" id="stat-contrib">0</p><p class="stat-label">Yıllık Katkı</p></div>
-            <div class="stat-cell"><p class="stat-num" data-count="6" data-suffix="">0</p><p class="stat-label">Öne Çıkan Proje</p></div>
+            <div class="stat-cell"><p class="stat-num" id="stat-stars">0</p><p class="stat-label">Aldığı Yıldız</p></div>
             <div class="stat-cell"><p class="stat-num" data-count="2" data-suffix="">0</p><p class="stat-label">İş Deneyimi</p></div>
         </div>
     </section>
@@ -961,6 +961,10 @@ function initFeatured() {
     if (!grid) return;
 
     getRepos().then(repos => {
+        // Anasayfa sayaçları da aynı veriden beslensin — elle güncelleme gerekmesin
+        animateCounter($('#stat-repos'), repos.length);
+        animateCounter($('#stat-stars'), repos.reduce((s, r) => s + r.stars, 0));
+
         if (!document.body.contains(grid)) return;
         grid.innerHTML = pinnedRepos(repos).map(r => projectCardHTML(r, true)).join('');
         initCardGlow(grid);
