@@ -312,6 +312,19 @@ function getContributions() {
     return _contribPromise;
 }
 
+// Depo README'sini GitHub'ın kendi markdown motorundan HTML olarak alır.
+// Böylece detay sayfasındaki içerik her zaman deponun güncel README'sidir.
+function getReadmeHtml(name) {
+    return cached('gh_readme_' + name, 60 * 60 * 1000, async () => {
+        const res = await fetch(`https://api.github.com/repos/${GH.user}/${name}/readme`, {
+            headers: { Accept: 'application/vnd.github.html' }
+        });
+        if (res.status === 404) return null;          // README yok
+        if (!res.ok) throw new Error('README: ' + res.status);
+        return res.text();
+    });
+}
+
 // Tüm yılların katkı verisi (yıl kırılımı ve tüm zamanlar toplamı için)
 let _contribAllPromise = null;
 
@@ -349,7 +362,7 @@ function projectCardHTML(repo, isPinned) {
                 ${repo.forks ? `<span><i class="bi bi-diagram-2"></i> ${repo.forks}</span>` : ''}
             </div>
         </div>
-        <h3 class="pc-title">${esc(title)}</h3>
+        <h3 class="pc-title"><a href="#project/${encodeURIComponent(repo.name)}" data-page="project/${encodeURIComponent(repo.name)}">${esc(title)}</a></h3>
         <p class="pc-desc">${esc(desc)}</p>
         <div class="pc-tags">${tags.slice(0, 6).map(t => `<span class="chip">${esc(t)}</span>`).join('')}</div>
         <div class="pc-foot">
@@ -358,10 +371,14 @@ function projectCardHTML(repo, isPinned) {
             </span>
             <span class="pc-links">
                 ${demo ? `<a class="pc-demo" href="${esc(demo)}" target="_blank" rel="noopener">
-                    <i class="bi bi-box-arrow-up-right"></i> Canlı Demo
+                    <i class="bi bi-box-arrow-up-right"></i> Demo
                 </a>` : ''}
-                <a class="pc-link" href="${esc(repo.url)}" target="_blank" rel="noopener">
-                    <i class="bi bi-github"></i> Kod
+                <a class="pc-link" href="${esc(repo.url)}" target="_blank" rel="noopener" aria-label="GitHub deposu">
+                    <i class="bi bi-github"></i>
+                </a>
+                <a class="pc-link" href="#project/${encodeURIComponent(repo.name)}"
+                   data-page="project/${encodeURIComponent(repo.name)}">
+                    Detay <i class="bi bi-arrow-right"></i>
                 </a>
             </span>
         </div>
@@ -623,6 +640,39 @@ const PAGES = {
         </div>
     </section>`,
 
+    // ── PROJE DETAYI ─────────────────────────────────────────
+    project: (name) => {
+        const meta = PROJECT_META[name] || {};
+        const title = meta.title || prettyName(name);
+        return `
+    <section class="wrap section">
+        <a href="#projects" data-page="projects" class="back-link reveal">
+            <i class="bi bi-arrow-left"></i> Tüm projeler
+        </a>
+
+        <div class="pd-head reveal">
+            <div class="pd-icon"><i class="bi ${esc(meta.icon || 'bi-folder2-open')}"></i></div>
+            <div style="flex:1;min-width:0">
+                <h1 class="pd-title">${esc(title)}</h1>
+                <p class="dim mono" style="font-size:12.5px;margin-top:4px">${esc(GH.user)}/${esc(name)}</p>
+                <div id="pd-meta" class="pd-meta"></div>
+            </div>
+        </div>
+
+        ${meta.desc ? `<p class="pd-lead reveal">${esc(meta.desc)}</p>` : ''}
+
+        ${(meta.tags || []).length ? `<div class="sg-chips reveal" style="margin-bottom:22px">
+            ${meta.tags.map(t => `<span class="chip">${esc(t)}</span>`).join('')}
+        </div>` : ''}
+
+        <div id="pd-actions" class="hero-actions reveal" style="margin:0 0 34px"></div>
+
+        <div id="pd-body" class="reveal">
+            <div class="state-box"><div class="spinner"></div>İçerik yükleniyor…</div>
+        </div>
+    </section>`;
+    },
+
     // ── CV ───────────────────────────────────────────────────
     cv: () => `
     <section class="wrap section">
@@ -854,6 +904,7 @@ const PAGE_TITLES = {
     home: 'Süleyman Emre Arlı | Backend & Full-Stack Developer',
     about: 'Hakkımda | Süleyman Emre Arlı',
     projects: 'Projeler | Süleyman Emre Arlı',
+    project: (name) => `${(PROJECT_META[name]?.title) || prettyName(name || '')} | Süleyman Emre Arlı`,
     cv: 'CV | Süleyman Emre Arlı',
     contact: 'İletişim | Süleyman Emre Arlı',
     stats: 'İstatistikler | Süleyman Emre Arlı'
@@ -1210,6 +1261,118 @@ function initGithubStats() {
 
 function setText(sel, txt) { const el = $(sel); if (el) el.textContent = txt; }
 
+// ── Proje detay sayfası ───────────────────────────────────────
+
+/**
+ * GitHub'ın README HTML'ini siteye uyarlar:
+ *  - mermaid blokları GitHub'ın kendi iframe'ine bağlı geliyor; kaynağı çıkarıp
+ *    kendimiz çizebilmek için <pre class="mermaid"> haline getiriyoruz
+ *  - başlık çapası ikonları ve octicon SVG'leri gereksiz gürültü, siliniyor
+ *  - dış bağlantılar yeni sekmede açılıyor
+ */
+function normalizeReadme(html) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+
+    doc.querySelectorAll('[data-type="mermaid"]').forEach(sec => {
+        const holder = sec.querySelector('[data-json]');
+        let src = '';
+        try { src = JSON.parse(holder.getAttribute('data-json')).data || ''; } catch { }
+        if (!src) { sec.remove(); return; }
+        const pre = doc.createElement('pre');
+        pre.className = 'mermaid';
+        pre.textContent = src;
+        sec.replaceWith(pre);
+    });
+
+    doc.querySelectorAll('.anchor, .octicon, .markdown-heading > a').forEach(e => e.remove());
+
+    doc.querySelectorAll('a[href]').forEach(a => {
+        const href = a.getAttribute('href');
+        if (href.startsWith('#')) { a.removeAttribute('href'); return; }  // iç çapa — çalışmaz
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+    });
+
+    doc.querySelectorAll('img').forEach(img => {
+        img.loading = 'lazy';
+        img.removeAttribute('width');
+        img.removeAttribute('height');
+    });
+
+    return doc.body.innerHTML;
+}
+
+// mermaid yalnızca diyagram içeren detay sayfalarında, o an indiriliyor
+async function renderMermaid(root) {
+    const nodes = [...root.querySelectorAll('pre.mermaid')];
+    if (!nodes.length) return;
+    try {
+        const mod = await import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs');
+        const mermaid = mod.default;
+        mermaid.initialize({
+            startOnLoad: false,
+            securityLevel: 'strict',
+            theme: 'dark',
+            themeVariables: {
+                background: '#0d1222',
+                primaryColor: '#1b2340',
+                primaryTextColor: '#e8ebf5',
+                primaryBorderColor: '#6366f1',
+                lineColor: '#6366f1',
+                secondaryColor: '#1a1f38',
+                tertiaryColor: '#141a2e',
+                fontFamily: 'Inter, system-ui, sans-serif'
+            }
+        });
+        await mermaid.run({ nodes });
+    } catch (err) {
+        // CDN engellenirse diyagram kaynağı okunabilir kod bloğu olarak kalsın
+        console.warn('mermaid yüklenemedi:', err.message);
+        nodes.forEach(n => n.classList.add('mermaid-raw'));
+    }
+}
+
+function initProjectDetail(name) {
+    const body = $('#pd-body');
+    if (!body) return;
+
+    // Başlık şeridini depo verisiyle doldur
+    getRepos().then(repos => {
+        const repo = repos.find(r => r.name === name);
+        if (!repo || !$('#pd-meta')) return;
+        const demo = demoUrl(repo);
+        const color = LANG_COLOR[repo.lang] || '#6366f1';
+        $('#pd-meta').innerHTML = `
+            ${repo.lang ? `<span class="pc-lang"><i class="pc-dot" style="background:${color}"></i> ${esc(repo.lang)}</span>` : ''}
+            ${repo.stars ? `<span class="pc-lang"><i class="bi bi-star-fill"></i> ${repo.stars}</span>` : ''}
+            <span class="pc-lang"><i class="bi bi-clock-history"></i> ${new Date(repo.updated).toLocaleDateString('tr-TR')}</span>`;
+        $('#pd-actions').innerHTML = `
+            ${demo ? `<a class="btn btn-primary" href="${esc(demo)}" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right"></i> Canlı Demo</a>` : ''}
+            <a class="btn btn-ghost" href="${esc(repo.url)}" target="_blank" rel="noopener"><i class="bi bi-github"></i> GitHub'da Aç</a>`;
+    }).catch(() => { });
+
+    // README
+    getReadmeHtml(name).then(html => {
+        if (!document.body.contains(body)) return;
+        if (!html) {
+            const meta = PROJECT_META[name] || {};
+            body.innerHTML = `<div class="state-box" style="text-align:left;padding:8px 0">
+                <p class="muted" style="font-size:14.5px;line-height:1.8">${esc(meta.desc || 'Bu depo için ayrıntılı açıklama bulunmuyor.')}</p>
+                <p class="dim" style="font-size:13px;margin-top:16px">
+                    Bu projenin GitHub'da README dosyası yok; ayrıntı için kaynak koda göz atabilirsiniz.
+                </p></div>`;
+            initReveal();
+            return;
+        }
+        body.innerHTML = `<div class="readme">${normalizeReadme(html)}</div>`;
+        renderMermaid(body);
+        initReveal();
+    }).catch(err => {
+        if (!document.body.contains(body)) return;
+        body.innerHTML = `<p class="dim" style="font-size:13px">İçerik yüklenemedi (${esc(err.message)}).</p>`;
+    });
+}
+
 function apiErrorHTML() {
     return '<p class="dim" style="font-size:13px">Veri şu an alınamadı.</p>';
 }
@@ -1243,22 +1406,32 @@ const PAGE_INIT = {
     home: () => { initCounters(); initContributions(); initFeatured(); },
     about: () => { initContributions(); },
     projects: () => { initAllProjects(); },
+    project: (name) => { initProjectDetail(name); },
     cv: () => { initCvViewer(); },
     contact: () => { initContactForm(); },
     stats: () => { initStatsPage(); }
 };
 
 let _currentPage = null;
+let _currentParam = null;
 let _navigating = false;
 
-function pageFromHash() {
-    const key = (location.hash || '').replace(/^#\/?/, '').split('?')[0];
-    return PAGES[key] ? key : 'home';
+// `#project/<depo-adı>` gibi parametreli rotaları da çözer
+function routeFromHash() {
+    const raw = (location.hash || '').replace(/^#\/?/, '').split('?')[0];
+    const slash = raw.indexOf('/');
+    const key = slash === -1 ? raw : raw.slice(0, slash);
+    const param = slash === -1 ? null : decodeURIComponent(raw.slice(slash + 1));
+
+    if (key === 'project' && param) return { page: 'project', param };
+    return { page: PAGES[key] ? key : 'home', param: null };
 }
 
 function syncNav(page) {
+    // Proje detayındayken üst menüde "Projeler" işaretli kalsın
+    const navKey = page === 'project' ? 'projects' : page;
     $$('#nav-links > a, #mobile-menu a[data-page], .footer-nav a').forEach(a => {
-        a.classList.toggle('active', a.dataset.page === page);
+        a.classList.toggle('active', a.dataset.page === navKey);
     });
     scheduleNavIndicator();
 }
@@ -1284,12 +1457,12 @@ function moveNavIndicator() {
     ind.style.opacity = '1';
 }
 
-function render(page, { scroll = true } = {}) {
+function render(page, param, { scroll = true } = {}) {
     const container = $('#app-container');
     if (_navigating) return;
 
     // Aynı sayfaya tekrar tıklandıysa sadece başa dön
-    if (page === _currentPage) {
+    if (page === _currentPage && param === _currentParam) {
         if (scroll) window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
     }
@@ -1298,10 +1471,13 @@ function render(page, { scroll = true } = {}) {
     container.classList.add('leaving');
 
     setTimeout(() => {
-        container.innerHTML = PAGES[page]();
+        container.innerHTML = PAGES[page](param);
         _currentPage = page;
+        _currentParam = param;
 
-        document.title = PAGE_TITLES[page];
+        document.title = typeof PAGE_TITLES[page] === 'function'
+            ? PAGE_TITLES[page](param)
+            : PAGE_TITLES[page];
         syncNav(page);
 
         if (scroll) window.scrollTo({ top: 0, behavior: 'auto' });
@@ -1310,17 +1486,19 @@ function render(page, { scroll = true } = {}) {
         // geçiş yarıda kalıp sayfa görünmez şekilde kilitlenirdi
         container.classList.remove('leaving');
         initReveal();
-        PAGE_INIT[page]?.();
+        PAGE_INIT[page]?.(param);
         _navigating = false;
     }, 220);
 }
 
-function navigate(page) {
-    const target = PAGES[page] ? page : 'home';
-    if (location.hash.replace(/^#\/?/, '') !== target) {
-        location.hash = target;      // hashchange render'ı tetikler
+function navigate(target) {
+    // target: 'projects' ya da 'project/Depo-Adi'
+    const clean = PAGES[target.split('/')[0]] ? target : 'home';
+    if (location.hash.replace(/^#\/?/, '') !== clean) {
+        location.hash = clean;       // hashchange render'ı tetikler
     } else {
-        render(target);
+        const r = routeFromHash();
+        render(r.page, r.param);
     }
 }
 
@@ -1408,7 +1586,10 @@ function initChrome() {
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden) scheduleNavIndicator();
     });
-    window.addEventListener('hashchange', () => render(pageFromHash()));
+    window.addEventListener('hashchange', () => {
+        const r = routeFromHash();
+        render(r.page, r.param);
+    });
 
     $('#year').textContent = new Date().getFullYear();
 }
@@ -1513,14 +1694,16 @@ document.addEventListener('DOMContentLoaded', () => {
     initChrome();
     initBackground();
 
-    // İlk sayfa — derin bağlantı (#projects gibi) desteklenir
-    const first = pageFromHash();
-    _currentPage = null;
+    // İlk sayfa — derin bağlantı (#projects, #project/Depo-Adi) desteklenir
+    const { page, param } = routeFromHash();
     $('#app-container').classList.remove('leaving');
-    $('#app-container').innerHTML = PAGES[first]();
-    _currentPage = first;
-    document.title = PAGE_TITLES[first];
-    syncNav(first);
+    $('#app-container').innerHTML = PAGES[page](param);
+    _currentPage = page;
+    _currentParam = param;
+    document.title = typeof PAGE_TITLES[page] === 'function'
+        ? PAGE_TITLES[page](param)
+        : PAGE_TITLES[page];
+    syncNav(page);
     initReveal();
-    PAGE_INIT[first]?.();
+    PAGE_INIT[page]?.(param);
 });
