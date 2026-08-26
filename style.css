@@ -209,6 +209,30 @@ button { font: inherit; cursor: pointer; }
     transform: translateY(-1px);
 }
 
+.lang-btn {
+    height: 36px;
+    min-width: 44px;
+    padding: 0 11px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, .03);
+    color: var(--text-soft);
+    font-size: 12px;
+    font-weight: 750;
+    letter-spacing: .06em;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all .22s var(--ease);
+}
+
+.lang-btn:hover {
+    color: var(--accent-light);
+    border-color: rgba(99, 102, 241, .4);
+    background: rgba(99, 102, 241, .12);
+    transform: translateY(-1px);
+}
+
 .menu-only { display: none; }
 
 #mobile-menu {
@@ -946,7 +970,6 @@ button { font: inherit; cursor: pointer; }
     white-space: pre;
 }
 
-
 /* ── Zaman çizelgesi ──────────────────────────────────────── */
 .timeline { position: relative; padding-left: 30px; }
 
@@ -1142,7 +1165,6 @@ button { font: inherit; cursor: pointer; }
 .metric-card { padding: 22px; }
 .metric-label { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
 .metric-value { font-size: 32px; font-weight: 900; letter-spacing: -.04em; line-height: 1; color: var(--accent-light); }
-.metric-hint { font-size: 11.5px; color: var(--text-dim); margin-top: 7px; }
 .metric-hint { font-size: 11.5px; color: var(--text-dim); margin-top: 7px; }
 
 .bar-row { margin-bottom: 16px; }

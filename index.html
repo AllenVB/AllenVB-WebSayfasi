@@ -86,36 +86,39 @@
             </a>
 
             <div class="nav-links" id="nav-links">
-                <a href="#home"    data-page="home">Anasayfa</a>
-                <a href="#about"   data-page="about">Hakkımda</a>
-                <a href="#projects" data-page="projects">Projeler</a>
-                <a href="#cv"      data-page="cv">CV</a>
-                <a href="#contact" data-page="contact">İletişim</a>
-                <a href="#stats"   data-page="stats">İstatistikler</a>
+                <a href="#home"    data-page="home" data-i18n="nav_home">Anasayfa</a>
+                <a href="#about"   data-page="about" data-i18n="nav_about">Hakkımda</a>
+                <a href="#projects" data-page="projects" data-i18n="nav_projects">Projeler</a>
+                <a href="#cv"      data-page="cv" data-i18n="nav_cv">CV</a>
+                <a href="#contact" data-page="contact" data-i18n="nav_contact">İletişim</a>
+                <a href="#stats"   data-page="stats" data-i18n="nav_stats">İstatistikler</a>
                 <span id="nav-indicator" aria-hidden="true"></span>
             </div>
 
             <div class="nav-actions">
                 <a href="cv.pdf" download="Suleyman-Emre-Arli-CV.pdf" class="btn btn-sm btn-ghost hide-sm">
-                    <i class="bi bi-download"></i> CV
+                    <i class="bi bi-download"></i> <span data-i18n="nav_cv">CV</span>
                 </a>
+                <button id="lang-btn" class="lang-btn" aria-label="Language / Dil">
+                    <span id="lang-current">TR</span>
+                </button>
                 <a href="https://github.com/AllenVB" target="_blank" rel="noopener" class="icon-btn" aria-label="GitHub">
                     <i class="bi bi-github"></i>
                 </a>
-                <button id="menu-btn" class="icon-btn menu-only" aria-label="Menü" aria-expanded="false">
+                <button id="menu-btn" class="icon-btn menu-only" aria-label="Menü" data-i18n-aria="menu" aria-expanded="false">
                     <i class="bi bi-list"></i>
                 </button>
             </div>
         </div>
 
         <div id="mobile-menu">
-            <a href="#home"     data-page="home">Anasayfa</a>
-            <a href="#about"    data-page="about">Hakkımda</a>
-            <a href="#projects" data-page="projects">Projeler</a>
-            <a href="#cv"       data-page="cv">CV</a>
-            <a href="#contact"  data-page="contact">İletişim</a>
-            <a href="#stats"    data-page="stats">İstatistikler</a>
-            <a href="cv.pdf" download="Suleyman-Emre-Arli-CV.pdf" class="mobile-cv"><i class="bi bi-download"></i> CV İndir</a>
+            <a href="#home"     data-page="home" data-i18n="nav_home">Anasayfa</a>
+            <a href="#about"    data-page="about" data-i18n="nav_about">Hakkımda</a>
+            <a href="#projects" data-page="projects" data-i18n="nav_projects">Projeler</a>
+            <a href="#cv"       data-page="cv" data-i18n="nav_cv">CV</a>
+            <a href="#contact"  data-page="contact" data-i18n="nav_contact">İletişim</a>
+            <a href="#stats"    data-page="stats" data-i18n="nav_stats">İstatistikler</a>
+            <a href="cv.pdf" download="Suleyman-Emre-Arli-CV.pdf" class="mobile-cv"><i class="bi bi-download"></i> <span data-i18n="cv_download">CV İndir</span></a>
         </div>
     </nav>
 
@@ -131,11 +134,11 @@
             </div>
 
             <nav class="footer-nav" aria-label="Alt menü">
-                <a href="#home" data-page="home">Anasayfa</a>
-                <a href="#about" data-page="about">Hakkımda</a>
-                <a href="#projects" data-page="projects">Projeler</a>
-                <a href="#cv" data-page="cv">CV</a>
-                <a href="#contact" data-page="contact">İletişim</a>
+                <a href="#home" data-page="home" data-i18n="nav_home">Anasayfa</a>
+                <a href="#about" data-page="about" data-i18n="nav_about">Hakkımda</a>
+                <a href="#projects" data-page="projects" data-i18n="nav_projects">Projeler</a>
+                <a href="#cv" data-page="cv" data-i18n="nav_cv">CV</a>
+                <a href="#contact" data-page="contact" data-i18n="nav_contact">İletişim</a>
             </nav>
 
             <div class="footer-social">
@@ -151,7 +154,7 @@
         </div>
     </footer>
 
-    <button id="to-top" aria-label="Yukarı çık"><i class="bi bi-arrow-up"></i></button>
+    <button id="to-top" aria-label="Yukarı çık" data-i18n-aria="to_top"><i class="bi bi-arrow-up"></i></button>
 
     <script src="app.js"></script>
 </body>
